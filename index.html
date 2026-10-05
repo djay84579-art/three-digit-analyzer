@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>三位数走势分析器</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#687386;--line:#e7ebf2;--accent:#4f46e5;--red:#ef4444;--blue:#2196f3;--green:#16a34a;--orange:#f59e0b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+header{background:linear-gradient(135deg,#111827,#312e81);color:white;padding:28px 20px}
+.wrap{max-width:1180px;margin:auto}.title{font-size:28px;font-weight:800}.sub{opacity:.78;margin-top:7px}
+.grid{display:grid;grid-template-columns:360px 1fr;gap:18px;margin:20px auto}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 4px 18px #1f29370b}
+h2{font-size:18px;margin:0 0 14px}.hint{font-size:13px;color:var(--muted);line-height:1.6}
+textarea{width:100%;height:390px;border:1px solid var(--line);border-radius:12px;padding:12px;font:13px ui-monospace,SFMono-Regular,Menlo,monospace;resize:vertical}
+button{border:0;border-radius:10px;padding:10px 14px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;margin-top:10px}
+button.secondary{background:#eef2ff;color:#3730a3;margin-left:6px}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.metric{background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:14px}.metric b{font-size:22px;display:block;margin-top:5px}.metric span{font-size:12px;color:var(--muted)}
+.sections{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+.bar{height:10px;background:#edf1f7;border-radius:99px;overflow:hidden}.fill{height:100%;background:var(--accent);border-radius:99px}
+.row{display:grid;grid-template-columns:80px 1fr 50px;gap:10px;align-items:center;margin:9px 0;font-size:13px}
+.tags{display:flex;flex-wrap:wrap;gap:8px}.tag{padding:7px 10px;border-radius:999px;background:#eef2ff;color:#3730a3;font-weight:700;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--muted)}
+.warning{margin-top:18px;padding:12px 14px;border-radius:12px;background:#fff7ed;color:#9a3412;font-size:13px;line-height:1.6}
+@media(max-width:850px){.grid{grid-template-columns:1fr}.sections{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="title">三位数 · 走势分析器</div><div class="sub">录入历史开奖数据 → 自动统计和值、单双、大小、形态、冷热号与近期走势</div></div></header>
+<main class="wrap">
+<div class="grid">
+<section class="card">
+<h2>① 导入历史数据</h2>
+<div class="hint">每行格式：期号 A B C。也支持直接粘贴“3490489 9 6 8”。数据按你提供的顺序分析。</div>
+<textarea id="input"></textarea>
+<button onclick="analyze()">开始分析</button><button class="secondary" onclick="loadSample()">载入示例</button>
+<div class="warning">本工具只做历史数据统计与可视化，不代表能预测随机开奖结果，也不提供中奖保证。请理性使用。</div>
+</section>
+<section>
+<div class="card"><h2>② 核心指标</h2><div class="metrics" id="metrics"></div></div>
+<div class="sections">
+<div class="card"><h2>和值分布</h2><div id="sumChart"></div></div>
+<div class="card"><h2>数字冷热（近全部样本）</h2><div id="digitChart"></div></div>
+<div class="card"><h2>单双结构</h2><div id="parity"></div></div>
+<div class="card"><h2>大小结构</h2><div id="size"></div></div>
+</div>
+</section>
+</div>
+<div class="sections">
+<div class="card"><h2>③ 近期走势摘要</h2><div id="summary"></div></div>
+<div class="card"><h2>④ 下一期“观察框架”</h2><div id="next"></div></div>
+</div>
+<div class="card" style="margin-top:18px"><h2>⑤ 最近数据</h2><div style="overflow:auto"><table><thead><tr><th>期号</th><th>A</th><th>B</th><th>C</th><th>和值</th><th>单双</th><th>大小</th><th>形态</th></tr></thead><tbody id="table"></tbody></table></div></div>
+</main>
+<script>
+const sample=`3490489 9 6 8
+3490488 7 7 3
+3490487 0 4 8
+3490486 1 1 2
+3490485 7 7 1
+3490484 3 5 2
+3490483 5 8 4
+3490482 4 8 5
+3490481 1 6 9
+3490480 8 6 0
+3490479 9 6 7
+3490478 9 5 6
+3490477 9 2 3
+3490476 5 2 5
+3490475 4 7 9
+3490474 1 0 3
+3490473 8 5 2
+3490472 7 7 0
+3490471 3 5 7
+3490470 8 2 9`;
+
+function loadSample(){document.getElementById('input').value=sample;analyze()}
+function parse(){
+ return document.getElementById('input').value.trim().split(/\n+/).map(x=>{
+   let p=x.trim().split(/[\s,，]+/).filter(Boolean);
+   if(p.length<4)return null;
+   let a=+p[p.length-3],b=+p[p.length-2],c=+p[p.length-1];
+   if([a,b,c].some(v=>!Number.isInteger(v)||v<0||v>9))return null;
+   let issue=p.slice(0,p.length-3).join('');
+   return {issue,a,b,c,sum:a+b+c};
+ }).filter(Boolean);
+}
+function counts(arr){return arr.reduce((o,x)=>(o[x]=(o[x]||0)+1,o),{})}
+function mode(obj){return Object.entries(obj).sort((a,b)=>b[1]-a[1])[0]}
+function hist(items, target){
+ let c=counts(items);let max=Math.max(...Object.values(c),1);
+ return Object.entries(c).sort((a,b)=>+a[0]-+b[0]).map(([k,v])=>`<div class="row"><span>${target?target(k):k}</span><div class="bar"><div class="fill" style="width:${v/max*100}%"></div></div><b>${v}</b></div>`).join('')
+}
+function analyze(){
+ let d=parse(); if(!d.length){alert('没有识别到有效数据');return}
+ let sums=d.map(x=>x.sum), digits=d.flatMap(x=>[x.a,x.b,x.c]);
+ let parity=d.map(x=>[x.a,x.b,x.c].filter(v=>v%2).length===2?'2单1双':[x.a,x.b,x.c].filter(v=>v%2).length===1?'1单2双':[x.a,x.b,x.c].every(v=>v%2)?'3单':'3双');
+ let size=d.map(x=>[x.a,x.b,x.c].filter(v=>v>=5).length===2?'2大1小':[x.a,x.b,x.c].filter(v=>v>=5).length===1?'1大2小':[x.a,x.b,x.c].every(v=>v>=5)?'3大':'3小');
+ let shapes=d.map(x=>new Set([x.a,x.b,x.c]).size===3?'组六':new Set([x.a,x.b,x.c]).size===2?'组三':'豹子');
+ let recent=d.slice(0,10);
+ let hot=Object.entries(counts(digits)).sort((a,b)=>b[1]-a[1]).slice(0,5);
+ document.getElementById('metrics').innerHTML=[
+  ['样本期数',d.length],['平均和值',(sums.reduce((a,b)=>a+b,0)/sums.length).toFixed(1)],
+  ['最高和值',Math.max(...sums)],['最低和值',Math.min(...sums)]
+ ].map(x=>`<div class="metric"><span>${x[0]}</span><b>${x[1]}</b></div>`).join('');
+ document.getElementById('sumChart').innerHTML=hist(sums);
+ document.getElementById('digitChart').innerHTML=hist(digits);
+ document.getElementById('parity').innerHTML=hist(parity);
+ document.getElementById('size').innerHTML=hist(size);
+ let sm=mode(counts(sums)), pm=mode(counts(parity)), zm=mode(counts(size)), fm=mode(counts(shapes));
+ document.getElementById('summary').innerHTML=`<div class="tags">${hot.map(x=>`<span class="tag">数字 ${x[0]} · ${x[1]}次</span>`).join('')}</div><p>最常见和值：<b>${sm[0]}</b>（${sm[1]}次）</p><p>单双最常见：<b>${pm[0]}</b>；大小最常见：<b>${zm[0]}</b>；形态最常见：<b>${fm[0]}</b>。</p><p class="hint">这些是历史频数，不等于下一期概率。</p>`;
+ document.getElementById('next').innerHTML=`<div class="tags"><span class="tag">和值重点观察 ${Math.max(0,+sm[0]-2)}～${+sm[0]+2}</span><span class="tag">单双 ${pm[0]}</span><span class="tag">大小 ${zm[0]}</span><span class="tag">形态 ${fm[0]}</span></div><p class="hint" style="margin-top:12px">建议把这里理解成“数据观察框架”，不要理解成确定预测。可以进一步加入遗漏、移动窗口、位置冷热、和值跨度、连号、重号等指标。</p>`;
+ document.getElementById('table').innerHTML=d.map(x=>`<tr><td>${x.issue}</td><td>${x.a}</td><td>${x.b}</td><td>${x.c}</td><td>${x.sum}</td><td>${parity[d.indexOf(x)]}</td><td>${size[d.indexOf(x)]}</td><td>${shapes[d.indexOf(x)]}</td></tr>`).join('');
+}
+loadSample();
+</script>
+</body></html>
