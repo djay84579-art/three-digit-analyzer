@@ -98,4 +98,315 @@ button{
  font-size:16px;
 }
 .small{
- color:#888
+ color:#888;
+ font-size:13px;
+ line-height:1.7;
+}
+@media(max-width:600px){
+ .header h1{font-size:27px}
+ .grid,.pred{grid-template-columns:1fr 1fr}
+ .box b{font-size:21px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+ <h1>🎯 PC28 · 实时开奖 + 统计参考</h1>
+ <p>Telegram 公开频道 @pc28 · 自动读取 · 每60秒刷新</p>
+</div>
+
+<div class="wrap">
+
+<div class="card">
+ <h2>📡 实时状态</h2>
+ <div id="status" class="status">正在读取数据...</div>
+ <br>
+ <button onclick="loadData()">立即刷新</button>
+</div>
+
+<div class="card">
+ <h2>📊 核心指标</h2>
+ <div class="grid">
+  <div class="box">
+   <span>已记录期数</span>
+   <b id="count">—</b>
+  </div>
+  <div class="box">
+   <span>最新期号</span>
+   <b id="issue">—</b>
+  </div>
+  <div class="box">
+   <span>最新号码</span>
+   <b id="nums">—</b>
+  </div>
+  <div class="box">
+   <span>最新和值</span>
+   <b id="sum">—</b>
+  </div>
+ </div>
+</div>
+
+<div class="card">
+ <h2>🔮 下一期统计参考</h2>
+ <div class="pred">
+  <div class="box">
+   <span>和值热区</span>
+   <b id="predSum" class="hot">—</b>
+  </div>
+  <div class="box">
+   <span>重点数字</span>
+   <b id="predDigit" class="hot">—</b>
+  </div>
+  <div class="box">
+   <span>单双参考</span>
+   <b id="predParity">—</b>
+  </div>
+  <div class="box">
+   <span>大小参考</span>
+   <b id="predSize">—</b>
+  </div>
+ </div>
+
+ <p class="small">
+  根据最近50期历史数据统计，仅作为走势参考，不代表下一期一定出现。
+ </p>
+</div>
+
+<div class="card">
+ <h2>📈 和值分布</h2>
+ <div id="dist">—</div>
+</div>
+
+<div class="card">
+ <h2>🔥 数字热度</h2>
+ <div id="hot">—</div>
+</div>
+
+<div class="card">
+ <h2>🧾 最近30期</h2>
+ <div style="overflow:auto">
+  <table>
+   <thead>
+    <tr>
+     <th>期号</th>
+     <th>A</th>
+     <th>B</th>
+     <th>C</th>
+     <th>和值</th>
+    </tr>
+   </thead>
+   <tbody id="list"></tbody>
+  </table>
+ </div>
+</div>
+
+</div>
+
+<script>
+
+let data=[];
+
+function $(id){
+ return document.getElementById(id);
+}
+
+function setStatus(text,cls){
+ $('status').className='status '+(cls||'');
+ $('status').textContent=text;
+}
+
+async function loadData(){
+
+ setStatus('正在读取数据...');
+
+ try{
+
+  const url =
+   'https://djay84579-art.github.io/three-digit-analyzer/data.json?v='
+   +Date.now();
+
+  const controller=new AbortController();
+
+  const timer=setTimeout(function(){
+   controller.abort();
+  },10000);
+
+  const response=await fetch(url,{
+   method:'GET',
+   cache:'no-store',
+   signal:controller.signal
+  });
+
+  clearTimeout(timer);
+
+  if(!response.ok){
+   throw new Error('HTTP '+response.status);
+  }
+
+  const json=await response.json();
+
+  if(!json.results || !json.results.length){
+   throw new Error('data.json没有开奖数据');
+  }
+
+  data=json.results
+   .map(x=>({
+    issue:String(x.issue),
+    a:Number(x.a),
+    b:Number(x.b),
+    c:Number(x.c),
+    sum:Number(x.sum)
+   }))
+   .sort((a,b)=>Number(b.issue)-Number(a.issue));
+
+  render();
+
+  setStatus(
+   '读取成功 · '+data.length+
+   '期 · 最后刷新：'+new Date().toLocaleTimeString(),
+   'ok'
+  );
+
+ }catch(e){
+
+  setStatus(
+   '读取失败：'+
+   (e.name==='AbortError'?'请求超时':e.message),
+   'err'
+  );
+
+ }
+}
+
+function render(){
+
+ const latest=data[0];
+
+ $('count').textContent=data.length;
+ $('issue').textContent=latest.issue;
+ $('nums').textContent=
+  latest.a+' + '+latest.b+' + '+latest.c;
+ $('sum').textContent=latest.sum;
+
+ renderPrediction();
+ renderDist();
+ renderHot();
+ renderList();
+}
+
+function renderPrediction(){
+
+ const recent=data.slice(0,50);
+
+ const sums={};
+ const digits=Array(10).fill(0);
+ let odd=0;
+ let even=0;
+ let big=0;
+ let small=0;
+
+ recent.forEach(x=>{
+
+  sums[x.sum]=(sums[x.sum]||0)+1;
+
+  digits[x.a]++;
+  digits[x.b]++;
+  digits[x.c]++;
+
+  if(x.sum%2) odd++;
+  else even++;
+
+  if(x.sum>=14) big++;
+  else small++;
+ });
+
+ const hotSums=Object.keys(sums)
+  .sort((a,b)=>sums[b]-sums[a])
+  .slice(0,3);
+
+ const hotDigits=[0,1,2,3,4,5,6,7,8,9]
+  .sort((a,b)=>digits[b]-digits[a])
+  .slice(0,3);
+
+ $('predSum').textContent=
+  hotSums.join(' / ');
+
+ $('predDigit').textContent=
+  hotDigits.join('、');
+
+ $('predParity').textContent=
+  odd>=even?'单':'双';
+
+ $('predSize').textContent=
+  big>=small?'大':'小';
+}
+
+function renderDist(){
+
+ const recent=data.slice(0,50);
+ const map={};
+
+ recent.forEach(x=>{
+  map[x.sum]=(map[x.sum]||0)+1;
+ });
+
+ const arr=Object.keys(map)
+  .sort((a,b)=>Number(a)-Number(b));
+
+ $('dist').innerHTML=arr.map(k=>
+  '<div style="margin:7px 0">'+
+  '<span>'+k+'点：'+map[k]+'次</span>'+
+  '<div style="height:8px;background:#292936;border-radius:5px">'+
+  '<div style="height:8px;width:'+
+  Math.min(map[k]*12,100)+
+  '%;background:#755cff;border-radius:5px"></div>'+
+  '</div></div>'
+ ).join('');
+}
+
+function renderHot(){
+
+ const recent=data.slice(0,50);
+ const count=Array(10).fill(0);
+
+ recent.forEach(x=>{
+  count[x.a]++;
+  count[x.b]++;
+  count[x.c]++;
+ });
+
+ const arr=[0,1,2,3,4,5,6,7,8,9]
+  .sort((a,b)=>count[b]-count[a]);
+
+ $('hot').innerHTML=
+  arr.map(n=>
+   '<span style="display:inline-block;padding:9px 13px;margin:4px;border-radius:10px;background:#202033">'+
+   n+'：'+count[n]+
+   '</span>'
+  ).join('');
+}
+
+function renderList(){
+
+ $('list').innerHTML=
+  data.slice(0,30).map(x=>
+   '<tr>'+
+   '<td>'+x.issue+'</td>'+
+   '<td>'+x.a+'</td>'+
+   '<td>'+x.b+'</td>'+
+   '<td>'+x.c+'</td>'+
+   '<td>'+x.sum+'</td>'+
+   '</tr>'
+  ).join('');
+}
+
+loadData();
+
+setInterval(loadData,60000);
+
+</script>
+
+</body>
+</html>
