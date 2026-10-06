@@ -261,16 +261,17 @@ status.className="status";
 status.textContent="正在读取 @pc28…";
 
 const r=await fetch(
-PROXY+CHANNEL,
+"data.json?"+Date.now(),
 {cache:"no-store"}
 );
 
 if(!r.ok)throw new Error("HTTP "+r.status);
 
-const d=parsePage(await r.text());
+const j=await r.json();
+const d=j.results||[];
 
 if(!d.length)
-throw new Error("暂时没有识别到开奖数据");
+throw new Error("暂时没有开奖数据");
 
 render(d);
 
