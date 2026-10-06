@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#090910">
-<title>PC28 · 实时开奖 + 统计参考</title>
+<meta name="theme-color" content="#08080d">
+<title>PC28 · 实时开奖 + 预测统计</title>
 
 <style>
 *{
@@ -21,30 +21,20 @@ body{
   min-height:100vh;
   overflow-x:hidden;
   color:#fff;
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "SF Pro Display",
-    "PingFang SC",
-    "Microsoft YaHei",
-    sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,
+  "SF Pro Display","PingFang SC","Microsoft YaHei",sans-serif;
   background:#08080d;
 }
 
-/* 背景图片 */
 body::before{
   content:"";
   position:fixed;
   inset:0;
   z-index:-3;
-  background-image:url("./bg.png");
-  background-size:cover;
-  background-position:center top;
-  background-repeat:no-repeat;
+  background:url("./bg.png") center top/cover no-repeat;
   transform:scale(1.03);
 }
 
-/* 黑色渐变遮罩 */
 body::after{
   content:"";
   position:fixed;
@@ -55,22 +45,20 @@ body::after{
       180deg,
       rgba(0,0,0,.25),
       rgba(0,0,0,.58) 55%,
-      rgba(0,0,0,.82)
+      rgba(0,0,0,.84)
     );
 }
 
-/* 页面 */
 .page{
   width:100%;
   max-width:760px;
   margin:auto;
   padding:
     calc(18px + env(safe-area-inset-top))
-    14px
+    13px
     calc(90px + env(safe-area-inset-bottom));
 }
 
-/* 毛玻璃 */
 .glass{
   background:rgba(25,25,34,.48);
   border:1px solid rgba(255,255,255,.17);
@@ -82,7 +70,6 @@ body::after{
   -webkit-backdrop-filter:blur(24px) saturate(150%);
 }
 
-/* 顶部 */
 .hero{
   padding:24px 20px;
   margin-bottom:14px;
@@ -96,15 +83,14 @@ body::after{
 }
 
 .title{
-  font-size:26px;
+  font-size:25px;
   font-weight:800;
-  letter-spacing:-.5px;
 }
 
 .sub{
   margin-top:7px;
   font-size:13px;
-  color:rgba(255,255,255,.62);
+  color:rgba(255,255,255,.60);
 }
 
 .online{
@@ -128,7 +114,6 @@ body::after{
   box-shadow:0 0 12px #55ff9b;
 }
 
-/* 音乐 */
 .music-box{
   margin-top:18px;
   display:flex;
@@ -139,27 +124,23 @@ body::after{
 
 .music-info{
   font-size:13px;
-  color:rgba(255,255,255,.65);
+  color:rgba(255,255,255,.60);
 }
 
 .music-btn{
-  border:0;
+  border:1px solid rgba(255,255,255,.20);
   color:#fff;
   background:rgba(255,255,255,.13);
-  border:1px solid rgba(255,255,255,.20);
   border-radius:18px;
   padding:10px 14px;
   font-size:13px;
   font-weight:600;
-  backdrop-filter:blur(15px);
-  -webkit-backdrop-filter:blur(15px);
 }
 
 .music-btn:active{
   transform:scale(.96);
 }
 
-/* 卡片 */
 .card{
   padding:18px;
   margin-bottom:14px;
@@ -178,10 +159,9 @@ body::after{
 
 .card-title span{
   font-size:11px;
-  color:rgba(255,255,255,.48);
+  color:rgba(255,255,255,.45);
 }
 
-/* 最新开奖 */
 .latest{
   padding:20px;
 }
@@ -210,19 +190,14 @@ body::after{
   font-weight:800;
   background:rgba(255,255,255,.13);
   border:1px solid rgba(255,255,255,.20);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.18),
-    0 8px 25px rgba(0,0,0,.18);
 }
 
 .plus{
   color:rgba(255,255,255,.45);
-  font-size:18px;
 }
 
 .sum{
   text-align:center;
-  font-size:14px;
   color:rgba(255,255,255,.70);
 }
 
@@ -231,7 +206,6 @@ body::after{
   font-size:22px;
 }
 
-/* 数据网格 */
 .grid{
   display:grid;
   grid-template-columns:repeat(2,1fr);
@@ -260,10 +234,9 @@ body::after{
 .stat-small{
   margin-top:5px;
   font-size:11px;
-  color:rgba(255,255,255,.45);
+  color:rgba(255,255,255,.40);
 }
 
-/* 预测 */
 .prediction{
   background:
     linear-gradient(
@@ -291,13 +264,67 @@ body::after{
   margin-top:8px;
   font-size:30px;
   font-weight:900;
-  letter-spacing:1px;
 }
 
 .pred-note{
   margin-top:7px;
   font-size:11px;
+  color:rgba(255,255,255,.42);
+}
+
+.win-card{
+  background:
+    linear-gradient(
+      135deg,
+      rgba(40,220,150,.15),
+      rgba(80,100,255,.13)
+    ),
+    rgba(20,20,30,.50);
+}
+
+.win-number{
+  text-align:center;
+  font-size:52px;
+  line-height:1;
+  font-weight:900;
+  margin:10px 0 5px;
+}
+
+.win-label{
+  text-align:center;
+  color:rgba(255,255,255,.55);
+  font-size:12px;
+}
+
+.win-grid{
+  margin-top:17px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+
+.win-stat{
+  padding:13px 5px;
+  text-align:center;
+  border-radius:18px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.09);
+}
+
+.win-stat b{
+  display:block;
+  font-size:19px;
+}
+
+.win-stat span{
+  display:block;
+  margin-top:4px;
+  font-size:10px;
   color:rgba(255,255,255,.45);
+}
+
+.hit-good{
+  color:#8dffc1;
 }
 
 .reference{
@@ -315,7 +342,6 @@ body::after{
   font-size:12px;
 }
 
-/* 统计条 */
 .bar-row{
   margin:12px 0;
 }
@@ -341,7 +367,6 @@ body::after{
   background:linear-gradient(90deg,#9d7cff,#5fa8ff);
 }
 
-/* 数字冷热 */
 .hot-grid{
   display:grid;
   grid-template-columns:repeat(5,1fr);
@@ -367,7 +392,6 @@ body::after{
   color:rgba(255,255,255,.42);
 }
 
-/* 表格 */
 .table-wrap{
   overflow-x:auto;
   border-radius:20px;
@@ -379,8 +403,7 @@ table{
   border-collapse:collapse;
 }
 
-th,
-td{
+th,td{
   padding:11px 8px;
   text-align:center;
   border-bottom:1px solid rgba(255,255,255,.07);
@@ -400,7 +423,6 @@ td strong{
   color:#fff;
 }
 
-/* 状态 */
 .status{
   text-align:center;
   margin:12px 0;
@@ -408,16 +430,21 @@ td strong{
   color:rgba(255,255,255,.42);
 }
 
-/* 底部 */
 .footer{
   text-align:center;
-  padding:12px 0 5px;
-  color:rgba(255,255,255,.35);
-  font-size:10px;
+  padding:15px 0 5px;
+  color:rgba(255,255,255,.42);
+  font-size:11px;
+  line-height:1.8;
 }
 
-/* 手机优化 */
+.producer{
+  color:rgba(255,255,255,.70);
+  font-weight:600;
+}
+
 @media(max-width:420px){
+
   .page{
     padding-left:11px;
     padding-right:11px;
@@ -439,6 +466,7 @@ td strong{
   .card{
     padding:15px;
   }
+
 }
 </style>
 </head>
@@ -451,6 +479,7 @@ td strong{
   <section class="glass hero">
 
     <div class="hero-top">
+
       <div>
         <div class="title">PC28 · 实时开奖</div>
         <div class="sub">Telegram 公开频道 · @pc28</div>
@@ -460,9 +489,11 @@ td strong{
         <span class="dot"></span>
         LIVE
       </div>
+
     </div>
 
     <div class="music-box">
+
       <div class="music-info">
         🎧 背景音乐
       </div>
@@ -470,6 +501,7 @@ td strong{
       <button class="music-btn" id="musicBtn">
         🎵 播放音乐
       </button>
+
     </div>
 
   </section>
@@ -486,11 +518,17 @@ td strong{
     <div class="issue" id="latestIssue">暂无</div>
 
     <div class="numbers">
+
       <div class="ball" id="ballA">-</div>
+
       <div class="plus">+</div>
+
       <div class="ball" id="ballB">-</div>
+
       <div class="plus">+</div>
+
       <div class="ball" id="ballC">-</div>
+
     </div>
 
     <div class="sum">
@@ -500,7 +538,7 @@ td strong{
   </section>
 
 
-  <!-- 基础数据 -->
+  <!-- 数据概览 -->
   <section class="glass card">
 
     <div class="card-title">
@@ -539,11 +577,11 @@ td strong{
   </section>
 
 
-  <!-- 统计参考 -->
+  <!-- 预测 -->
   <section class="glass card prediction">
 
     <div class="card-title">
-      <strong>🔮 统计参考</strong>
+      <strong>🔮 下一期统计参考</strong>
       <span>近50期</span>
     </div>
 
@@ -558,7 +596,7 @@ td strong{
       </div>
 
       <div class="pred-note">
-        根据历史出现频率统计
+        根据最近50期历史频率计算
       </div>
 
     </div>
@@ -590,7 +628,49 @@ td strong{
     <div class="reference">
       <div class="tag">历史频率</div>
       <div class="tag">近50期</div>
-      <div class="tag">仅供统计参考</div>
+      <div class="tag">统计参考</div>
+    </div>
+
+  </section>
+
+
+  <!-- 预测总赢数 -->
+  <section class="glass card win-card">
+
+    <div class="card-title">
+      <strong>🏆 预测总赢数</strong>
+      <span>历史回测</span>
+    </div>
+
+    <div class="win-number hit-good" id="winCount">
+      -
+    </div>
+
+    <div class="win-label">
+      近50期预测命中次数
+    </div>
+
+    <div class="win-grid">
+
+      <div class="win-stat">
+        <b id="testCount">-</b>
+        <span>测试期数</span>
+      </div>
+
+      <div class="win-stat">
+        <b id="hitRate">-</b>
+        <span>历史命中率</span>
+      </div>
+
+      <div class="win-stat">
+        <b id="streak">-</b>
+        <span>连续命中</span>
+      </div>
+
+    </div>
+
+    <div class="pred-note" style="margin-top:15px;text-align:center;">
+      命中数为历史数据回测结果，不代表下一期一定命中
     </div>
 
   </section>
@@ -644,8 +724,7 @@ td strong{
           </tr>
         </thead>
 
-        <tbody id="recentTable">
-        </tbody>
+        <tbody id="recentTable"></tbody>
 
       </table>
 
@@ -658,9 +737,20 @@ td strong{
     正在读取数据……
   </div>
 
+
+  <!-- 制作人 -->
   <div class="footer">
+
     PC28 · 数据来自 Telegram 公开频道<br>
-    统计结果仅供历史数据分析参考，不代表下一期结果
+
+    <span class="producer">
+      制作人：@ds200xd200xs200
+    </span>
+
+    <br>
+
+    统计结果仅供历史数据分析参考
+
   </div>
 
 </div>
@@ -718,6 +808,7 @@ async function loadData(){
     renderLatest();
     renderStats();
     renderPrediction();
+    renderWinStats();
     renderSumBars();
     renderHot();
     renderTable();
@@ -811,16 +902,10 @@ function renderStats(){
 
 
 /* =========================
-   预测统计
+   下一期统计
 ========================= */
 
-function renderPrediction(){
-
-  const recent = data.slice(0,50);
-
-  if(!recent.length){
-    return;
-  }
+function getPrediction(records){
 
   const sumCount = {};
   const digitCount = Array(10).fill(0);
@@ -831,7 +916,7 @@ function renderPrediction(){
   let big = 0;
   let small = 0;
 
-  recent.forEach(x=>{
+  records.forEach(x=>{
 
     const sum = Number(x.sum);
 
@@ -862,58 +947,61 @@ function renderPrediction(){
 
   });
 
-
-  /* 热和值 */
-
   const hotSums =
     Object.entries(sumCount)
       .sort((a,b)=>b[1]-a[1])
       .slice(0,3)
-      .map(x=>x[0]);
-
-  $("predSum").textContent =
-    hotSums.length
-      ? hotSums.join(" / ")
-      : "-";
-
-
-  /* 热数字 */
+      .map(x=>Number(x[0]));
 
   const hotDigits =
     [...Array(10).keys()]
       .sort((a,b)=>digitCount[b]-digitCount[a])
       .slice(0,3);
 
+  return {
+    hotSums,
+    hotDigits,
+    parity:odd >= even ? "单" : "双",
+    size:big >= small ? "大" : "小"
+  };
+
+}
+
+
+/* =========================
+   显示下一期统计
+========================= */
+
+function renderPrediction(){
+
+  const recent = data.slice(0,50);
+
+  if(!recent.length){
+    return;
+  }
+
+  const p = getPrediction(recent);
+
+  $("predSum").textContent =
+    p.hotSums.join(" / ");
+
   $("predDigit").textContent =
-    hotDigits.join("、");
-
-
-  /* 单双 */
+    p.hotDigits.join("、");
 
   $("predParity").textContent =
-    odd >= even ? "单" : "双";
-
-
-  /* 大小 */
+    p.parity;
 
   $("predSize").textContent =
-    big >= small ? "大" : "小";
+    p.size;
 
-
-  /* 参考组合 */
-
-  if(hotDigits.length >= 3){
+  if(p.hotDigits.length >= 3){
 
     $("predCombo").textContent =
-      hotDigits[0] +
+      p.hotDigits[0] +
       "+" +
-      hotDigits[1] +
+      p.hotDigits[1] +
       "+" +
-      hotDigits[2];
-
-  }else{
-
-    $("predCombo").textContent = "-";
+      p.hotDigits[2];
 
   }
 
@@ -921,7 +1009,91 @@ function renderPrediction(){
 
 
 /* =========================
-   和值柱状图
+   预测历史回测
+========================= */
+
+function renderWinStats(){
+
+  const records = data.slice(0,50);
+
+  if(records.length < 2){
+    return;
+  }
+
+  let wins = 0;
+  let tests = 0;
+  let currentStreak = 0;
+  let maxStreak = 0;
+
+  /*
+    用前一期以前的数据
+    预测当前这一期。
+
+    判断条件：
+    和值是否落入当时预测的
+    3个热和值之一。
+  */
+
+  for(let i = records.length - 1; i >= 1; i--){
+
+    const history =
+      records.slice(i + 1);
+
+    if(!history.length){
+      continue;
+    }
+
+    const sample =
+      history.slice(0,50);
+
+    const prediction =
+      getPrediction(sample);
+
+    const actual =
+      Number(records[i].sum);
+
+    tests++;
+
+    if(prediction.hotSums.includes(actual)){
+
+      wins++;
+
+      currentStreak++;
+
+      if(currentStreak > maxStreak){
+        maxStreak = currentStreak;
+      }
+
+    }else{
+
+      currentStreak = 0;
+
+    }
+
+  }
+
+  const rate =
+    tests > 0
+      ? ((wins / tests) * 100).toFixed(1)
+      : "0.0";
+
+  $("winCount").textContent =
+    wins;
+
+  $("testCount").textContent =
+    tests;
+
+  $("hitRate").textContent =
+    rate + "%";
+
+  $("streak").textContent =
+    maxStreak + "期";
+
+}
+
+
+/* =========================
+   和值分布
 ========================= */
 
 function renderSumBars(){
@@ -1084,7 +1256,7 @@ function renderTable(){
 
 
 /* =========================
-   音乐控制
+   音乐
 ========================= */
 
 const bgm = $("bgm");
@@ -1137,4 +1309,4 @@ setInterval(
 </script>
 
 </body>
-          </html>
+</html>
