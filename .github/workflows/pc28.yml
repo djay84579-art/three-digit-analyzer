@@ -1,1 +1,102 @@
 
+name: PC28 Update
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/10 * * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install requests beautifulsoup4
+
+      - name: Get PC28
+        run: |
+          python - <<'PY'
+          import requests
+          import re
+          import json
+          from bs4 import BeautifulSoup
+
+          url = "https://t.me/s/pc28"
+          r = requests.get(
+              url,
+              headers={"User-Agent": "Mozilla/5.0"},
+              timeout=20
+          )
+
+          soup = BeautifulSoup(r.text, "html.parser")
+
+          old = {}
+
+          try:
+              with open("data.json", "r", encoding="utf-8") as f:
+                  old = {
+                      x["issue"]: x
+                      for x in json.load(f)["results"]
+                  }
+          except:
+              pass
+
+          for m in soup.select(".tgme_widget_message"):
+              t = m.get_text(" ", strip=True)
+
+              x = re.search(
+                  r"(\d{6,})\s*期.*?([0-9])\s*\+\s*([0-9])\s*\+\s*([0-9])\s*=\s*(\d+)",
+                  t
+              )
+
+              if x:
+                  q, a, b, c, total = x.groups()
+
+                  a = int(a)
+                  b = int(b)
+                  c = int(c)
+                  total = int(total)
+
+                  if a + b + c == total:
+                      old[q] = {
+                          "issue": q,
+                          "a": a,
+                          "b": b,
+                          "c": c,
+                          "sum": total
+                      }
+
+          data = {
+              "count": len(old),
+              "results": sorted(
+                  old.values(),
+                  key=lambda x: int(x["issue"]),
+                  reverse=True
+              )
+          }
+
+          with open("data.json", "w", encoding="utf-8") as f:
+              json.dump(
+                  data,
+                  f,
+                  ensure_ascii=False,
+                  indent=2
+              )
+          PY
+
+      - name: Save
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data.json
+          git commit -m "Update PC28" || true
+          git push
