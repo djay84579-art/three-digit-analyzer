@@ -8,212 +8,285 @@
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;font-family:Arial,"Microsoft YaHei",sans-serif;color:#fff}
 body{
-  background:
-    linear-gradient(rgba(10,10,14,.28),rgba(10,10,14,.48)),
-    url("./bg.png") center/cover fixed no-repeat;
+  background:#0b0d12 url("./bg.png") center/cover fixed no-repeat;
+  position:relative;
+}
+body:before{
+  content:"";position:fixed;inset:0;background:rgba(5,7,12,.48);
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:-1
 }
 .wrap{width:min(1050px,94%);margin:auto}
-header{
-  margin-top:18px;padding:28px 22px 25px;border:1px solid rgba(255,255,255,.22);
-  border-radius:34px;background:rgba(35,31,38,.36);
-  box-shadow:0 10px 40px rgba(0,0,0,.25),inset 0 1px rgba(255,255,255,.16);
-  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)
-}
-h1{margin:0;font-size:30px;font-weight:900;letter-spacing:.5px}
-.sub{margin-top:8px;color:rgba(255,255,255,.68);font-size:14px}
-.music{
-  width:100%;margin-top:20px;padding:14px;border-radius:24px;
-  border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.07);
-  color:#fff;font-size:17px
-}
+header{padding:28px 0 14px}
+h1{margin:0;font-size:30px;letter-spacing:.5px}
+.sub{margin-top:8px;color:#c9cbd3;font-size:14px}
 .card{
-  margin:18px 0;padding:22px;border:1px solid rgba(255,255,255,.20);
-  border-radius:30px;background:rgba(25,23,28,.38);
-  box-shadow:0 12px 42px rgba(0,0,0,.26),inset 0 1px rgba(255,255,255,.10);
-  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)
+  margin:14px 0;padding:20px;border:1px solid rgba(255,255,255,.16);
+  border-radius:22px;background:rgba(12,14,22,.58);
+  box-shadow:0 12px 35px rgba(0,0,0,.25);
+  backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px)
 }
-h2{margin:0 0 18px;font-size:23px}
-.headline{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.small{color:rgba(255,255,255,.55);font-size:13px}
-.status{text-align:center;color:rgba(255,255,255,.62);font-size:13px;margin:8px 0 2px}
-.ok{color:#b8eabf}.err{color:#ff9e9e}
+h2{margin:0 0 15px;font-size:21px}
+.status{color:#a8ffb0;font-size:14px;line-height:1.6}
+.err{color:#ff9b9b}
+button{
+  border:1px solid rgba(255,255,255,.2);border-radius:13px;
+  padding:11px 17px;background:rgba(255,255,255,.1);color:#fff;font-size:15px
+}
+.music{width:100%;font-size:17px;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.box{
+  padding:15px;border-radius:16px;background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.08)
+}
+.label{font-size:13px;color:#aeb1bc}
+.value{font-size:25px;font-weight:700;margin-top:7px}
 .latest{text-align:center}
-.issue{font-size:32px;font-weight:900;margin:5px 0 18px}
-.balls{display:flex;justify-content:center;align-items:center;gap:15px}
-.ball{
-  width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-size:28px;font-weight:900;background:rgba(255,255,255,.13);
-  border:1px solid rgba(255,255,255,.25);box-shadow:inset 0 2px 12px rgba(255,255,255,.08)
-}
-.plus{font-size:27px;color:rgba(255,255,255,.45)}
-.sumbox{margin-top:24px;padding:18px;border-radius:22px;background:rgba(255,255,255,.055);text-align:center}
-.sumlabel{font-size:13px;color:rgba(255,255,255,.55)}
-.sumvalue{font-size:34px;font-weight:900;margin-top:5px}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}
-.metric{padding:17px;border-radius:22px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08)}
-.label{font-size:13px;color:rgba(255,255,255,.53)}
-.value{font-size:27px;font-weight:900;margin-top:7px}
-.probs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.prob{padding:17px;border-radius:22px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.10)}
-.probtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.pname{font-size:19px;font-weight:900}
-.pnum{font-size:20px;font-weight:900}
-.bar{height:10px;border-radius:99px;background:rgba(255,255,255,.10);overflow:hidden}
-.fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#a98cff,#e8a5ff)}
+.latest .value{font-size:29px}
+.pred{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.pred .box{text-align:center}
+.pct{font-size:27px;font-weight:800;margin-top:7px}
+.note{color:#aeb1bc;font-size:12px;line-height:1.6;margin:13px 0 0}
 .best{
-  margin-top:15px;padding:17px;text-align:center;border-radius:22px;
-  background:rgba(110,75,180,.28);border:1px solid rgba(220,190,255,.18)
+  font-size:22px;font-weight:800;text-align:center;
+  padding:16px;border-radius:16px;background:rgba(255,255,255,.08)
 }
-.best small{display:block;color:rgba(255,255,255,.55)}
-.best b{display:block;font-size:28px;margin-top:4px}
-.tags{display:flex;flex-wrap:wrap;gap:8px}
-.tag{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.10);font-size:13px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:8px 11px;border-radius:999px;background:rgba(255,255,255,.08);font-size:13px}
 table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{padding:11px 7px;text-align:center;border-bottom:1px solid rgba(255,255,255,.08);white-space:nowrap}
-th{color:rgba(255,255,255,.52)}
-.note{font-size:12px;line-height:1.7;color:rgba(255,255,255,.48);margin:13px 0 0}
-.refresh{
-  border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:9px 14px;
-  background:rgba(255,255,255,.07);color:#fff
-}
-.footer{text-align:center;padding:25px 10px 40px;color:rgba(255,255,255,.45);font-size:12px;line-height:2}
-.producer{color:rgba(255,255,255,.65)}
+th,td{padding:9px 5px;text-align:center;border-bottom:1px solid rgba(255,255,255,.09)}
+th{color:#aeb1bc}
+.footer{padding:5px 0 28px;color:#858894;font-size:12px;text-align:center}
 @media(max-width:700px){
-  h1{font-size:27px}.wrap{width:94%}.card{padding:19px;border-radius:28px}
-  .grid,.probs{grid-template-columns:1fr 1fr}.ball{width:66px;height:66px}
+  h1{font-size:25px}
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .pred{grid-template-columns:repeat(2,1fr)}
+  .value,.pct{font-size:22px}
+  .card{padding:16px}
+  table{font-size:12px}
 }
 </style>
 </head>
 <body>
-<div class="wrap">
-<header>
+<header class="wrap">
   <h1>PC28 · 实时开奖 + 统计</h1>
   <div class="sub">Telegram 公开频道 · 自动同步 · 历史数据分析</div>
-  <button class="music" id="musicBtn">🎵 播放音乐</button>
 </header>
 
-<div class="status" id="status">正在读取数据……</div>
+<main class="wrap">
+  <section class="card">
+    <button class="music" id="musicBtn">🎵 播放音乐</button>
+    <audio id="music" src="./music.mp3" loop preload="none"></audio>
+    <div id="status" class="status">正在读取最新数据...</div>
+  </section>
 
-<section class="card">
-  <div class="headline"><h2>最新开奖</h2><span class="small" id="updated">—</span></div>
-  <div class="latest">
-    <div class="issue" id="issue">—</div>
-    <div class="balls"><div class="ball" id="a">—</div><div class="plus">+</div><div class="ball" id="b">—</div><div class="plus">+</div><div class="ball" id="c">—</div></div>
-    <div class="sumbox"><div class="sumlabel">和值</div><div class="sumvalue" id="sum">—</div></div>
-  </div>
-</section>
+  <section class="card">
+    <h2>最新开奖</h2>
+    <div class="grid">
+      <div class="box"><div class="label">期号</div><div class="value" id="issue">—</div></div>
+      <div class="box"><div class="label">开奖号码</div><div class="value" id="nums">—</div></div>
+      <div class="box"><div class="label">和值</div><div class="value" id="sum">—</div></div>
+      <div class="box"><div class="label">形态</div><div class="value" id="shape">—</div></div>
+    </div>
+  </section>
 
-<section class="card">
-  <div class="headline"><h2>数据统计</h2><span class="small">全部记录</span></div>
-  <div class="grid">
-    <div class="metric"><div class="label">开奖记录</div><div class="value" id="count">—</div></div>
-    <div class="metric"><div class="label">平均和值</div><div class="value" id="avg">—</div></div>
-    <div class="metric"><div class="label">最大和值</div><div class="value" id="max">—</div></div>
-    <div class="metric"><div class="label">最小和值</div><div class="value" id="min">—</div></div>
-  </div>
-</section>
+  <section class="card">
+    <h2>数据统计 · 最近150期</h2>
+    <div class="grid">
+      <div class="box"><div class="label">记录期数</div><div class="value" id="count">—</div></div>
+      <div class="box"><div class="label">平均和值</div><div class="value" id="avg">—</div></div>
+      <div class="box"><div class="label">最高和值</div><div class="value" id="max">—</div></div>
+      <div class="box"><div class="label">最低和值</div><div class="value" id="min">—</div></div>
+    </div>
+  </section>
 
-<section class="card">
-  <div class="headline"><h2>下一期统计参考</h2><span class="small">最近150期</span></div>
-  <div class="probs">
-    <div class="prob"><div class="probtop"><span class="pname">大单</span><b class="pnum" id="bs">—</b></div><div class="bar"><div class="fill" id="bsb"></div></div></div>
-    <div class="prob"><div class="probtop"><span class="pname">小单</span><b class="pnum" id="ss">—</b></div><div class="bar"><div class="fill" id="ssb"></div></div></div>
-    <div class="prob"><div class="probtop"><span class="pname">大双</span><b class="pnum" id="bd">—</b></div><div class="bar"><div class="fill" id="bdb"></div></div></div>
-    <div class="prob"><div class="probtop"><span class="pname">小双</span><b class="pnum" id="sd">—</b></div><div class="bar"><div class="fill" id="sdb"></div></div></div>
-  </div>
-  <div class="best"><small>🔥 当前统计最高分类</small><b id="best">—</b></div>
-  <p class="note">大：和值14–27；小：和值0–13；单：和值为奇数；双：和值为偶数。概率为最近150期历史频率统计，仅供数据分析参考。</p>
-</section>
+  <section class="card">
+    <h2>下一期统计参考 · 最近150期</h2>
+    <div class="pred">
+      <div class="box"><div class="label">大单</div><div class="pct" id="bigOdd">—</div></div>
+      <div class="box"><div class="label">大双</div><div class="pct" id="bigEven">—</div></div>
+      <div class="box"><div class="label">小单</div><div class="pct" id="smallOdd">—</div></div>
+      <div class="box"><div class="label">小双</div><div class="pct" id="smallEven">—</div></div>
+    </div>
+    <div class="best" id="best">统计中...</div>
+    <p class="note">分类规则：大=和值14–27，小=和值0–13；单/双按和值奇偶计算。概率仅为最近150期历史频率，不代表下一期结果。</p>
+  </section>
 
-<section class="card">
-  <div class="headline"><h2>形态统计</h2><span class="small">最近150期</span></div>
-  <div class="grid">
-    <div class="metric"><div class="label">豹子</div><div class="value" id="baozi">—</div></div>
-    <div class="metric"><div class="label">对子</div><div class="value" id="duizi">—</div></div>
-    <div class="metric"><div class="label">杂六</div><div class="value" id="zaliu">—</div></div>
-    <div class="metric"><div class="label">最高分类</div><div class="value" id="best2">—</div></div>
-  </div>
-</section>
+  <section class="card">
+    <h2>形态统计 · 最近150期</h2>
+    <div class="grid">
+      <div class="box"><div class="label">豹子</div><div class="value" id="baozi">—</div></div>
+      <div class="box"><div class="label">对子</div><div class="value" id="duizi">—</div></div>
+      <div class="box"><div class="label">杂六</div><div class="value" id="zaliu">—</div></div>
+      <div class="box"><div class="label">热门形态</div><div class="value" id="hotShape">—</div></div>
+    </div>
+  </section>
 
-<section class="card">
-  <h2>数字冷热</h2>
-  <div class="tags" id="hot">—</div>
-</section>
+  <section class="card">
+    <h2>数字冷热 · 最近150期</h2>
+    <div id="hot" class="chips">统计中...</div>
+  </section>
 
-<section class="card">
-  <h2>最近150期开奖</h2>
-  <div style="overflow:auto">
-    <table><thead><tr><th>期号</th><th>号码</th><th>和值</th><th>分类</th><th>形态</th></tr></thead><tbody id="rows"></tbody></table>
-  </div>
-</section>
+  <section class="card">
+    <h2>最近30期开奖</h2>
+    <table>
+      <thead><tr><th>期号</th><th>号码</th><th>和值</th><th>大小</th><th>单双</th><th>形态</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </section>
+</main>
 
-<div class="footer">PC28 · 数据来自 Telegram 公开频道<br><span class="producer">制作人：@ds200xd200xs200</span><br>统计结果仅供历史数据分析参考</div>
-</div>
-
-<audio id="music" src="./music.mp3" loop preload="auto"></audio>
+<div class="wrap footer">PC28 · 数据来自公开频道，仅作历史数据统计展示</div>
 
 <script>
-const $=id=>document.getElementById(id);
-let data=[];
+const $ = id => document.getElementById(id);
+let data = [];
 
-function classify(x){
-  const s=Number(x.sum), a=Number(x.a), b=Number(x.b), c=Number(x.c);
-  const size=s>=14?"大":"小", parity=s%2?"单":"双";
-  const shape=a===b&&b===c?"豹子":(a===b||a===c||b===c?"对子":"杂六");
-  return {group:size+parity,shape};
+function esc(s){
+  return String(s).replace(/[&<>"']/g, m => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[m]));
 }
 
-function calc150(){
-  const d=data.slice(0,150);
-  if(!d.length)return;
-  const g={"大单":0,"小单":0,"大双":0,"小双":0};
-  const shape={"豹子":0,"对子":0,"杂六":0};
-  d.forEach(x=>{const c=classify(x);g[c.group]++;shape[c.shape]++;});
-  const names=["大单","小单","大双","小双"];
-  const ids={大单:["bs","bsb"],小单:["ss","ssb"],大双:["bd","bdb"],小双:["sd","sdb"]};
-  names.forEach(n=>{const p=g[n]/d.length*100;$(ids[n][0]).textContent=p.toFixed(1)+"%";$(ids[n][1]).style.width=p+"%";});
-  const best=names.sort((a,b)=>g[b]-g[a])[0];
-  $("best").textContent=best;$("best2").textContent=best;
-  $("baozi").textContent=(shape["豹子"]/d.length*100).toFixed(1)+"%";
-  $("duizi").textContent=(shape["对子"]/d.length*100).toFixed(1)+"%";
-  $("zaliu").textContent=(shape["杂六"]/d.length*100).toFixed(1)+"%";
+function classify(x){
+  const a=Number(x.a), b=Number(x.b), c=Number(x.c), s=Number(x.sum);
+  const shape=(a===b && b===c) ? "豹子" : (a===b || a===c || b===c ? "对子" : "杂六");
+  const big=s>=14;
+  const odd=s%2===1;
+  return {a,b,c,s,shape,big,odd};
+}
+
+function pct(n,total){
+  return total ? (n*100/total).toFixed(1)+"%" : "0.0%";
 }
 
 function render(){
-  if(!data.length)throw Error("暂无数据");
-  const x=data[0];
-  $("count").textContent=data.length;
-  $("issue").textContent=x.issue+"期";
-  $("a").textContent=x.a;$("b").textContent=x.b;$("c").textContent=x.c;
-  $("sum").textContent=x.sum;
-  const sums=data.map(x=>Number(x.sum));
-  $("avg").textContent=(sums.reduce((a,b)=>a+b,0)/sums.length).toFixed(2);
-  $("max").textContent=Math.max(...sums);$("min").textContent=Math.min(...sums);
-  calc150();
-  const h=Array(10).fill(0);
-  data.slice(0,150).forEach(x=>[x.a,x.b,x.c].forEach(n=>h[Number(n)]++));
-  const order=[0,1,2,3,4,5,6,7,8,9].sort((a,b)=>h[b]-h[a]);
-  $("hot").innerHTML=order.map((n,i)=>`<span class="tag">${n} · ${h[n]}次${i<3?" 🔥":i>6?" ❄️":""}</span>`).join("");
-  $("rows").innerHTML=data.slice(0,150).map(x=>{const c=classify(x);return `<tr><td>${x.issue}</td><td>${x.a}+${x.b}+${x.c}</td><td>${x.sum}</td><td>${c.group}</td><td>${c.shape}</td></tr>`}).join("");
-  $("updated").textContent="更新 "+new Date().toLocaleTimeString("zh-CN",{hour12:false});
-  $("status").innerHTML=`<span class="ok">读取成功 · ${data.length}期 · 每5秒自动刷新</span>`;
+  if(!data.length) throw new Error("暂无数据");
+
+  data.sort((a,b)=>Number(b.issue)-Number(a.issue));
+  const latest=data[0];
+  const recent=data.slice(0,150);
+
+  $("issue").textContent=latest.issue+"期";
+  $("nums").textContent=`${latest.a}+${latest.b}+${latest.c}`;
+  $("sum").textContent=latest.sum;
+
+  const lc=classify(latest);
+  $("shape").textContent=lc.shape;
+
+  $("count").textContent=data.length+"期";
+
+  const sums=recent.map(x=>Number(x.sum));
+  const average=sums.reduce((a,b)=>a+b,0)/sums.length;
+  $("avg").textContent=average.toFixed(2);
+  $("max").textContent=Math.max(...sums);
+  $("min").textContent=Math.min(...sums);
+
+  let bo=0, be=0, so=0, se=0;
+  let shapes={豹子:0,对子:0,杂六:0};
+
+  recent.forEach(x=>{
+    const c=classify(x);
+    shapes[c.shape]++;
+    if(c.big && c.odd) bo++;
+    else if(c.big && !c.odd) be++;
+    else if(!c.big && c.odd) so++;
+    else se++;
+  });
+
+  $("bigOdd").textContent=pct(bo,recent.length);
+  $("bigEven").textContent=pct(be,recent.length);
+  $("smallOdd").textContent=pct(so,recent.length);
+  $("smallEven").textContent=pct(se,recent.length);
+
+  const cats=[
+    ["大单",bo],["大双",be],["小单",so],["小双",se]
+  ].sort((a,b)=>b[1]-a[1]);
+  $("best").textContent=`近期统计最高：${cats[0][0]} · ${pct(cats[0][1],recent.length)}`;
+
+  $("baozi").textContent=pct(shapes.豹子,recent.length);
+  $("duizi").textContent=pct(shapes.对子,recent.length);
+  $("zaliu").textContent=pct(shapes.杂六,recent.length);
+  $("hotShape").textContent=["豹子","对子","杂六"].sort((a,b)=>shapes[b]-shapes[a])[0];
+
+  const nums=Array(10).fill(0);
+  recent.forEach(x=>{
+    [x.a,x.b,x.c].forEach(v=>{
+      const n=Number(v);
+      if(Number.isInteger(n) && n>=0 && n<=9) nums[n]++;
+    });
+  });
+  const order=[0,1,2,3,4,5,6,7,8,9].sort((a,b)=>nums[b]-nums[a]);
+  $("hot").innerHTML=order.map((n,i)=>
+    `<span class="chip">${n} · ${nums[n]}次 ${i<3?"🔥":i>6?"❄️":""}</span>`
+  ).join("");
+
+  const rows=data.slice(0,30);
+  $("rows").innerHTML=rows.map(x=>{
+    const c=classify(x);
+    return `<tr>
+      <td>${esc(x.issue)}</td>
+      <td>${c.a}+${c.b}+${c.c}</td>
+      <td>${c.s}</td>
+      <td>${c.big?"大":"小"}</td>
+      <td>${c.odd?"单":"双"}</td>
+      <td>${c.shape}</td>
+    </tr>`;
+  }).join("");
+
+  $("status").className="status";
+  $("status").textContent=`读取成功 · ${data.length}期 · 每5秒自动刷新 · 最新：${latest.issue}期`;
+}
+
+async function getJson(url){
+  const r=await fetch(url,{cache:"no-store"});
+  if(!r.ok) throw new Error("HTTP "+r.status);
+  const text=await r.text();
+  if(!text.trim()) throw new Error("数据为空");
+  return JSON.parse(text);
 }
 
 async function load(){
-  try{
-    const r=await fetch("./data.json?t="+Date.now(),{cache:"no-store"});
-    if(!r.ok)throw Error("HTTP "+r.status);
-    const j=await r.json();
-    data=(j.results||[]).sort((a,b)=>Number(b.issue)-Number(a.issue));
-    render();
-  }catch(e){$("status").innerHTML=`<span class="err">读取失败：${e.message}</span>`;}
+  $("status").className="status";
+  $("status").textContent="正在读取最新数据...";
+
+  const urls=[
+    "./data.json?t="+Date.now(),
+    "https://raw.githubusercontent.com/djay84579-art/three-digit-analyzer/main/data.json?t="+Date.now()
+  ];
+
+  let lastError=null;
+
+  for(const url of urls){
+    try{
+      const j=await getJson(url);
+      if(!j || !Array.isArray(j.results)) throw new Error("data.json 格式不正确");
+      data=j.results;
+      render();
+      return;
+    }catch(e){
+      lastError=e;
+    }
+  }
+
+  $("status").className="status err";
+  $("status").textContent="读取失败："+(lastError ? lastError.message : "未知错误");
 }
+
 $("musicBtn").onclick=async()=>{
-  const m=$("music");
-  if(m.paused){try{await m.play();$("musicBtn").textContent="🎵 暂停音乐"}catch(e){$("musicBtn").textContent="🎵 请再次点击播放"}}
-  else{m.pause();$("musicBtn").textContent="🎵 播放音乐"}
+  const audio=$("music");
+  try{
+    if(audio.paused){
+      await audio.play();
+      $("musicBtn").textContent="⏸ 暂停音乐";
+    }else{
+      audio.pause();
+      $("musicBtn").textContent="🎵 播放音乐";
+    }
+  }catch(e){
+    $("musicBtn").textContent="🎵 点击播放音乐";
+  }
 };
-$("refresh").onclick=load;
+
 load();
 setInterval(load,5000);
 </script>
