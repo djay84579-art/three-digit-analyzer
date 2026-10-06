@@ -1,296 +1,268 @@
-<!doctype html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PC28 · 实时开奖 + 统计</title>
-<style>
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;font-family:Arial,"Microsoft YaHei",sans-serif;color:#fff}
-body{
-  background:#0b0d12 url("./bg.png") center/cover fixed no-repeat;
-  position:relative;
-}
-body:before{
-  content:"";position:fixed;inset:0;background:rgba(5,7,12,.48);
-  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:-1
-}
-.wrap{width:min(1050px,94%);margin:auto}
-header{padding:28px 0 14px}
-h1{margin:0;font-size:30px;letter-spacing:.5px}
-.sub{margin-top:8px;color:#c9cbd3;font-size:14px}
-.card{
-  margin:14px 0;padding:20px;border:1px solid rgba(255,255,255,.16);
-  border-radius:22px;background:rgba(12,14,22,.58);
-  box-shadow:0 12px 35px rgba(0,0,0,.25);
-  backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px)
-}
-h2{margin:0 0 15px;font-size:21px}
-.status{color:#a8ffb0;font-size:14px;line-height:1.6}
-.err{color:#ff9b9b}
-button{
-  border:1px solid rgba(255,255,255,.2);border-radius:13px;
-  padding:11px 17px;background:rgba(255,255,255,.1);color:#fff;font-size:15px
-}
-.music{width:100%;font-size:17px;margin-bottom:14px}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.box{
-  padding:15px;border-radius:16px;background:rgba(255,255,255,.07);
-  border:1px solid rgba(255,255,255,.08)
-}
-.label{font-size:13px;color:#aeb1bc}
-.value{font-size:25px;font-weight:700;margin-top:7px}
-.latest{text-align:center}
-.latest .value{font-size:29px}
-.pred{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.pred .box{text-align:center}
-.pct{font-size:27px;font-weight:800;margin-top:7px}
-.note{color:#aeb1bc;font-size:12px;line-height:1.6;margin:13px 0 0}
-.best{
-  font-size:22px;font-weight:800;text-align:center;
-  padding:16px;border-radius:16px;background:rgba(255,255,255,.08)
-}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{padding:8px 11px;border-radius:999px;background:rgba(255,255,255,.08);font-size:13px}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{padding:9px 5px;text-align:center;border-bottom:1px solid rgba(255,255,255,.09)}
-th{color:#aeb1bc}
-.footer{padding:5px 0 28px;color:#858894;font-size:12px;text-align:center}
-@media(max-width:700px){
-  h1{font-size:25px}
-  .grid{grid-template-columns:repeat(2,1fr)}
-  .pred{grid-template-columns:repeat(2,1fr)}
-  .value,.pct{font-size:22px}
-  .card{padding:16px}
-  table{font-size:12px}
-}
-</style>
-</head>
-<body>
-<header class="wrap">
-  <h1>PC28 · 实时开奖 + 统计</h1>
-  <div class="sub">Telegram 公开频道 · 自动同步 · 历史数据分析</div>
-</header>
+name: PC28 Update
 
-<main class="wrap">
-  <section class="card">
-    <button class="music" id="musicBtn">🎵 播放音乐</button>
-    <audio id="music" src="./music.mp3" loop preload="none"></audio>
-    <div id="status" class="status">正在读取最新数据...</div>
-  </section>
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/5 * * * *"
 
-  <section class="card">
-    <h2>最新开奖</h2>
-    <div class="grid">
-      <div class="box"><div class="label">期号</div><div class="value" id="issue">—</div></div>
-      <div class="box"><div class="label">开奖号码</div><div class="value" id="nums">—</div></div>
-      <div class="box"><div class="label">和值</div><div class="value" id="sum">—</div></div>
-      <div class="box"><div class="label">形态</div><div class="value" id="shape">—</div></div>
-    </div>
-  </section>
+permissions:
+  contents: write
 
-  <section class="card">
-    <h2>数据统计 · 最近150期</h2>
-    <div class="grid">
-      <div class="box"><div class="label">记录期数</div><div class="value" id="count">—</div></div>
-      <div class="box"><div class="label">平均和值</div><div class="value" id="avg">—</div></div>
-      <div class="box"><div class="label">最高和值</div><div class="value" id="max">—</div></div>
-      <div class="box"><div class="label">最低和值</div><div class="value" id="min">—</div></div>
-    </div>
-  </section>
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
 
-  <section class="card">
-    <h2>下一期统计参考 · 最近150期</h2>
-    <div class="pred">
-      <div class="box"><div class="label">大单</div><div class="pct" id="bigOdd">—</div></div>
-      <div class="box"><div class="label">大双</div><div class="pct" id="bigEven">—</div></div>
-      <div class="box"><div class="label">小单</div><div class="pct" id="smallOdd">—</div></div>
-      <div class="box"><div class="label">小双</div><div class="pct" id="smallEven">—</div></div>
-    </div>
-    <div class="best" id="best">统计中...</div>
-    <p class="note">分类规则：大=和值14–27，小=和值0–13；单/双按和值奇偶计算。概率仅为最近150期历史频率，不代表下一期结果。</p>
-  </section>
+    steps:
 
-  <section class="card">
-    <h2>形态统计 · 最近150期</h2>
-    <div class="grid">
-      <div class="box"><div class="label">豹子</div><div class="value" id="baozi">—</div></div>
-      <div class="box"><div class="label">对子</div><div class="value" id="duizi">—</div></div>
-      <div class="box"><div class="label">杂六</div><div class="value" id="zaliu">—</div></div>
-      <div class="box"><div class="label">热门形态</div><div class="value" id="hotShape">—</div></div>
-    </div>
-  </section>
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  <section class="card">
-    <h2>数字冷热 · 最近150期</h2>
-    <div id="hot" class="chips">统计中...</div>
-  </section>
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-  <section class="card">
-    <h2>最近30期开奖</h2>
-    <table>
-      <thead><tr><th>期号</th><th>号码</th><th>和值</th><th>大小</th><th>单双</th><th>形态</th></tr></thead>
-      <tbody id="rows"></tbody>
-    </table>
-  </section>
-</main>
+      - name: Install
+        run: |
+          pip install requests beautifulsoup4
 
-<div class="wrap footer">PC28 · 数据来自公开频道，仅作历史数据统计展示</div>
+      - name: Monitor PC28
+        run: |
+          python - <<'PY'
+          import requests
+          import re
+          import json
+          import time
+          import subprocess
 
-<script>
-const $ = id => document.getElementById(id);
-let data = [];
+          from bs4 import BeautifulSoup
 
-function esc(s){
-  return String(s).replace(/[&<>"']/g, m => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  }[m]));
-}
+          URL = "https://t.me/s/pc28"
 
-function classify(x){
-  const a=Number(x.a), b=Number(x.b), c=Number(x.c), s=Number(x.sum);
-  const shape=(a===b && b===c) ? "豹子" : (a===b || a===c || b===c ? "对子" : "杂六");
-  const big=s>=14;
-  const odd=s%2===1;
-  return {a,b,c,s,shape,big,odd};
-}
+          # 单次任务持续约 4 分 40 秒
+          END_TIME = time.time() + 280
 
-function pct(n,total){
-  return total ? (n*100/total).toFixed(1)+"%" : "0.0%";
-}
+          session = requests.Session()
+          session.headers.update({
+              "User-Agent": "Mozilla/5.0"
+          })
 
-function render(){
-  if(!data.length) throw new Error("暂无数据");
+          def load_data():
+              try:
+                  with open("data.json", "r", encoding="utf-8") as f:
+                      obj = json.load(f)
 
-  data.sort((a,b)=>Number(b.issue)-Number(a.issue));
-  const latest=data[0];
-  const recent=data.slice(0,150);
+                  return {
+                      str(x["issue"]): x
+                      for x in obj.get("results", [])
+                      if "issue" in x
+                  }
 
-  $("issue").textContent=latest.issue+"期";
-  $("nums").textContent=`${latest.a}+${latest.b}+${latest.c}`;
-  $("sum").textContent=latest.sum;
+              except Exception:
+                  return {}
 
-  const lc=classify(latest);
-  $("shape").textContent=lc.shape;
+          def save_data(data):
+              result = {
+                  "count": len(data),
+                  "results": sorted(
+                      data.values(),
+                      key=lambda x: int(x["issue"]),
+                      reverse=True
+                  )
+              }
 
-  $("count").textContent=data.length+"期";
+              with open("data.json", "w", encoding="utf-8") as f:
+                  json.dump(
+                      result,
+                      f,
+                      ensure_ascii=False,
+                      indent=2
+                  )
 
-  const sums=recent.map(x=>Number(x.sum));
-  const average=sums.reduce((a,b)=>a+b,0)/sums.length;
-  $("avg").textContent=average.toFixed(2);
-  $("max").textContent=Math.max(...sums);
-  $("min").textContent=Math.min(...sums);
+          def git_push():
+              subprocess.run(
+                  [
+                      "git",
+                      "config",
+                      "user.name",
+                      "github-actions[bot]"
+                  ],
+                  check=True
+              )
 
-  let bo=0, be=0, so=0, se=0;
-  let shapes={豹子:0,对子:0,杂六:0};
+              subprocess.run(
+                  [
+                      "git",
+                      "config",
+                      "user.email",
+                      "41898282+github-actions[bot]@users.noreply.github.com"
+                  ],
+                  check=True
+              )
 
-  recent.forEach(x=>{
-    const c=classify(x);
-    shapes[c.shape]++;
-    if(c.big && c.odd) bo++;
-    else if(c.big && !c.odd) be++;
-    else if(!c.big && c.odd) so++;
-    else se++;
-  });
+              subprocess.run(
+                  ["git", "add", "data.json"],
+                  check=True
+              )
 
-  $("bigOdd").textContent=pct(bo,recent.length);
-  $("bigEven").textContent=pct(be,recent.length);
-  $("smallOdd").textContent=pct(so,recent.length);
-  $("smallEven").textContent=pct(se,recent.length);
+              result = subprocess.run(
+                  [
+                      "git",
+                      "commit",
+                      "-m",
+                      "Update PC28"
+                  ],
+                  capture_output=True,
+                  text=True
+              )
 
-  const cats=[
-    ["大单",bo],["大双",be],["小单",so],["小双",se]
-  ].sort((a,b)=>b[1]-a[1]);
-  $("best").textContent=`近期统计最高：${cats[0][0]} · ${pct(cats[0][1],recent.length)}`;
+              if result.returncode == 0:
+                  subprocess.run(
+                      ["git", "push"],
+                      check=True
+                  )
+                  return True
 
-  $("baozi").textContent=pct(shapes.豹子,recent.length);
-  $("duizi").textContent=pct(shapes.对子,recent.length);
-  $("zaliu").textContent=pct(shapes.杂六,recent.length);
-  $("hotShape").textContent=["豹子","对子","杂六"].sort((a,b)=>shapes[b]-shapes[a])[0];
+              return False
 
-  const nums=Array(10).fill(0);
-  recent.forEach(x=>{
-    [x.a,x.b,x.c].forEach(v=>{
-      const n=Number(v);
-      if(Number.isInteger(n) && n>=0 && n<=9) nums[n]++;
-    });
-  });
-  const order=[0,1,2,3,4,5,6,7,8,9].sort((a,b)=>nums[b]-nums[a]);
-  $("hot").innerHTML=order.map((n,i)=>
-    `<span class="chip">${n} · ${nums[n]}次 ${i<3?"🔥":i>6?"❄️":""}</span>`
-  ).join("");
+          data = load_data()
 
-  const rows=data.slice(0,30);
-  $("rows").innerHTML=rows.map(x=>{
-    const c=classify(x);
-    return `<tr>
-      <td>${esc(x.issue)}</td>
-      <td>${c.a}+${c.b}+${c.c}</td>
-      <td>${c.s}</td>
-      <td>${c.big?"大":"小"}</td>
-      <td>${c.odd?"单":"双"}</td>
-      <td>${c.shape}</td>
-    </tr>`;
-  }).join("");
+          print("启动监测")
+          print("当前已有:", len(data), "期")
 
-  $("status").className="status";
-  $("status").textContent=`读取成功 · ${data.length}期 · 每5秒自动刷新 · 最新：${latest.issue}期`;
-}
+          last_issue = None
 
-async function getJson(url){
-  const r=await fetch(url,{cache:"no-store"});
-  if(!r.ok) throw new Error("HTTP "+r.status);
-  const text=await r.text();
-  if(!text.trim()) throw new Error("数据为空");
-  return JSON.parse(text);
-}
+          while time.time() < END_TIME:
 
-async function load(){
-  $("status").className="status";
-  $("status").textContent="正在读取最新数据...";
+              try:
+                  response = session.get(
+                      URL,
+                      timeout=15
+                  )
 
-  // 优先读取 GitHub 原始数据，绕过 GitHub Pages 部署/CDN 延迟
-  const cacheBust=Date.now();
-  const urls=[
-    "https://raw.githubusercontent.com/djay84579-art/three-digit-analyzer/main/data.json?cb="+cacheBust,
-    "./data.json?cb="+cacheBust
-  ];
+                  response.raise_for_status()
 
-  let lastError=null;
+                  soup = BeautifulSoup(
+                      response.text,
+                      "html.parser"
+                  )
 
-  for(const url of urls){
-    try{
-      const j=await getJson(url);
-      if(!j || !Array.isArray(j.results)) throw new Error("data.json 格式不正确");
-      data=j.results;
-      render();
-      return;
-    }catch(e){
-      lastError=e;
-    }
-  }
+                  changed = False
+                  new_issues = []
 
-  $("status").className="status err";
-  $("status").textContent="读取失败："+(lastError ? lastError.message : "未知错误");
-}
+                  for message in soup.select(
+                      ".tgme_widget_message"
+                  ):
 
-$("musicBtn").onclick=async()=>{
-  const audio=$("music");
-  try{
-    if(audio.paused){
-      await audio.play();
-      $("musicBtn").textContent="⏸ 暂停音乐";
-    }else{
-      audio.pause();
-      $("musicBtn").textContent="🎵 播放音乐";
-    }
-  }catch(e){
-    $("musicBtn").textContent="🎵 点击播放音乐";
-  }
-};
+                      text = message.get_text(
+                          " ",
+                          strip=True
+                      )
 
-load();
-setInterval(load,5000);
-</script>
-</body>
-</html>
+                      match = re.search(
+                          r"(\d{6,})\s*期"
+                          r".*?"
+                          r"([0-9])\s*\+\s*"
+                          r"([0-9])\s*\+\s*"
+                          r"([0-9])\s*=\s*"
+                          r"(\d+)",
+                          text
+                      )
+
+                      if not match:
+                          continue
+
+                      issue, a, b, c, total = match.groups()
+
+                      a = int(a)
+                      b = int(b)
+                      c = int(c)
+                      total = int(total)
+
+                      # 校验和值
+                      if a + b + c != total:
+                          continue
+
+                      item = {
+                          "issue": issue,
+                          "a": a,
+                          "b": b,
+                          "c": c,
+                          "sum": total
+                      }
+
+                      if data.get(issue) != item:
+                          data[issue] = item
+                          changed = True
+                          new_issues.append(issue)
+
+                  if changed:
+
+                      save_data(data)
+
+                      newest = sorted(
+                          data.keys(),
+                          key=lambda x: int(x),
+                          reverse=True
+                      )[0]
+
+                      print(
+                          "发现新数据:",
+                          newest,
+                          "当前共",
+                          len(data),
+                          "期"
+                      )
+
+                      git_push()
+
+                      last_issue = newest
+
+                  else:
+
+                      newest = (
+                          max(
+                              data.keys(),
+                              key=lambda x: int(x)
+                          )
+                          if data
+                          else "暂无"
+                      )
+
+                      print(
+                          "监测中 | 最新:",
+                          newest,
+                          "| 总数:",
+                          len(data)
+                      )
+
+              except Exception as e:
+
+                  print(
+                      "抓取失败:",
+                      repr(e)
+                  )
+
+              # 高频检查
+              time.sleep(5)
+
+          print(
+              "本次监测结束 | 共记录:",
+              len(data),
+              "期"
+          )
+
+          if data:
+
+              newest = max(
+                  data.keys(),
+                  key=lambda x: int(x)
+              )
+
+              print(
+                  "最终最新期:",
+                  newest
+              )
+
+          PY
