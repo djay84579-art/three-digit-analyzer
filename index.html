@@ -1,268 +1,1088 @@
-name: PC28 Update
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>PC28 · 实时开奖 + 预测统计</title>
 
-on:
-  workflow_dispatch:
-  schedule:
-    - cron: "*/5 * * * *"
+<style>
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
 
-permissions:
-  contents: write
+html,body{
+  margin:0;
+  padding:0;
+  min-height:100%;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",
+  "PingFang SC","Microsoft YaHei",Arial,sans-serif;
+  color:#fff;
+}
 
-jobs:
-  update:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
+body{
+  min-height:100vh;
+  background:#111;
+  overflow-x:hidden;
+}
 
-    steps:
+/* 背景人物 */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-3;
+  background:url("./bg.png") center top/cover no-repeat;
+  transform:scale(1.02);
+}
 
-      - name: Checkout
-        uses: actions/checkout@v4
+/* 只做轻微遮罩，让人物保持清晰 */
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  background:rgba(0,0,0,.12);
+}
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+/* 页面 */
+.container{
+  width:100%;
+  max-width:720px;
+  margin:auto;
+  padding:14px 12px 45px;
+}
 
-      - name: Install
-        run: |
-          pip install requests beautifulsoup4
+/* iOS 透明玻璃 */
+.glass{
+  background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.20);
+  box-shadow:
+    0 8px 28px rgba(0,0,0,.14),
+    inset 0 1px 0 rgba(255,255,255,.18);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  border-radius:24px;
+}
 
-      - name: Monitor PC28
-        run: |
-          python - <<'PY'
-          import requests
-          import re
-          import json
-          import time
-          import subprocess
+/* 顶部 */
+.header{
+  padding:20px;
+  margin-bottom:12px;
+}
 
-          from bs4 import BeautifulSoup
+.title{
+  font-size:24px;
+  font-weight:800;
+}
 
-          URL = "https://t.me/s/pc28"
+.subtitle{
+  margin-top:7px;
+  color:rgba(255,255,255,.65);
+  font-size:12px;
+}
 
-          # 单次任务持续约 4 分 40 秒
-          END_TIME = time.time() + 280
+.music-btn{
+  width:100%;
+  margin-top:14px;
+  padding:11px;
+  border-radius:15px;
+  color:#fff;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.18);
+  font-size:14px;
+}
 
-          session = requests.Session()
-          session.headers.update({
-              "User-Agent": "Mozilla/5.0"
-          })
+/* 卡片 */
+.card{
+  padding:18px;
+  margin-bottom:12px;
+}
 
-          def load_data():
-              try:
-                  with open("data.json", "r", encoding="utf-8") as f:
-                      obj = json.load(f)
+.card-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:14px;
+}
 
-                  return {
-                      str(x["issue"]): x
-                      for x in obj.get("results", [])
-                      if "issue" in x
-                  }
+.card-title strong{
+  font-size:16px;
+}
 
-              except Exception:
-                  return {}
+.card-title span{
+  color:rgba(255,255,255,.55);
+  font-size:11px;
+}
 
-          def save_data(data):
-              result = {
-                  "count": len(data),
-                  "results": sorted(
-                      data.values(),
-                      key=lambda x: int(x["issue"]),
-                      reverse=True
-                  )
-              }
+/* 最新开奖 */
+.issue{
+  text-align:center;
+  font-size:18px;
+  font-weight:700;
+  margin-bottom:16px;
+}
 
-              with open("data.json", "w", encoding="utf-8") as f:
-                  json.dump(
-                      result,
-                      f,
-                      ensure_ascii=False,
-                      indent=2
-                  )
+.numbers{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:9px;
+}
 
-          def git_push():
-              subprocess.run(
-                  [
-                      "git",
-                      "config",
-                      "user.name",
-                      "github-actions[bot]"
-                  ],
-                  check=True
-              )
+.ball{
+  width:64px;
+  height:64px;
+  border-radius:50%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:25px;
+  font-weight:800;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.22);
+  box-shadow:
+    inset 0 1px 5px rgba(255,255,255,.15),
+    0 5px 18px rgba(0,0,0,.15);
+}
 
-              subprocess.run(
-                  [
-                      "git",
-                      "config",
-                      "user.email",
-                      "41898282+github-actions[bot]@users.noreply.github.com"
-                  ],
-                  check=True
-              )
+.plus{
+  font-size:20px;
+  color:rgba(255,255,255,.6);
+}
 
-              subprocess.run(
-                  ["git", "add", "data.json"],
-                  check=True
-              )
+.sum-box{
+  text-align:center;
+  margin-top:15px;
+  padding:12px;
+  border-radius:15px;
+  background:rgba(255,255,255,.06);
+}
 
-              result = subprocess.run(
-                  [
-                      "git",
-                      "commit",
-                      "-m",
-                      "Update PC28"
-                  ],
-                  capture_output=True,
-                  text=True
-              )
+.sum-label{
+  color:rgba(255,255,255,.6);
+  font-size:11px;
+}
 
-              if result.returncode == 0:
-                  subprocess.run(
-                      ["git", "push"],
-                      check=True
-                  )
-                  return True
+.sum-value{
+  margin-top:4px;
+  font-size:25px;
+  font-weight:800;
+}
 
-              return False
+/* 状态 */
+.status{
+  text-align:center;
+  color:rgba(255,255,255,.65);
+  font-size:11px;
+  margin:8px 0 14px;
+}
 
-          data = load_data()
+/* 统计 */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:9px;
+}
 
-          print("启动监测")
-          print("当前已有:", len(data), "期")
+.stat{
+  padding:14px;
+  border-radius:17px;
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.10);
+}
 
-          last_issue = None
+.stat-name{
+  color:rgba(255,255,255,.55);
+  font-size:11px;
+}
 
-          while time.time() < END_TIME:
+.stat-value{
+  margin-top:5px;
+  font-size:19px;
+  font-weight:800;
+}
 
-              try:
-                  response = session.get(
-                      URL,
-                      timeout=15
-                  )
+/* 预测 */
+.prediction{
+  display:grid;
+  gap:9px;
+}
 
-                  response.raise_for_status()
+.pred-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:13px;
+  border-radius:16px;
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.10);
+}
 
-                  soup = BeautifulSoup(
-                      response.text,
-                      "html.parser"
-                  )
+.pred-name{
+  color:rgba(255,255,255,.65);
+  font-size:12px;
+}
 
-                  changed = False
-                  new_issues = []
+.pred-value{
+  font-weight:800;
+}
 
-                  for message in soup.select(
-                      ".tgme_widget_message"
-                  ):
+/* 和值条 */
+.bar-row{
+  margin-bottom:13px;
+}
 
-                      text = message.get_text(
-                          " ",
-                          strip=True
-                      )
+.bar-head{
+  display:flex;
+  justify-content:space-between;
+  font-size:12px;
+  color:rgba(255,255,255,.70);
+  margin-bottom:6px;
+}
 
-                      match = re.search(
-                          r"(\d{6,})\s*期"
-                          r".*?"
-                          r"([0-9])\s*\+\s*"
-                          r"([0-9])\s*\+\s*"
-                          r"([0-9])\s*=\s*"
-                          r"(\d+)",
-                          text
-                      )
+.bar-bg{
+  height:7px;
+  overflow:hidden;
+  border-radius:10px;
+  background:rgba(255,255,255,.07);
+}
 
-                      if not match:
-                          continue
+.bar{
+  height:100%;
+  border-radius:10px;
+  background:rgba(255,255,255,.68);
+}
 
-                      issue, a, b, c, total = match.groups()
+/* 热门数字 */
+.hot-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:7px;
+}
 
-                      a = int(a)
-                      b = int(b)
-                      c = int(c)
-                      total = int(total)
+.hot{
+  text-align:center;
+  padding:11px 4px;
+  border-radius:14px;
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.10);
+}
 
-                      # 校验和值
-                      if a + b + c != total:
-                          continue
+.hot-num{
+  font-size:18px;
+  font-weight:800;
+}
 
-                      item = {
-                          "issue": issue,
-                          "a": a,
-                          "b": b,
-                          "c": c,
-                          "sum": total
-                      }
+.hot-count{
+  margin-top:3px;
+  font-size:10px;
+  color:rgba(255,255,255,.55);
+}
 
-                      if data.get(issue) != item:
-                          data[issue] = item
-                          changed = True
-                          new_issues.append(issue)
+/* 最近开奖 */
+.table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px;
+}
 
-                  if changed:
+.table th{
+  color:rgba(255,255,255,.48);
+  font-weight:500;
+  padding:9px 3px;
+  border-bottom:1px solid rgba(255,255,255,.10);
+}
 
-                      save_data(data)
+.table td{
+  text-align:center;
+  padding:10px 3px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
 
-                      newest = sorted(
-                          data.keys(),
-                          key=lambda x: int(x),
-                          reverse=True
-                      )[0]
+.table tr:last-child td{
+  border-bottom:0;
+}
 
-                      print(
-                          "发现新数据:",
-                          newest,
-                          "当前共",
-                          len(data),
-                          "期"
-                      )
+/* 赢数 */
+.win-box{
+  text-align:center;
+  padding:16px;
+  border-radius:18px;
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.10);
+}
 
-                      git_push()
+.win-number{
+  font-size:36px;
+  font-weight:900;
+}
 
-                      last_issue = newest
+.win-label{
+  margin-top:3px;
+  color:rgba(255,255,255,.55);
+  font-size:11px;
+}
 
-                  else:
+.win-grid{
+  margin-top:10px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:7px;
+}
 
-                      newest = (
-                          max(
-                              data.keys(),
-                              key=lambda x: int(x)
-                          )
-                          if data
-                          else "暂无"
-                      )
+.win-stat{
+  padding:10px 4px;
+  border-radius:13px;
+  background:rgba(255,255,255,.045);
+}
 
-                      print(
-                          "监测中 | 最新:",
-                          newest,
-                          "| 总数:",
-                          len(data)
-                      )
+.win-stat b{
+  display:block;
+  font-size:15px;
+}
 
-              except Exception as e:
+.win-stat span{
+  font-size:10px;
+  color:rgba(255,255,255,.50);
+}
 
-                  print(
-                      "抓取失败:",
-                      repr(e)
-                  )
+/* 底部 */
+.footer{
+  text-align:center;
+  color:rgba(255,255,255,.45);
+  font-size:10px;
+  line-height:1.8;
+  padding:15px 0 5px;
+}
 
-              # 高频检查
-              time.sleep(5)
+.producer{
+  color:rgba(255,255,255,.68);
+  font-weight:600;
+}
 
-          print(
-              "本次监测结束 | 共记录:",
-              len(data),
-              "期"
-          )
+/* 手机 */
+@media(max-width:430px){
+  .container{
+    padding:10px 10px 35px;
+  }
 
-          if data:
+  .header{
+    padding:17px;
+  }
 
-              newest = max(
-                  data.keys(),
-                  key=lambda x: int(x)
-              )
+  .title{
+    font-size:22px;
+  }
 
-              print(
-                  "最终最新期:",
-                  newest
-              )
+  .card{
+    padding:15px;
+  }
 
-          PY
+  .ball{
+    width:58px;
+    height:58px;
+    font-size:23px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- 顶部 -->
+  <section class="glass header">
+    <div class="title">PC28 · 实时开奖 + 统计</div>
+    <div class="subtitle">
+      Telegram 公开频道 · 自动同步 · 历史数据分析
+    </div>
+
+    <button class="music-btn" id="musicBtn">
+      🎵 播放音乐
+    </button>
+
+    <audio id="bgm" src="./music.mp3" loop preload="auto"></audio>
+  </section>
+
+  <!-- 状态 -->
+  <div class="status" id="status">
+    正在读取数据……
+  </div>
+
+  <!-- 最新开奖 -->
+  <section class="glass card">
+    <div class="card-title">
+      <strong>最新开奖</strong>
+      <span id="updateTime">等待数据</span>
+    </div>
+
+    <div class="issue" id="latestIssue">
+      暂无
+    </div>
+
+    <div class="numbers">
+      <div class="ball" id="ballA">-</div>
+      <div class="plus">+</div>
+      <div class="ball" id="ballB">-</div>
+      <div class="plus">+</div>
+      <div class="ball" id="ballC">-</div>
+    </div>
+
+    <div class="sum-box">
+      <div class="sum-label">和值</div>
+      <div class="sum-value" id="latestSum">-</div>
+    </div>
+  </section>
+
+  <!-- 基础统计 -->
+  <section class="glass card">
+    <div class="card-title">
+      <strong>数据统计</strong>
+      <span>全部记录</span>
+    </div>
+
+    <div class="grid">
+
+      <div class="stat">
+        <div class="stat-name">开奖记录</div>
+        <div class="stat-value" id="count">-</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-name">平均和值</div>
+        <div class="stat-value" id="avgSum">-</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-name">最大和值</div>
+        <div class="stat-value" id="maxSum">-</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-name">最小和值</div>
+        <div class="stat-value" id="minSum">-</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 下一期 -->
+  <section class="glass card">
+    <div class="card-title">
+      <strong>下一期统计参考</strong>
+      <span>最近50期</span>
+    </div>
+
+    <div class="prediction">
+
+      <div class="pred-row">
+        <span class="pred-name">热门和值</span>
+        <span class="pred-value" id="predSum">-</span>
+      </div>
+
+      <div class="pred-row">
+        <span class="pred-name">热门数字</span>
+        <span class="pred-value" id="predDigit">-</span>
+      </div>
+
+      <div class="pred-row">
+        <span class="pred-name">单双参考</span>
+        <span class="pred-value" id="predOddEven">-</span>
+      </div>
+
+      <div class="pred-row">
+        <span class="pred-name">大小参考</span>
+        <span class="pred-value" id="predBigSmall">-</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 历史回测 -->
+  <section class="glass card">
+    <div class="card-title">
+      <strong>🏆 预测总赢数</strong>
+      <span>历史回测</span>
+    </div>
+
+    <div class="win-box">
+      <div class="win-number" id="winCount">-</div>
+      <div class="win-label">
+        历史命中次数
+      </div>
+
+      <div class="win-grid">
+
+        <div class="win-stat">
+          <b id="testCount">-</b>
+          <span>测试期数</span>
+        </div>
+
+        <div class="win-stat">
+          <b id="hitRate">-</b>
+          <span>命中率</span>
+        </div>
+
+        <div class="win-stat">
+          <b id="streak">-</b>
+          <span>最高连中</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 和值分布 -->
+  <section class="glass card">
+    <div class="card-title">
+      <strong>和值分布</strong>
+      <span>历史次数</span>
+    </div>
+
+    <div id="sumBars"></div>
+  </section>
+
+  <!-- 热门数字 -->
+  <section class="glass card">
+    <div class="card-title">
+      <strong>数字冷热</strong>
+      <span>出现次数</span>
+    </div>
+
+    <div class="hot-grid" id="hotGrid"></div>
+  </section>
+
+  <!-- 最近30期 -->
+  <section class="glass card">
+    <div class="card-title">
+      <strong>最近开奖记录</strong>
+      <span>最新30期</span>
+    </div>
+
+    <div style="overflow-x:auto;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>期号</th>
+            <th>号码</th>
+            <th>和值</th>
+          </tr>
+        </thead>
+        <tbody id="recordTable"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="footer">
+    PC28 · 数据来自 Telegram 公开频道<br>
+    <span class="producer">
+      制作人：@ds200xd200xs200
+    </span><br>
+    统计结果仅供历史数据分析参考
+  </div>
+
+</div>
+
+<script>
+let data = [];
+
+/* =========================
+   工具
+========================= */
+
+function $(id){
+  return document.getElementById(id);
+}
+
+function num(v){
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+}
+
+/* =========================
+   加载数据
+   5秒自动检查
+========================= */
+
+async function loadData(){
+
+  try{
+
+    const response = await fetch(
+      "./data.json?t=" + Date.now(),
+      {
+        cache:"no-store"
+      }
+    );
+
+    if(!response.ok){
+      throw new Error("HTTP " + response.status);
+    }
+
+    const json = await response.json();
+
+    data = Array.isArray(json.results)
+      ? json.results
+      : [];
+
+    data.sort(function(a,b){
+      return num(b.issue) - num(a.issue);
+    });
+
+    if(!data.length){
+      throw new Error("暂无数据");
+    }
+
+    renderLatest();
+    renderStats();
+    renderPrediction();
+    renderWinStats();
+    renderSumBars();
+    renderHot();
+    renderTable();
+
+    $("status").textContent =
+      "读取成功 · " +
+      data.length +
+      "期 · 每5秒自动刷新";
+
+  }catch(error){
+
+    console.error(error);
+
+    $("status").textContent =
+      "数据读取失败 · " + error.message;
+  }
+}
+
+/* =========================
+   最新开奖
+========================= */
+
+function renderLatest(){
+
+  const x = data[0];
+
+  $("latestIssue").textContent =
+    x.issue ? x.issue + "期" : "暂无";
+
+  $("ballA").textContent =
+    x.a ?? "-";
+
+  $("ballB").textContent =
+    x.b ?? "-";
+
+  $("ballC").textContent =
+    x.c ?? "-";
+
+  $("latestSum").textContent =
+    x.sum ?? "-";
+
+  $("updateTime").textContent =
+    "更新 " +
+    new Date().toLocaleTimeString();
+}
+
+/* =========================
+   基础统计
+========================= */
+
+function renderStats(){
+
+  const sums = data
+    .map(x=>num(x.sum))
+    .filter(x=>Number.isFinite(x));
+
+  if(!sums.length) return;
+
+  const total =
+    sums.reduce((a,b)=>a+b,0);
+
+  const avg =
+    total / sums.length;
+
+  $("count").textContent =
+    data.length;
+
+  $("avgSum").textContent =
+    avg.toFixed(2);
+
+  $("maxSum").textContent =
+    Math.max(...sums);
+
+  $("minSum").textContent =
+    Math.min(...sums);
+}
+
+/* =========================
+   下一期统计参考
+========================= */
+
+function getPrediction(records){
+
+  const recent =
+    records.slice(0,50);
+
+  const sumCount = {};
+  const digitCount =
+    Array(10).fill(0);
+
+  let odd = 0;
+  let even = 0;
+
+  let big = 0;
+  let small = 0;
+
+  recent.forEach(x=>{
+
+    const sum = num(x.sum);
+
+    sumCount[sum] =
+      (sumCount[sum] || 0) + 1;
+
+    [
+      num(x.a),
+      num(x.b),
+      num(x.c)
+    ].forEach(n=>{
+      if(n>=0 && n<=9){
+        digitCount[n]++;
+      }
+    });
+
+    if(sum % 2 === 0){
+      even++;
+    }else{
+      odd++;
+    }
+
+    if(sum >= 14){
+      big++;
+    }else{
+      small++;
+    }
+
+  });
+
+  const hotSums =
+    Object.entries(sumCount)
+      .sort((a,b)=>b[1]-a[1])
+      .slice(0,3)
+      .map(x=>x[0]);
+
+  const hotDigits =
+    digitCount
+      .map((count,index)=>({
+        digit:index,
+        count
+      }))
+      .sort((a,b)=>b.count-a.count)
+      .slice(0,3)
+      .map(x=>x.digit);
+
+  return {
+    hotSums,
+    hotDigits,
+    oddEven: odd >= even ? "单" : "双",
+    bigSmall: big >= small ? "大" : "小"
+  };
+}
+
+function renderPrediction(){
+
+  const p =
+    getPrediction(data);
+
+  $("predSum").textContent =
+    p.hotSums.join(" / ");
+
+  $("predDigit").textContent =
+    p.hotDigits.join(" / ");
+
+  $("predOddEven").textContent =
+    p.oddEven;
+
+  $("predBigSmall").textContent =
+    p.bigSmall;
+}
+
+/* =========================
+   历史预测回测
+========================= */
+
+function renderWinStats(){
+
+  if(data.length < 10){
+    return;
+  }
+
+  const records =
+    data.slice(0,50);
+
+  let wins = 0;
+  let tests = 0;
+
+  let currentStreak = 0;
+  let maxStreak = 0;
+
+  for(let i=records.length-1;i>0;i--){
+
+    const history =
+      records.slice(i+1);
+
+    if(history.length < 5){
+      continue;
+    }
+
+    const prediction =
+      getPrediction(history);
+
+    const actual =
+      num(records[i].sum);
+
+    const hit =
+      prediction.hotSums
+        .map(Number)
+        .includes(actual);
+
+    tests++;
+
+    if(hit){
+
+      wins++;
+      currentStreak++;
+
+      if(currentStreak > maxStreak){
+        maxStreak = currentStreak;
+      }
+
+    }else{
+
+      currentStreak = 0;
+
+    }
+  }
+
+  $("winCount").textContent =
+    wins;
+
+  $("testCount").textContent =
+    tests;
+
+  $("hitRate").textContent =
+    tests
+      ? ((wins/tests)*100).toFixed(1) + "%"
+      : "0%";
+
+  $("streak").textContent =
+    maxStreak;
+}
+
+/* =========================
+   和值分布
+========================= */
+
+function renderSumBars(){
+
+  const box =
+    $("sumBars");
+
+  box.innerHTML = "";
+
+  const count = {};
+
+  data.forEach(x=>{
+
+    const s =
+      num(x.sum);
+
+    count[s] =
+      (count[s] || 0) + 1;
+
+  });
+
+  const values =
+    Object.entries(count)
+      .sort((a,b)=>Number(a[0])-Number(b[0]));
+
+  if(!values.length){
+    box.innerHTML =
+      "<div style='opacity:.5'>暂无数据</div>";
+    return;
+  }
+
+  const max =
+    Math.max(...values.map(x=>x[1]));
+
+  values.forEach(([sum,n])=>{
+
+    const width =
+      (n/max)*100;
+
+    const row =
+      document.createElement("div");
+
+    row.className =
+      "bar-row";
+
+    row.innerHTML = `
+      <div class="bar-head">
+        <span>和值 ${sum}</span>
+        <span>${n} 次</span>
+      </div>
+
+      <div class="bar-bg">
+        <div class="bar" style="width:${width}%"></div>
+      </div>
+    `;
+
+    box.appendChild(row);
+  });
+}
+
+/* =========================
+   数字冷热
+========================= */
+
+function renderHot(){
+
+  const counts =
+    Array(10).fill(0);
+
+  data.forEach(x=>{
+
+    [
+      num(x.a),
+      num(x.b),
+      num(x.c)
+    ].forEach(n=>{
+
+      if(n>=0 && n<=9){
+        counts[n]++;
+      }
+
+    });
+
+  });
+
+  const box =
+    $("hotGrid");
+
+  box.innerHTML = "";
+
+  counts.forEach((count,digit)=>{
+
+    const el =
+      document.createElement("div");
+
+    el.className =
+      "hot";
+
+    el.innerHTML = `
+      <div class="hot-num">${digit}</div>
+      <div class="hot-count">${count}次</div>
+    `;
+
+    box.appendChild(el);
+  });
+}
+
+/* =========================
+   最近开奖记录
+========================= */
+
+function renderTable(){
+
+  const tbody =
+    $("recordTable");
+
+  tbody.innerHTML = "";
+
+  data.slice(0,30).forEach(x=>{
+
+    const tr =
+      document.createElement("tr");
+
+    tr.innerHTML = `
+      <td>${x.issue ?? "-"}</td>
+
+      <td>
+        ${x.a ?? "-"}
+        +
+        ${x.b ?? "-"}
+        +
+        ${x.c ?? "-"}
+      </td>
+
+      <td>${x.sum ?? "-"}</td>
+    `;
+
+    tbody.appendChild(tr);
+
+  });
+}
+
+/* =========================
+   音乐
+========================= */
+
+const bgm =
+  $("bgm");
+
+const musicBtn =
+  $("musicBtn");
+
+musicBtn.addEventListener(
+  "click",
+  async function(){
+
+    try{
+
+      if(bgm.paused){
+
+        await bgm.play();
+
+        musicBtn.textContent =
+          "🔊 正在播放音乐";
+
+      }else{
+
+        bgm.pause();
+
+        musicBtn.textContent =
+          "🎵 播放音乐";
+
+      }
+
+    }catch(error){
+
+      musicBtn.textContent =
+        "🎵 点击播放音乐";
+
+    }
+
+  }
+);
+
+/* =========================
+   启动
+========================= */
+
+loadData();
+
+/*
+  重点：
+  5000 = 5秒
+  网站每5秒检查一次 data.json
+*/
+setInterval(
+  loadData,
+  5000
+);
+
+</script>
+
+</body>
+          </html>
