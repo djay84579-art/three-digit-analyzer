@@ -1,396 +1,101 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PC28 · 实时开奖 + 预测</title>
+<title>PC28 · 实时开奖 + 统计参考</title>
 
 <style>
 *{box-sizing:border-box}
 body{
-margin:0;
-color:#fff;
-font-family:Arial,"Microsoft YaHei",sans-serif;
-background:
-linear-gradient(rgba(5,8,30,.72),rgba(5,8,30,.88)),
-url("https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=1600&q=80")
-center/cover fixed;
+ margin:0;
+ color:#fff;
+ font-family:Arial,"Microsoft YaHei",sans-serif;
+ background:#090914;
 }
-header{
-padding:30px 20px;
-background:linear-gradient(135deg,#11154d,#38208b);
+.header{
+ padding:28px 20px;
+ background:linear-gradient(135deg,#25145e,#17104b,#080b22);
 }
-.wrap{max-width:1000px;margin:auto}
-h1{margin:0 0 10px;font-size:32px}
-.sub{color:#ccc;font-size:16px}
+.header h1{
+ margin:0;
+ font-size:30px;
+}
+.header p{
+ margin:12px 0 0;
+ color:#bbb;
+ font-size:16px;
+}
+.wrap{
+ max-width:900px;
+ margin:auto;
+ padding:16px;
+}
 .card{
-margin:18px 0;
-padding:22px;
-border:1px solid #444;
-border-radius:22px;
-background:rgba(15,15,25,.86);
-backdrop-filter:blur(8px);
+ margin-bottom:16px;
+ padding:20px;
+ border:1px solid #444;
+ border-radius:22px;
+ background:rgba(15,15,25,.94);
+ box-shadow:0 8px 30px rgba(0,0,0,.25);
 }
-h2{margin:0 0 18px;font-size:25px}
-button{
-float:right;
-background:#29245f;
-color:#fff;
-border:0;
-border-radius:12px;
-padding:10px 16px;
-font-size:16px
+.card h2{
+ margin:0 0 18px;
+ font-size:23px;
 }
+.status{
+ color:#bbb;
+ line-height:1.7;
+}
+.ok{color:#61e294}
+.err{color:#ff7272}
 .grid{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:12px
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
+ gap:12px;
 }
 .box{
-background:rgba(35,35,50,.9);
-border-radius:15px;
-padding:16px
+ padding:18px;
+ border-radius:18px;
+ background:#1b1b28;
 }
-.label{color:#aaa;font-size:14px}
-.value{font-size:28px;font-weight:bold;margin-top:8px}
-.ok{color:#8ee28e}
-.err{color:#ff9275}
-.tags{display:flex;flex-wrap:wrap;gap:10px}
-.tag{
-background:linear-gradient(135deg,#342b82,#6939a8);
-border-radius:12px;
-padding:10px 13px;
-font-weight:bold
+.box span{
+ display:block;
+ color:#999;
+ margin-bottom:8px;
 }
-.note{color:#aaa;font-size:13px;line-height:1.7}
-table{width:100%;border-collapse:collapse}
+.box b{
+ font-size:25px;
+}
+.pred{
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
+ gap:12px;
+}
+.pred .box{
+ background:linear-gradient(135deg,#21154d,#17172a);
+}
+.hot{
+ color:#ffd86b;
+}
+table{
+ width:100%;
+ border-collapse:collapse;
+ font-size:14px;
+}
 th,td{
-padding:10px;
-border-bottom:1px solid #333;
-text-align:center
+ padding:10px 6px;
+ border-bottom:1px solid #333;
+ text-align:center;
 }
 th{color:#aaa}
-
-@media(max-width:700px){
-h1{font-size:27px}
-.grid{grid-template-columns:repeat(2,1fr)}
-.value{font-size:24px}
+button{
+ border:0;
+ border-radius:12px;
+ padding:10px 18px;
+ background:#302064;
+ color:#fff;
+ font-size:16px;
 }
-</style>
-</head>
-
-<body>
-
-<header>
-<div class="wrap">
-<h1>🎯 PC28 · 实时开奖 + 预测</h1>
-<div class="sub">
-Telegram 公开频道 @pc28 · 自动更新 · 每60秒刷新
-</div>
-</div>
-</header>
-
-<main class="wrap">
-
-<div class="card">
-<h2>📡 实时状态
-<button id="refresh">刷新</button>
-</h2>
-<div id="status">正在读取数据...</div>
-</div>
-
-<div class="card">
-<h2>📊 核心指标</h2>
-
-<div class="grid">
-
-<div class="box">
-<div class="label">已记录期数</div>
-<div class="value" id="count">—</div>
-</div>
-
-<div class="box">
-<div class="label">最新期号</div>
-<div class="value" id="issue">—</div>
-</div>
-
-<div class="box">
-<div class="label">最新号码</div>
-<div class="value" id="nums">—</div>
-</div>
-
-<div class="box">
-<div class="label">最新和值</div>
-<div class="value" id="sum">—</div>
-</div>
-
-</div>
-</div>
-
-<div class="card">
-
-<h2>🔮 下一期统计参考</h2>
-
-<div class="grid">
-
-<div class="box">
-<div class="label">和值热区</div>
-<div class="value" id="predSum">—</div>
-</div>
-
-<div class="box">
-<div class="label">数字重点</div>
-<div class="value" id="predDigit">—</div>
-</div>
-
-<div class="box">
-<div class="label">单双倾向</div>
-<div class="value" id="predParity">—</div>
-</div>
-
-<div class="box">
-<div class="label">大小倾向</div>
-<div class="value" id="predSize">—</div>
-</div>
-
-</div>
-
-<br>
-
-<div class="label">参考组合</div>
-<div class="tags" id="predNums"></div>
-
-<p class="note">
-⚠️ 预测仅根据历史开奖数据进行统计分析，不代表下一期一定出现。
-</p>
-
-</div>
-
-<div class="card">
-<h2>📈 和值分布</h2>
-<div id="dist">—</div>
-</div>
-
-<div class="card">
-<h2>🔥 数字冷热</h2>
-<div id="hot">—</div>
-</div>
-
-<div class="card">
-<h2>📋 最近30期</h2>
-
-<table>
-<thead>
-<tr>
-<th>期号</th>
-<th>号码</th>
-<th>和值</th>
-</tr>
-</thead>
-
-<tbody id="rows"></tbody>
-</table>
-
-</div>
-
-</main>
-
-<script>
-
-const $=id=>document.getElementById(id);
-
-let data=[];
-
-function esc(s){
-return String(s).replace(/[&<>"']/g,m=>({
-'&':'&amp;',
-'<':'&lt;',
-'>':'&gt;',
-'"':'&quot;',
-"'":'&#39;'
-}[m]));
-}
-
-function calcPrediction(){
-
-const recent=data.slice(0,50);
-
-if(!recent.length)return;
-
-const sumCount={};
-
-const digitCount=Array(10).fill(0);
-
-const parity={单:0,双:0};
-
-const size={大:0,小:0};
-
-recent.forEach(x=>{
-
-sumCount[x.sum]=(sumCount[x.sum]||0)+1;
-
-[x.a,x.b,x.c].forEach(n=>{
-digitCount[n]++;
-});
-
-parity[x.sum%2?'单':'双']++;
-
-size[x.sum>=14?'大':'小']++;
-
-});
-
-const hotSums=
-Object.entries(sumCount)
-.sort((a,b)=>b[1]-a[1])
-.slice(0,3)
-.map(x=>x[0]);
-
-const hotDigits=
-[...digitCount.keys()]
-.sort((a,b)=>digitCount[b]-digitCount[a])
-.slice(0,3);
-
-$('predSum').textContent=hotSums.join(' / ');
-
-$('predDigit').textContent=hotDigits.join('、');
-
-$('predParity').textContent=
-parity.单>=parity.双?'单':'双';
-
-$('predSize').textContent=
-size.大>=size.小?'大':'小';
-
-const combos=[];
-
-for(const a of hotDigits){
-for(const b of hotDigits){
-for(const c of hotDigits){
-
-const s=
-Number(a)+Number(b)+Number(c);
-
-if(hotSums.includes(String(s))){
-combos.push(`${a}${b}${c}`);
-}
-
-if(combos.length>=6)break;
-
-}
-
-if(combos.length>=6)break;
-}
-
-if(combos.length){
-
-$('predNums').innerHTML=
-combos
-.map(x=>`<span class="tag">${x}</span>`)
-.join('');
-
-}else{
-
-$('predNums').innerHTML=
-'<span class="tag">统计数据不足</span>';
-
-}
-
-}
-
-async function load(){
-
-$('status').textContent=
-'正在读取最新数据...';
-
-try{
-
-const r=await fetch(
-'https://djay84579-art.github.io/three-digit-analyzer/data.json?t='+Date.now()
-);
-
-if(!r.ok)
-throw new Error('HTTP '+r.status);
-
-const j=await r.json();
-
-data=(j.results||[])
-.sort((a,b)=>Number(b.issue)-Number(a.issue));
-
-if(!data.length)
-throw new Error('暂无数据');
-
-const x=data[0];
-
-$('count').textContent=data.length;
-
-$('issue').textContent=x.issue;
-
-$('nums').textContent=
-`${x.a} + ${x.b} + ${x.c}`;
-
-$('sum').textContent=x.sum;
-
-$('status').innerHTML=
-`<span class="ok">
-读取成功 · 最新：${esc(x.issue)}期
-</span>`;
-
-const d={};
-
-const hot=Array(10).fill(0);
-
-data.forEach(x=>{
-
-d[x.sum]=(d[x.sum]||0)+1;
-
-[x.a,x.b,x.c].forEach(n=>{
-hot[n]++;
-});
-
-});
-
-$('dist').textContent=
-Object.entries(d)
-.sort((a,b)=>a[0]-b[0])
-.map(x=>`${x[0]}:${x[1]}`)
-.join('　');
-
-$('hot').textContent=
-[...hot.keys()]
-.sort((a,b)=>hot[b]-hot[a])
-.map(n=>`${n}(${hot[n]})`)
-.join('　');
-
-$('rows').innerHTML=
-data.slice(0,30)
-.map(x=>`
-<tr>
-<td>${esc(x.issue)}</td>
-<td>${x.a}+${x.b}+${x.c}</td>
-<td>${x.sum}</td>
-</tr>
-`)
-.join('');
-
-calcPrediction();
-
-}catch(e){
-
-$('status').innerHTML=
-`<span class="err">
-读取失败：${esc(e.message)}
-</span>`;
-
-}
-
-}
-
-$('refresh').onclick=load;
-
-load();
-
-setInterval(load,60000);
-
-</script>
-
-</body>
-</html>
+.small{
+ color:#888
