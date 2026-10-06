@@ -1,412 +1,52 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PC28 · 实时开奖 + 统计参考</title>
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10131d">
+<title>PC28 · 毛玻璃实时开奖</title>
 <style>
-*{box-sizing:border-box}
-body{
- margin:0;
- color:#fff;
- font-family:Arial,"Microsoft YaHei",sans-serif;
- background:#090914;
-}
-.header{
- padding:28px 20px;
- background:linear-gradient(135deg,#25145e,#17104b,#080b22);
-}
-.header h1{
- margin:0;
- font-size:30px;
-}
-.header p{
- margin:12px 0 0;
- color:#bbb;
- font-size:16px;
-}
-.wrap{
- max-width:900px;
- margin:auto;
- padding:16px;
-}
-.card{
- margin-bottom:16px;
- padding:20px;
- border:1px solid #444;
- border-radius:22px;
- background:rgba(15,15,25,.94);
- box-shadow:0 8px 30px rgba(0,0,0,.25);
-}
-.card h2{
- margin:0 0 18px;
- font-size:23px;
-}
-.status{
- color:#bbb;
- line-height:1.7;
-}
-.ok{color:#61e294}
-.err{color:#ff7272}
-.grid{
- display:grid;
- grid-template-columns:repeat(2,1fr);
- gap:12px;
-}
-.box{
- padding:18px;
- border-radius:18px;
- background:#1b1b28;
-}
-.box span{
- display:block;
- color:#999;
- margin-bottom:8px;
-}
-.box b{
- font-size:25px;
-}
-.pred{
- display:grid;
- grid-template-columns:repeat(2,1fr);
- gap:12px;
-}
-.pred .box{
- background:linear-gradient(135deg,#21154d,#17172a);
-}
-.hot{
- color:#ffd86b;
-}
-table{
- width:100%;
- border-collapse:collapse;
- font-size:14px;
-}
-th,td{
- padding:10px 6px;
- border-bottom:1px solid #333;
- text-align:center;
-}
-th{color:#aaa}
-button{
- border:0;
- border-radius:12px;
- padding:10px 18px;
- background:#302064;
- color:#fff;
- font-size:16px;
-}
-.small{
- color:#888;
- font-size:13px;
- line-height:1.7;
-}
-@media(max-width:600px){
- .header h1{font-size:27px}
- .grid,.pred{grid-template-columns:1fr 1fr}
- .box b{font-size:21px}
-}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei",sans-serif;color:#fff;background:#080a10}
+body{background-image:linear-gradient(rgba(4,7,15,.28),rgba(4,7,15,.62)),url('./bg.png');background-size:cover;background-position:center top;background-attachment:fixed}
+body:before{content:"";position:fixed;inset:0;background:rgba(8,12,24,.12);backdrop-filter:blur(1px);pointer-events:none}
+.app{position:relative;max-width:760px;margin:auto;padding:18px 14px 100px}
+.glass{background:rgba(18,25,40,.46);border:1px solid rgba(255,255,255,.23);box-shadow:0 14px 40px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.15);backdrop-filter:blur(18px) saturate(135%);-webkit-backdrop-filter:blur(18px) saturate(135%);border-radius:26px}
+.hero{padding:22px;margin-bottom:14px}.hero h1{margin:0;font-size:28px;letter-spacing:.3px}.hero p{margin:8px 0 0;color:rgba(255,255,255,.72);font-size:14px}
+.card{padding:18px;margin:14px 0}.title{font-size:20px;font-weight:700;margin-bottom:14px}.muted{color:rgba(255,255,255,.65)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.box{padding:15px;border-radius:19px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.12)}.box small{display:block;color:rgba(255,255,255,.62);margin-bottom:7px}.box b{font-size:21px}
+.btn{border:0;border-radius:16px;padding:12px 17px;background:rgba(104,113,255,.78);color:#fff;font-size:15px;box-shadow:0 8px 24px rgba(74,86,255,.25)}
+.status{display:flex;justify-content:space-between;align-items:center;gap:10px}.ok{color:#71f0ad}.err{color:#ff7f9c}
+.pred .box:nth-child(1){background:linear-gradient(135deg,rgba(255,72,155,.22),rgba(255,255,255,.08))}.pred .box:nth-child(2){background:linear-gradient(135deg,rgba(64,151,255,.22),rgba(255,255,255,.08))}.pred .box:nth-child(3){background:linear-gradient(135deg,rgba(67,224,144,.20),rgba(255,255,255,.08))}.pred .box:nth-child(4){background:linear-gradient(135deg,rgba(255,185,74,.20),rgba(255,255,255,.08))}
+.bar{height:8px;background:rgba(255,255,255,.10);border-radius:99px;overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#6b7cff,#d27cff)}
+.pills{display:flex;flex-wrap:wrap;gap:8px}.pill{min-width:44px;text-align:center;padding:9px 10px;border-radius:15px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.12)}
+.table{overflow:auto;border-radius:17px}table{width:100%;border-collapse:collapse;min-width:420px}th,td{padding:9px 7px;text-align:center;border-bottom:1px solid rgba(255,255,255,.10);font-size:13px}th{color:rgba(255,255,255,.58)}
+.music{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);width:min(92%,700px);padding:11px 13px;display:flex;align-items:center;gap:11px;z-index:20}.disc{width:42px;height:42px;border-radius:50%;background:radial-gradient(circle,#fff 0 8%,#b48cff 9% 18%,#5b6cff 19% 50%,#1b2140 51%);box-shadow:0 0 20px rgba(125,111,255,.55);flex:none}.music-info{min-width:0;flex:1}.music-info b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.music-info small{color:rgba(255,255,255,.58)}.music button{flex:none;border:0;border-radius:14px;width:44px;height:40px;background:rgba(255,255,255,.12);color:#fff;font-size:18px}
+.note{font-size:12px;color:rgba(255,255,255,.55);line-height:1.7}.refresh{float:right}
+@media(max-width:520px){.app{padding:12px 11px 105px}.hero h1{font-size:25px}.card{padding:15px;border-radius:22px}.box{padding:13px}.box b{font-size:19px}}
 </style>
 </head>
-
 <body>
-
-<div class="header">
- <h1>🎯 PC28 · 实时开奖 + 统计参考</h1>
- <p>Telegram 公开频道 @pc28 · 自动读取 · 每60秒刷新</p>
-</div>
-
-<div class="wrap">
-
-<div class="card">
- <h2>📡 实时状态</h2>
- <div id="status" class="status">正在读取数据...</div>
- <br>
- <button onclick="loadData()">立即刷新</button>
-</div>
-
-<div class="card">
- <h2>📊 核心指标</h2>
- <div class="grid">
-  <div class="box">
-   <span>已记录期数</span>
-   <b id="count">—</b>
-  </div>
-  <div class="box">
-   <span>最新期号</span>
-   <b id="issue">—</b>
-  </div>
-  <div class="box">
-   <span>最新号码</span>
-   <b id="nums">—</b>
-  </div>
-  <div class="box">
-   <span>最新和值</span>
-   <b id="sum">—</b>
-  </div>
- </div>
-</div>
-
-<div class="card">
- <h2>🔮 下一期统计参考</h2>
- <div class="pred">
-  <div class="box">
-   <span>和值热区</span>
-   <b id="predSum" class="hot">—</b>
-  </div>
-  <div class="box">
-   <span>重点数字</span>
-   <b id="predDigit" class="hot">—</b>
-  </div>
-  <div class="box">
-   <span>单双参考</span>
-   <b id="predParity">—</b>
-  </div>
-  <div class="box">
-   <span>大小参考</span>
-   <b id="predSize">—</b>
-  </div>
- </div>
-
- <p class="small">
-  根据最近50期历史数据统计，仅作为走势参考，不代表下一期一定出现。
- </p>
-</div>
-
-<div class="card">
- <h2>📈 和值分布</h2>
- <div id="dist">—</div>
-</div>
-
-<div class="card">
- <h2>🔥 数字热度</h2>
- <div id="hot">—</div>
-</div>
-
-<div class="card">
- <h2>🧾 最近30期</h2>
- <div style="overflow:auto">
-  <table>
-   <thead>
-    <tr>
-     <th>期号</th>
-     <th>A</th>
-     <th>B</th>
-     <th>C</th>
-     <th>和值</th>
-    </tr>
-   </thead>
-   <tbody id="list"></tbody>
-  </table>
- </div>
-</div>
-
-</div>
-
+<main class="app">
+<section class="glass hero"><h1>🎯 PC28 · 实时开奖 + 统计参考</h1><p>Telegram 公开频道 @pc28 · 自动读取 · 每60秒刷新</p></section>
+<section class="glass card"><div class="status"><div><div class="title" style="margin:0">📡 实时状态</div><div id="status" class="muted">正在读取数据…</div></div><button class="btn" onclick="loadData()">刷新</button></div></section>
+<section class="glass card"><div class="title">📊 核心指标</div><div class="row"><div class="box"><small>已记录期数</small><b id="count">—</b></div><div class="box"><small>最新期号</small><b id="issue">—</b></div><div class="box"><small>最新号码</small><b id="nums">—</b></div><div class="box"><small>最新和值</small><b id="sum">—</b></div></div></section>
+<section class="glass card pred"><div class="title">🔮 下一期统计参考</div><div class="row"><div class="box"><small>和值热区</small><b id="predSum">—</b></div><div class="box"><small>重点数字</small><b id="predDigit">—</b></div><div class="box"><small>单双参考</small><b id="predParity">—</b></div><div class="box"><small>大小参考</small><b id="predSize">—</b></div></div><p class="note">根据最近50期历史数据统计，仅作为走势参考，不代表下一期一定出现。</p></section>
+<section class="glass card"><div class="title">📈 和值分布（近50期）</div><div id="dist"></div></section>
+<section class="glass card"><div class="title">🔥 数字热度（近50期）</div><div id="hot" class="pills"></div></section>
+<section class="glass card"><div class="title">🧾 最近30期</div><div class="table"><table><thead><tr><th>期号</th><th>A</th><th>B</th><th>C</th><th>和值</th></tr></thead><tbody id="list"></tbody></table></div></section>
+</main>
+<div class="glass music"><div class="disc"></div><div class="music-info"><b>挂机 · 厌倦了吵架厌倦了迷人的谎话</b><small>背景音乐</small></div><button id="play" onclick="toggleMusic()">▶</button></div>
+<audio id="audio" src="./music.mp3" loop preload="metadata"></audio>
 <script>
-
-let data=[];
-
-function $(id){
- return document.getElementById(id);
-}
-
-function setStatus(text,cls){
- $('status').className='status '+(cls||'');
- $('status').textContent=text;
-}
-
-async function loadData(){
-
- setStatus('正在读取数据...');
-
- try{
-
-  const url =
-   'https://djay84579-art.github.io/three-digit-analyzer/data.json?v='
-   +Date.now();
-
-  const controller=new AbortController();
-
-  const timer=setTimeout(function(){
-   controller.abort();
-  },10000);
-
-  const response=await fetch(url,{
-   method:'GET',
-   cache:'no-store',
-   signal:controller.signal
-  });
-
-  clearTimeout(timer);
-
-  if(!response.ok){
-   throw new Error('HTTP '+response.status);
-  }
-
-  const json=await response.json();
-
-  if(!json.results || !json.results.length){
-   throw new Error('data.json没有开奖数据');
-  }
-
-  data=json.results
-   .map(x=>({
-    issue:String(x.issue),
-    a:Number(x.a),
-    b:Number(x.b),
-    c:Number(x.c),
-    sum:Number(x.sum)
-   }))
-   .sort((a,b)=>Number(b.issue)-Number(a.issue));
-
-  render();
-
-  setStatus(
-   '读取成功 · '+data.length+
-   '期 · 最后刷新：'+new Date().toLocaleTimeString(),
-   'ok'
-  );
-
- }catch(e){
-
-  setStatus(
-   '读取失败：'+
-   (e.name==='AbortError'?'请求超时':e.message),
-   'err'
-  );
-
- }
-}
-
-function render(){
-
- const latest=data[0];
-
- $('count').textContent=data.length;
- $('issue').textContent=latest.issue;
- $('nums').textContent=
-  latest.a+' + '+latest.b+' + '+latest.c;
- $('sum').textContent=latest.sum;
-
- renderPrediction();
- renderDist();
- renderHot();
- renderList();
-}
-
-function renderPrediction(){
-
- const recent=data.slice(0,50);
-
- const sums={};
- const digits=Array(10).fill(0);
- let odd=0;
- let even=0;
- let big=0;
- let small=0;
-
- recent.forEach(x=>{
-
-  sums[x.sum]=(sums[x.sum]||0)+1;
-
-  digits[x.a]++;
-  digits[x.b]++;
-  digits[x.c]++;
-
-  if(x.sum%2) odd++;
-  else even++;
-
-  if(x.sum>=14) big++;
-  else small++;
- });
-
- const hotSums=Object.keys(sums)
-  .sort((a,b)=>sums[b]-sums[a])
-  .slice(0,3);
-
- const hotDigits=[0,1,2,3,4,5,6,7,8,9]
-  .sort((a,b)=>digits[b]-digits[a])
-  .slice(0,3);
-
- $('predSum').textContent=
-  hotSums.join(' / ');
-
- $('predDigit').textContent=
-  hotDigits.join('、');
-
- $('predParity').textContent=
-  odd>=even?'单':'双';
-
- $('predSize').textContent=
-  big>=small?'大':'小';
-}
-
-function renderDist(){
-
- const recent=data.slice(0,50);
- const map={};
-
- recent.forEach(x=>{
-  map[x.sum]=(map[x.sum]||0)+1;
- });
-
- const arr=Object.keys(map)
-  .sort((a,b)=>Number(a)-Number(b));
-
- $('dist').innerHTML=arr.map(k=>
-  '<div style="margin:7px 0">'+
-  '<span>'+k+'点：'+map[k]+'次</span>'+
-  '<div style="height:8px;background:#292936;border-radius:5px">'+
-  '<div style="height:8px;width:'+
-  Math.min(map[k]*12,100)+
-  '%;background:#755cff;border-radius:5px"></div>'+
-  '</div></div>'
- ).join('');
-}
-
-function renderHot(){
-
- const recent=data.slice(0,50);
- const count=Array(10).fill(0);
-
- recent.forEach(x=>{
-  count[x.a]++;
-  count[x.b]++;
-  count[x.c]++;
- });
-
- const arr=[0,1,2,3,4,5,6,7,8,9]
-  .sort((a,b)=>count[b]-count[a]);
-
- $('hot').innerHTML=
-  arr.map(n=>
-   '<span style="display:inline-block;padding:9px 13px;margin:4px;border-radius:10px;background:#202033">'+
-   n+'：'+count[n]+
-   '</span>'
-  ).join('');
-}
-
-function renderList(){
-
- $('list').innerHTML=
-  data.slice(0,30).map(x=>
-   '<tr>'+
-   '<td>'+x.issue+'</td>'+
-   '<td>'+x.a+'</td>'+
-   '<td>'+x.b+'</td>'+
-   '<td>'+x.c+'</td>'+
-   '<td>'+x.sum+'</td>'+
-   '</tr>'
-  ).join('');
-}
-
-loadData();
-
-setInterval(loadData,60000);
-
+let data=[];const $=id=>document.getElementById(id);const audio=$('audio');
+function status(t,c=''){$('status').textContent=t;$('status').className=c}
+async function loadData(){status('正在读取数据…');try{const r=await fetch('./data.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const j=await r.json();data=(j.results||[]).map(x=>({issue:String(x.issue),a:+x.a,b:+x.b,c:+x.c,sum:+x.sum})).sort((a,b)=>+b.issue-+a.issue);if(!data.length)throw Error('暂无数据');render();status('读取成功 · '+data.length+'期 · '+new Date().toLocaleTimeString(),'ok')}catch(e){status('读取失败：'+e.message,'err')}}
+function render(){let x=data[0];$('count').textContent=data.length;$('issue').textContent=x.issue;$('nums').textContent=x.a+' + '+x.b+' + '+x.c;$('sum').textContent=x.sum;prediction();dist();hot();list()}
+function prediction(){let r=data.slice(0,50),s={},d=Array(10).fill(0),o=0,e=0,b=0,sm=0;r.forEach(x=>{s[x.sum]=(s[x.sum]||0)+1;d[x.a]++;d[x.b]++;d[x.c]++;x.sum%2?o++:e++;x.sum>=14?b++:sm++});$('predSum').textContent=Object.keys(s).sort((a,b)=>s[b]-s[a]).slice(0,3).join(' / ');$('predDigit').textContent=[0,1,2,3,4,5,6,7,8,9].sort((a,b)=>d[b]-d[a]).slice(0,3).join('、');$('predParity').textContent=o>=e?'单':'双';$('predSize').textContent=b>=sm?'大':'小'}
+function dist(){let s={};data.slice(0,50).forEach(x=>s[x.sum]=(s[x.sum]||0)+1);let m=Math.max(...Object.values(s),1);$('dist').innerHTML=Object.keys(s).sort((a,b)=>a-b).map(k=>'<div style="display:grid;grid-template-columns:42px 42px 1fr 42px;align-items:center;gap:7px;margin:7px 0"><span>'+k+'</span><span class="muted">'+s[k]+'次</span><div class="bar"><i style="width:'+(s[k]/m*100)+'%"></i></div><span class="muted">'+Math.round(s[k]/50*100)+'%</span></div>').join('')}
+function hot(){let d=Array(10).fill(0);data.slice(0,50).forEach(x=>{d[x.a]++;d[x.b]++;d[x.c]++});$('hot').innerHTML=d.map((n,i)=>'<div class="pill"><b>'+i+'</b><br><small>'+n+'次</small></div>').join('')}
+function list(){$('list').innerHTML=data.slice(0,30).map(x=>'<tr><td>'+x.issue+'</td><td>'+x.a+'</td><td>'+x.b+'</td><td>'+x.c+'</td><td>'+x.sum+'</td></tr>').join('')}
+async function toggleMusic(){try{if(audio.paused){await audio.play();$('play').textContent='❚❚'}else{audio.pause();$('play').textContent='▶'}}catch(e){alert('请再次点击播放按钮，手机浏览器需要用户手动开始音乐。')}}
+loadData();setInterval(loadData,60000);
 </script>
-
-</body>
-</html>
+</body></html>
