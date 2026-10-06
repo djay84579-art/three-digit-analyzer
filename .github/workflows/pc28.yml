@@ -14,13 +14,17 @@ jobs:
     timeout-minutes: 5
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - run: pip install requests beautifulsoup4
+      - name: Install
+        run: |
+          pip install requests beautifulsoup4
 
       - name: Monitor PC28
         run: |
@@ -33,24 +37,33 @@ jobs:
           from bs4 import BeautifulSoup
 
           URL = "https://t.me/s/pc28"
-          END_TIME = time.time() + 270
 
-          def load_old():
+          # 单次任务持续约 4 分 40 秒
+          END_TIME = time.time() + 280
+
+          session = requests.Session()
+          session.headers.update({
+              "User-Agent": "Mozilla/5.0"
+          })
+
+          def load_data():
               try:
                   with open("data.json", "r", encoding="utf-8") as f:
                       obj = json.load(f)
-                      return {
-                          str(x["issue"]): x
-                          for x in obj.get("results", [])
-                      }
-              except:
+
+                  return {
+                      str(x["issue"]): x
+                      for x in obj.get("results", [])
+                      if "issue" in x
+                  }
+              except Exception:
                   return {}
 
-          def save_data(old):
-              data = {
-                  "count": len(old),
+          def save_data(data):
+              result = {
+                  "count": len(data),
                   "results": sorted(
-                      old.values(),
+                      data.values(),
                       key=lambda x: int(x["issue"]),
                       reverse=True
                   )
@@ -58,45 +71,107 @@ jobs:
 
               with open("data.json", "w", encoding="utf-8") as f:
                   json.dump(
-                      data,
+                      result,
                       f,
                       ensure_ascii=False,
                       indent=2
                   )
 
-          old = load_old()
-          session = requests.Session()
-          session.headers.update({
-              "User-Agent": "Mozilla/5.0"
-          })
+          def git_push():
+              subprocess.run(
+                  ["git", "config", "user.name", "github-actions[bot]"],
+                  check=True
+              )
 
-          last_count = len(old)
+              subprocess.run(
+                  [
+                      "git",
+                      "config",
+                      "user.email",
+                      "41898282+github-actions[bot]@users.noreply.github.com"
+                  ],
+                  check=True
+              )
+
+              subprocess.run(
+                  ["git", "add", "data.json"],
+                  check=True
+              )
+
+              result = subprocess.run(
+                  [
+                      "git",
+                      "commit",
+                      "-m",
+                      "Update PC28"
+                  ],
+                  capture_output=True,
+                  text=True
+              )
+
+              if result.returncode == 0:
+                  subprocess.run(
+                      ["git", "push"],
+                      check=True
+                  )
+                  return True
+
+              return False
+
+          data = load_data()
+
+          print("启动监测")
+          print("当前已有:", len(data), "期")
+
+          last_issue = None
 
           while time.time() < END_TIME:
+
               try:
-                  r = session.get(URL, timeout=20)
-                  soup = BeautifulSoup(r.text, "html.parser")
+                  response = session.get(
+                      URL,
+                      timeout=15
+                  )
+
+                  response.raise_for_status()
+
+                  soup = BeautifulSoup(
+                      response.text,
+                      "html.parser"
+                  )
 
                   changed = False
+                  new_issues = []
 
-                  for m in soup.select(".tgme_widget_message"):
-                      t = m.get_text(" ", strip=True)
-
-                      x = re.search(
-                          r"(\d{6,})\s*期.*?([0-9])\s*\+\s*([0-9])\s*\+\s*([0-9])\s*=\s*(\d+)",
-                          t
+                  for message in soup.select(
+                      ".tgme_widget_message"
+                  ):
+                      text = message.get_text(
+                          " ",
+                          strip=True
                       )
 
-                      if not x:
+                      match = re.search(
+                          r"(\d{6,})\s*期"
+                          r".*?"
+                          r"([0-9])\s*\+\s*"
+                          r"([0-9])\s*\+\s*"
+                          r"([0-9])\s*=\s*"
+                          r"(\d+)",
+                          text
+                      )
+
+                      if not match:
                           continue
 
-                      issue, a, b, c, total = x.groups()
+                      issue, a, b, c, total = match.groups()
 
                       a = int(a)
                       b = int(b)
                       c = int(c)
                       total = int(total)
 
+                      # 校验和值
                       if a + b + c != total:
                           continue
 
@@ -108,56 +183,73 @@ jobs:
                           "sum": total
                       }
 
-                      if old.get(issue) != item:
-                          old[issue] = item
+                      if data.get(issue) != item:
+                          data[issue] = item
                           changed = True
+                          new_issues.append(issue)
 
                   if changed:
-                      save_data(old)
 
-                      subprocess.run(
-                          ["git", "config", "user.name", "github-actions[bot]"],
-                          check=True
-                      )
-                      subprocess.run(
-                          ["git", "config", "user.email",
-                           "41898282+github-actions[bot]@users.noreply.github.com"],
-                          check=True
-                      )
+                      save_data(data)
 
-                      subprocess.run(
-                          ["git", "add", "data.json"],
-                          check=True
-                      )
+                      newest = sorted(
+                          data.keys(),
+                          key=lambda x: int(x),
+                          reverse=True
+                      )[0]
 
-                      result = subprocess.run(
-                          ["git", "commit", "-m", "Update PC28"],
-                          capture_output=True,
-                          text=True
+                      print(
+                          "发现新数据:",
+                          newest,
+                          "当前共",
+                          len(data),
+                          "期"
                       )
 
-                      if result.returncode == 0:
-                          subprocess.run(
-                              ["git", "push"],
-                              check=True
+                      git_push()
+
+                      last_issue = newest
+
+                  else:
+                      newest = (
+                          max(
+                              data.keys(),
+                              key=lambda x: int(x)
                           )
+                          if data
+                          else "暂无"
+                      )
 
-                          print(
-                              "发现新数据，当前共",
-                              len(old),
-                              "期"
-                          )
-
-                  print(
-                      "监测中，目前",
-                      len(old),
-                      "期"
-                  )
+                      print(
+                          "监测中 | 最新:",
+                          newest,
+                          "| 总数:",
+                          len(data)
+                      )
 
               except Exception as e:
-                  print("本轮抓取失败:", e)
+                  print(
+                      "抓取失败:",
+                      repr(e)
+                  )
 
-              time.sleep(20)
+              # 高频检查
+              time.sleep(5)
 
-          print("本次监测结束，共记录", len(old), "期")
+          print(
+              "本次监测结束 | 共记录:",
+              len(data),
+              "期"
+          )
+
+          if data:
+              newest = max(
+                  data.keys(),
+                  key=lambda x: int(x)
+              )
+
+              print(
+                  "最终最新期:",
+                  newest
+              )
           PY
