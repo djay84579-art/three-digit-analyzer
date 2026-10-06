@@ -2,18 +2,21 @@ name: PC28 Update
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "*/5 * * * *"
 
 permissions:
   contents: write
 
+concurrency:
+  group: pc28-monitor
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 55
 
     steps:
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -34,21 +37,32 @@ jobs:
           import json
           import time
           import subprocess
+
           from bs4 import BeautifulSoup
+
 
           URL = "https://t.me/s/pc28"
 
-          # 单次任务持续约 4 分 40 秒
-          END_TIME = time.time() + 280
+          # 本轮运行约 50 分钟
+          END_TIME = time.time() + 3000
 
           session = requests.Session()
+
           session.headers.update({
               "User-Agent": "Mozilla/5.0"
           })
 
+
           def load_data():
+
               try:
-                  with open("data.json", "r", encoding="utf-8") as f:
+
+                  with open(
+                      "data.json",
+                      "r",
+                      encoding="utf-8"
+                  ) as f:
+
                       obj = json.load(f)
 
                   return {
@@ -56,12 +70,17 @@ jobs:
                       for x in obj.get("results", [])
                       if "issue" in x
                   }
+
               except Exception:
+
                   return {}
 
+
           def save_data(data):
+
               result = {
                   "count": len(data),
+
                   "results": sorted(
                       data.values(),
                       key=lambda x: int(x["issue"]),
@@ -69,7 +88,12 @@ jobs:
                   )
               }
 
-              with open("data.json", "w", encoding="utf-8") as f:
+              with open(
+                  "data.json",
+                  "w",
+                  encoding="utf-8"
+              ) as f:
+
                   json.dump(
                       result,
                       f,
@@ -77,9 +101,16 @@ jobs:
                       indent=2
                   )
 
+
           def git_push():
+
               subprocess.run(
-                  ["git", "config", "user.name", "github-actions[bot]"],
+                  [
+                      "git",
+                      "config",
+                      "user.name",
+                      "github-actions[bot]"
+                  ],
                   check=True
               )
 
@@ -94,7 +125,11 @@ jobs:
               )
 
               subprocess.run(
-                  ["git", "add", "data.json"],
+                  [
+                      "git",
+                      "add",
+                      "data.json"
+                  ],
                   check=True
               )
 
@@ -110,24 +145,37 @@ jobs:
               )
 
               if result.returncode == 0:
+
                   subprocess.run(
-                      ["git", "push"],
+                      [
+                          "git",
+                          "push"
+                      ],
                       check=True
                   )
+
                   return True
 
               return False
 
+
           data = load_data()
 
-          print("启动监测")
-          print("当前已有:", len(data), "期")
+          print(
+              "启动 PC28 高频监测"
+          )
 
-          last_issue = None
+          print(
+              "当前已有:",
+              len(data),
+              "期"
+          )
+
 
           while time.time() < END_TIME:
 
               try:
+
                   response = session.get(
                       URL,
                       timeout=15
@@ -141,11 +189,11 @@ jobs:
                   )
 
                   changed = False
-                  new_issues = []
 
                   for message in soup.select(
                       ".tgme_widget_message"
                   ):
+
                       text = message.get_text(
                           " ",
                           strip=True
@@ -164,6 +212,7 @@ jobs:
                       if not match:
                           continue
 
+
                       issue, a, b, c, total = match.groups()
 
                       a = int(a)
@@ -171,9 +220,10 @@ jobs:
                       c = int(c)
                       total = int(total)
 
-                      # 校验和值
+
                       if a + b + c != total:
                           continue
+
 
                       item = {
                           "issue": issue,
@@ -183,42 +233,46 @@ jobs:
                           "sum": total
                       }
 
+
                       if data.get(issue) != item:
+
                           data[issue] = item
+
                           changed = True
-                          new_issues.append(issue)
+
 
                   if changed:
 
                       save_data(data)
 
-                      newest = sorted(
+                      newest = max(
                           data.keys(),
-                          key=lambda x: int(x),
-                          reverse=True
-                      )[0]
+                          key=lambda x: int(x)
+                      )
 
                       print(
                           "发现新数据:",
                           newest,
-                          "当前共",
+                          "| 当前共:",
                           len(data),
                           "期"
                       )
 
                       git_push()
 
-                      last_issue = newest
-
                   else:
-                      newest = (
-                          max(
+
+                      if data:
+
+                          newest = max(
                               data.keys(),
                               key=lambda x: int(x)
                           )
-                          if data
-                          else "暂无"
-                      )
+
+                      else:
+
+                          newest = "暂无"
+
 
                       print(
                           "监测中 | 最新:",
@@ -227,14 +281,18 @@ jobs:
                           len(data)
                       )
 
+
               except Exception as e:
+
                   print(
                       "抓取失败:",
                       repr(e)
                   )
 
-              # 高频检查
+
+              # 每 5 秒检查一次
               time.sleep(5)
+
 
           print(
               "本次监测结束 | 共记录:",
@@ -242,7 +300,9 @@ jobs:
               "期"
           )
 
+
           if data:
+
               newest = max(
                   data.keys(),
                   key=lambda x: int(x)
@@ -252,13 +312,22 @@ jobs:
                   "最终最新期:",
                   newest
               )
+
           PY
-                - name: Auto Restart
+
+
+      - name: Auto Restart
         if: always()
         env:
           PC28_TOKEN: ${{ secrets.PC28_TOKEN }}
         run: |
+
+          echo "等待 5 秒后启动下一轮..."
+
           sleep 5
+
+          echo "正在启动下一轮 PC28..."
+
           curl -L \
             -X POST \
             -H "Accept: application/vnd.github+json" \
@@ -266,3 +335,5 @@ jobs:
             -H "X-GitHub-Api-Version: 2022-11-28" \
             "https://api.github.com/repos/${{ github.repository }}/actions/workflows/pc28.yml/dispatches" \
             -d '{"ref":"main"}'
+
+          echo "下一轮已请求启动"
