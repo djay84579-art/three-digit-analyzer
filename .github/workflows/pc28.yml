@@ -1,4 +1,3 @@
-
 name: PC28 Update
 
 on:
@@ -12,6 +11,7 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - uses: actions/checkout@v4
@@ -22,81 +22,142 @@ jobs:
 
       - run: pip install requests beautifulsoup4
 
-      - name: Get PC28
+      - name: Monitor PC28
         run: |
           python - <<'PY'
           import requests
           import re
           import json
+          import time
+          import subprocess
           from bs4 import BeautifulSoup
 
-          url = "https://t.me/s/pc28"
-          r = requests.get(
-              url,
-              headers={"User-Agent": "Mozilla/5.0"},
-              timeout=20
-          )
+          URL = "https://t.me/s/pc28"
+          END_TIME = time.time() + 270
 
-          soup = BeautifulSoup(r.text, "html.parser")
+          def load_old():
+              try:
+                  with open("data.json", "r", encoding="utf-8") as f:
+                      obj = json.load(f)
+                      return {
+                          str(x["issue"]): x
+                          for x in obj.get("results", [])
+                      }
+              except:
+                  return {}
 
-          old = {}
+          def save_data(old):
+              data = {
+                  "count": len(old),
+                  "results": sorted(
+                      old.values(),
+                      key=lambda x: int(x["issue"]),
+                      reverse=True
+                  )
+              }
 
-          try:
-              with open("data.json", "r", encoding="utf-8") as f:
-                  old = {
-                      x["issue"]: x
-                      for x in json.load(f)["results"]
-                  }
-          except:
-              pass
+              with open("data.json", "w", encoding="utf-8") as f:
+                  json.dump(
+                      data,
+                      f,
+                      ensure_ascii=False,
+                      indent=2
+                  )
 
-          for m in soup.select(".tgme_widget_message"):
-              t = m.get_text(" ", strip=True)
+          old = load_old()
+          session = requests.Session()
+          session.headers.update({
+              "User-Agent": "Mozilla/5.0"
+          })
 
-              x = re.search(
-                  r"(\d{6,})\s*期.*?([0-9])\s*\+\s*([0-9])\s*\+\s*([0-9])\s*=\s*(\d+)",
-                  t
-              )
+          last_count = len(old)
 
-              if x:
-                  q, a, b, c, total = x.groups()
+          while time.time() < END_TIME:
+              try:
+                  r = session.get(URL, timeout=20)
+                  soup = BeautifulSoup(r.text, "html.parser")
 
-                  a = int(a)
-                  b = int(b)
-                  c = int(c)
-                  total = int(total)
+                  changed = False
 
-                  if a + b + c == total:
-                      old[q] = {
-                          "issue": q,
+                  for m in soup.select(".tgme_widget_message"):
+                      t = m.get_text(" ", strip=True)
+
+                      x = re.search(
+                          r"(\d{6,})\s*期.*?([0-9])\s*\+\s*([0-9])\s*\+\s*([0-9])\s*=\s*(\d+)",
+                          t
+                      )
+
+                      if not x:
+                          continue
+
+                      issue, a, b, c, total = x.groups()
+
+                      a = int(a)
+                      b = int(b)
+                      c = int(c)
+                      total = int(total)
+
+                      if a + b + c != total:
+                          continue
+
+                      item = {
+                          "issue": issue,
                           "a": a,
                           "b": b,
                           "c": c,
                           "sum": total
                       }
 
-          data = {
-              "count": len(old),
-              "results": sorted(
-                  old.values(),
-                  key=lambda x: int(x["issue"]),
-                  reverse=True
-              )
-          }
+                      if old.get(issue) != item:
+                          old[issue] = item
+                          changed = True
 
-          with open("data.json", "w", encoding="utf-8") as f:
-              json.dump(
-                  data,
-                  f,
-                  ensure_ascii=False,
-                  indent=2
-              )
+                  if changed:
+                      save_data(old)
+
+                      subprocess.run(
+                          ["git", "config", "user.name", "github-actions[bot]"],
+                          check=True
+                      )
+                      subprocess.run(
+                          ["git", "config", "user.email",
+                           "41898282+github-actions[bot]@users.noreply.github.com"],
+                          check=True
+                      )
+
+                      subprocess.run(
+                          ["git", "add", "data.json"],
+                          check=True
+                      )
+
+                      result = subprocess.run(
+                          ["git", "commit", "-m", "Update PC28"],
+                          capture_output=True,
+                          text=True
+                      )
+
+                      if result.returncode == 0:
+                          subprocess.run(
+                              ["git", "push"],
+                              check=True
+                          )
+
+                          print(
+                              "发现新数据，当前共",
+                              len(old),
+                              "期"
+                          )
+
+                  print(
+                      "监测中，目前",
+                      len(old),
+                      "期"
+                  )
+
+              except Exception as e:
+                  print("本轮抓取失败:", e)
+
+              time.sleep(20)
+
+          print("本次监测结束，共记录", len(old), "期")
           PY
-
-      - name: Save
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data.json
-          git commit -m "Update PC28" || true
-          git push
