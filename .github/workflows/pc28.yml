@@ -4,7 +4,7 @@ name: PC28 Update
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "* * * * *"
 
 permissions:
   contents: write
