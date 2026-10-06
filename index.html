@@ -249,9 +249,11 @@ async function load(){
   $("status").className="status";
   $("status").textContent="正在读取最新数据...";
 
+  // 优先读取 GitHub 原始数据，绕过 GitHub Pages 部署/CDN 延迟
+  const cacheBust=Date.now();
   const urls=[
-    "./data.json?t="+Date.now(),
-    "https://raw.githubusercontent.com/djay84579-art/three-digit-analyzer/main/data.json?t="+Date.now()
+    "https://raw.githubusercontent.com/djay84579-art/three-digit-analyzer/main/data.json?cb="+cacheBust,
+    "./data.json?cb="+cacheBust
   ];
 
   let lastError=null;
