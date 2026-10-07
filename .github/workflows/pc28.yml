@@ -2,7 +2,7 @@ name: PC28 Update
 
 on:
   schedule:
-    - cron: "*/2 * * * *"
+    - cron: "3,8,13,18,23,28,33,38,43,48,53,58 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -11,6 +11,7 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 3
 
     steps:
       - name: Checkout
@@ -44,8 +45,7 @@ jobs:
               "User-Agent": (
                   "Mozilla/5.0 (Linux; Android 10) "
                   "AppleWebKit/537.36 "
-                  "(KHTML, like Gecko) "
-                  "Chrome/120.0 Mobile Safari/537.36"
+                  "Chrome/130.0 Mobile Safari/537.36"
               )
           }
 
@@ -61,36 +61,34 @@ jobs:
 
           html = r.text
 
-          # 提取 Telegram 页面中的文本
           text = re.sub(r"<[^>]+>", " ", html)
           text = re.sub(r"\s+", " ", text)
 
           results = []
 
-          # 常见 PC28 三位开奖号码格式
           patterns = [
-              r"(\d{3,})\D{0,20}([0-9])\s*\+\s*([0-9])\s*\+\s*([0-9])",
-              r"(\d{3,})\D{0,20}([0-9])\s+([0-9])\s+([0-9])"
+              r"(\d{6,})\D{0,30}([0-9])\s*\+\s*([0-9])\s*\+\s*([0-9])",
+              r"(\d{6,})\D{0,30}([0-9])\s+([0-9])\s+([0-9])"
           ]
 
           for pattern in patterns:
               for m in re.finditer(pattern, text):
+
                   issue = m.group(1)
+
                   a = int(m.group(2))
                   b = int(m.group(3))
                   c = int(m.group(4))
 
-                  if a > 9 or b > 9 or c > 9:
+                  if not all(0 <= x <= 9 for x in (a, b, c)):
                       continue
-
-                  total = a + b + c
 
                   item = {
                       "issue": issue,
                       "a": a,
                       "b": b,
                       "c": c,
-                      "sum": total
+                      "sum": a + b + c
                   }
 
                   if not any(
@@ -99,7 +97,6 @@ jobs:
                   ):
                       results.append(item)
 
-          # 按期号倒序
           results.sort(
               key=lambda x: int(
                   re.sub(r"\D", "", str(x["issue"])) or "0"
@@ -107,7 +104,6 @@ jobs:
               reverse=True
           )
 
-          # 最多保留 300 期，避免 data.json 无限变大
           results = results[:300]
 
           if not results:
@@ -141,7 +137,11 @@ jobs:
       - name: Check changes
         id: changes
         run: |
-          git diff --quiet data.json || echo "changed=true" >> "$GITHUB_OUTPUT"
+          if git diff --quiet data.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Commit and push
         if: steps.changes.outputs.changed == 'true'
@@ -151,6 +151,6 @@ jobs:
 
           git add data.json
 
-          git commit -m "PC28 Update"
+          git commit -m "Auto update PC28 data"
 
           git push
