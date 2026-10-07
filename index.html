@@ -1,339 +1,477 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0b0d12">
 <title>PC28 · 实时开奖 + 统计</title>
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{margin:0;padding:0;background:#090b10}
-body{margin:0;min-height:100vh;font-family:Arial,"Microsoft YaHei",sans-serif;color:#fff;background:#090b10 url("./bg.png") center top/cover no-repeat;background-attachment:scroll}
-body:before{content:"";position:fixed;inset:0;background:rgba(5,7,12,.55);pointer-events:none;z-index:0}
-.wrap{width:min(1050px,94%);margin:auto;position:relative;z-index:1}
-header{padding:28px 0 14px}
-h1{margin:0;font-size:29px;letter-spacing:.4px}
-.sub{margin-top:8px;color:#c7cad3;font-size:14px}
-.card{margin:14px 0;padding:18px;border:1px solid rgba(255,255,255,.13);border-radius:20px;background:rgba(12,14,22,.82);box-shadow:0 8px 24px rgba(0,0,0,.22)}
-h2{margin:0 0 15px;font-size:20px}
-.status{color:#a8ffb0;font-size:14px;line-height:1.6}
-.status.err{color:#ff9b9b}
-.actions{display:flex;gap:10px;margin-bottom:12px}
-button{border:1px solid rgba(255,255,255,.16);border-radius:13px;padding:11px 15px;background:rgba(255,255,255,.09);color:#fff;font-size:15px;cursor:pointer}
-button:active{transform:scale(.98)}
-.music{flex:1}.refresh{min-width:110px}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.box{padding:14px;border-radius:15px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.07)}
-.label{font-size:13px;color:#aeb1bc}
-.value{font-size:24px;font-weight:700;margin-top:7px;word-break:break-word}
-.latest .value{font-size:28px}
-.pred{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.pred .box{text-align:center}
-.pct{font-size:26px;font-weight:800;margin-top:7px}
-.best{margin-top:12px;font-size:21px;font-weight:800;text-align:center;padding:15px;border-radius:15px;background:rgba(255,255,255,.07)}
-.note{color:#aeb1bc;font-size:12px;line-height:1.6;margin:12px 0 0}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{padding:8px 11px;border-radius:999px;background:rgba(255,255,255,.075);font-size:13px}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{padding:9px 5px;text-align:center;border-bottom:1px solid rgba(255,255,255,.08)}
-th{color:#aeb1bc}
-.footer{padding:5px 0 30px;color:#858894;font-size:12px;text-align:center;line-height:1.8}
-.sync{color:#8f95a5;font-size:12px;margin-top:5px}
-@media(max-width:700px){
-header{padding-top:22px}h1{font-size:25px}.sub{font-size:13px}.card{padding:15px;border-radius:18px}
-.grid{grid-template-columns:repeat(2,1fr)}.pred{grid-template-columns:repeat(2,1fr)}
-.value{font-size:21px}.latest .value{font-size:24px}.pct{font-size:23px}.best{font-size:18px}
-table{font-size:11px}th,td{padding:8px 3px}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;color:#fff}
+body{
+  background:#090b10 url("./bg.png") center/cover fixed no-repeat;
+  position:relative;
 }
-@media(max-width:380px){
-.wrap{width:95%}.card{padding:13px}.grid,.pred{gap:7px}.box{padding:11px}.value{font-size:19px}.pct{font-size:21px}
+body:before{content:"";position:fixed;inset:0;background:rgba(5,7,12,.50);pointer-events:none}
+main{position:relative;z-index:1;width:min(720px,100%);margin:auto;padding:14px 10px 34px}
+header{text-align:center;padding:10px 4px 12px}
+h1{margin:0;font-size:24px}
+.sub{margin-top:6px;font-size:12px;opacity:.72}
+.card{
+  background:rgba(14,17,25,.72);
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:20px;
+  padding:15px;
+  margin:9px 0;
+  box-shadow:0 8px 28px rgba(0,0,0,.18);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+.status{font-size:13px;line-height:1.5;opacity:.82;min-height:20px}
+.actions{display:flex;gap:8px;margin-top:9px}
+button{
+  flex:1;border:0;border-radius:13px;padding:10px;background:rgba(255,255,255,.10);
+  color:#fff;font-size:14px
+}
+button:active{transform:scale(.98)}
+.row{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.item{background:rgba(255,255,255,.055);border-radius:14px;padding:12px;text-align:center}
+.label{font-size:12px;opacity:.62}
+.value{font-size:23px;font-weight:700;margin-top:4px}
+.big{font-size:32px;letter-spacing:7px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.stat{padding:11px 5px;text-align:center;background:rgba(255,255,255,.045);border-radius:13px}
+.stat span{font-size:12px;opacity:.62}
+.stat b{display:block;font-size:18px;margin-top:3px}
+.groups{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+.group{padding:11px;border-radius:13px;background:rgba(255,255,255,.045)}
+.group b{font-size:16px}
+.pct{float:right;font-weight:700}
+.small{font-size:11px;opacity:.58;line-height:1.45;margin-top:3px}
+.hot{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.ball{
+  width:35px;height:35px;border-radius:50%;display:flex;
+  align-items:center;justify-content:center;
+  background:rgba(255,255,255,.08);font-weight:700
+}
+.hotball{outline:2px solid rgba(255,190,60,.85)}
+.coldball{outline:2px solid rgba(100,180,255,.70)}
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px;white-space:nowrap}
+th,td{padding:8px 5px;border-bottom:1px solid rgba(255,255,255,.07);text-align:center}
+th{opacity:.62}
+.note{font-size:11px;line-height:1.5;opacity:.55;margin:9px 0 0}
+footer{text-align:center;font-size:12px;opacity:.48;padding:13px}
+.live-dot{
+  display:inline-block;width:7px;height:7px;border-radius:50%;
+  background:#6cf58a;margin-right:5px;vertical-align:1px
+}
+.off-dot{background:#aaa}
+@media(max-width:400px){
+  main{padding-left:8px;padding-right:8px}
+  h1{font-size:22px}
+  .big{font-size:29px}
 }
 </style>
 </head>
 <body>
-<header class="wrap">
-<h1>PC28 · 实时开奖 + 统计</h1>
-<div class="sub">Telegram 公开频道 · 自动同步 · 历史数据分析</div>
+<main>
+<header>
+  <h1>PC28 · 实时开奖 + 统计</h1>
+  <div class="sub">Telegram 公开频道 · 直接实时读取 · 历史数据分析</div>
 </header>
 
-<main class="wrap">
-<section class="card">
-<div class="actions">
-<button class="music" id="musicBtn">🎵 播放音乐</button>
-<button class="refresh" id="refreshBtn">🔄 立即刷新</button>
+<div class="card">
+  <div id="status" class="status">正在连接实时数据...</div>
+  <div class="actions">
+    <button id="refreshBtn">↻ 立即检查</button>
+    <button id="musicBtn">🎵 播放音乐</button>
+  </div>
 </div>
-<audio id="music" src="./music.mp3" loop preload="none"></audio>
-<div id="status" class="status">正在读取最新数据...</div>
-<div id="syncTime" class="sync">等待同步...</div>
-</section>
 
-<section class="card latest">
-<h2>最新开奖</h2>
-<div class="grid">
-<div class="box"><div class="label">期号</div><div class="value" id="issue">—</div></div>
-<div class="box"><div class="label">开奖号码</div><div class="value" id="nums">—</div></div>
-<div class="box"><div class="label">和值</div><div class="value" id="sum">—</div></div>
-<div class="box"><div class="label">形态</div><div class="value" id="shape">—</div></div>
+<div class="card">
+  <h3>最新开奖</h3>
+  <div class="row">
+    <div class="item"><div class="label">期号</div><div id="issue" class="value">--</div></div>
+    <div class="item"><div class="label">开奖号码</div><div id="nums" class="value big">---</div></div>
+    <div class="item"><div class="label">和值</div><div id="sum" class="value">--</div></div>
+    <div class="item"><div class="label">大小 / 单双</div><div id="shape" class="value">--</div></div>
+  </div>
 </div>
-</section>
 
-<section class="card">
-<h2>数据统计 · 最近150期</h2>
-<div class="grid">
-<div class="box"><div class="label">记录期数</div><div class="value" id="count">—</div></div>
-<div class="box"><div class="label">平均和值</div><div class="value" id="avg">—</div></div>
-<div class="box"><div class="label">最高和值</div><div class="value" id="max">—</div></div>
-<div class="box"><div class="label">最低和值</div><div class="value" id="min">—</div></div>
+<div class="card">
+  <h3>数据统计 · 最近150期</h3>
+  <div class="stats">
+    <div class="stat"><span>期数</span><b id="count">0</b></div>
+    <div class="stat"><span>平均和值</span><b id="avg">0</b></div>
+    <div class="stat"><span>最高和值</span><b id="max">0</b></div>
+  </div>
+  <div class="stats" style="margin-top:7px">
+    <div class="stat"><span>最低和值</span><b id="min">0</b></div>
+    <div class="stat"><span>豹子</span><b id="bao">0</b></div>
+    <div class="stat"><span>对子</span><b id="dui">0</b></div>
+  </div>
 </div>
-</section>
 
-<section class="card">
-<h2>下一期统计参考 · 最近150期</h2>
-<div class="pred">
-<div class="box"><div class="label">大单</div><div class="pct" id="bigOdd">—</div></div>
-<div class="box"><div class="label">大双</div><div class="pct" id="bigEven">—</div></div>
-<div class="box"><div class="label">小单</div><div class="pct" id="smallOdd">—</div></div>
-<div class="box"><div class="label">小双</div><div class="pct" id="smallEven">—</div></div>
+<div class="card">
+  <h3>下一期统计参考 · 最近150期</h3>
+  <div id="groups" class="groups"></div>
+  <p class="note">仅按最近150期历史频率统计，不代表下一期必然结果。</p>
 </div>
-<div class="best" id="best">统计中...</div>
-<p class="note">分类规则：大=和值14–27，小=和值0–13；单/双按和值奇偶计算。上述数据仅为最近150期历史频率统计，不代表下一期结果。</p>
-</section>
 
-<section class="card">
-<h2>形态统计 · 最近150期</h2>
-<div class="grid">
-<div class="box"><div class="label">豹子</div><div class="value" id="baozi">—</div></div>
-<div class="box"><div class="label">对子</div><div class="value" id="duizi">—</div></div>
-<div class="box"><div class="label">杂六</div><div class="value" id="zaliu">—</div></div>
-<div class="box"><div class="label">热门形态</div><div class="value" id="hotShape">—</div></div>
+<div class="card">
+  <h3>数字冷热</h3>
+  <div id="hot" class="hot"></div>
 </div>
-</section>
 
-<section class="card">
-<h2>数字冷热 · 最近150期</h2>
-<div id="hot" class="chips">统计中...</div>
-</section>
-
-<section class="card">
-<h2>最近30期开奖</h2>
-<div style="overflow-x:auto">
-<table>
-<thead><tr><th>期号</th><th>号码</th><th>和值</th><th>大小</th><th>单双</th><th>形态</th></tr></thead>
-<tbody id="rows"></tbody>
-</table>
+<div class="card">
+  <h3>形态统计 · 最近150期</h3>
+  <div id="forms" class="groups"></div>
 </div>
-</section>
+
+<div class="card">
+  <h3>最近30期开奖</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>期号</th><th>号码</th><th>和值</th><th>大小</th><th>单双</th><th>形态</th></tr></thead>
+      <tbody id="history"></tbody>
+    </table>
+  </div>
+</div>
+
+<footer>制作人：@ds200xd200xs200</footer>
 </main>
 
-<div class="wrap footer">PC28 · 数据来自公开频道，仅作历史数据统计展示<br>制作人：@ds200xd200xs200</div>
+<audio id="music" src="./music.mp3" loop preload="none"></audio>
 
 <script>
+"use strict";
+
+/*
+  新版数据链路：
+  1. 先读 GitHub 上的 data.json，作为历史/离线备份
+  2. 实时部分直接读取 Telegram @PC28 的公开网页
+  3. Telegram 通过免费的公开 GET CORS 代理转发到浏览器
+  4. 每5秒检查一次；只有发现新期号才重算页面
+  5. 新数据保存到本机 localStorage，避免每次打开都丢掉已经看到的期数
+
+  注意：
+  - 网页必须保持打开，浏览器被系统彻底挂起时任何网页都不能保证继续轮询。
+  - 这个方案不依赖 GitHub Actions 的定时触发，所以 Actions 延迟不会阻塞实时显示。
+*/
+
+const LIVE_URL="https://proxy.cors.dev/https://t.me/s/pc28";
+const BACKUP_URL="./data.json";
+const STORE_KEY="pc28_live_history_v1";
+const POLL_MS=5000;
+const TIMEOUT_MS=9000;
+
+let allData=[];
+let latestIssue="";
+let busy=false;
+let timer=null;
+
 const $=id=>document.getElementById(id);
-let data=[];
-let lastIssue="";
-let lastUpdated="";
-let loading=false;
-const REFRESH_MS=60000;
 
-function esc(v){
-return String(v).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+function issueNumber(x){
+  const n=String(x??"").replace(/\D/g,"");
+  return Number(n)||0;
 }
 
-function issueNumber(v){
-return Number(String(v??"").replace(/\D/g,""))||0;
+function normalize(arr){
+  if(!Array.isArray(arr)) return [];
+  return arr.map(x=>{
+    const a=Number(x.a),b=Number(x.b),c=Number(x.c);
+    return {
+      issue:String(x.issue??""),
+      a,b,c,
+      sum:Number.isFinite(Number(x.sum))?Number(x.sum):a+b+c
+    };
+  }).filter(x=>
+    x.issue &&
+    [x.a,x.b,x.c].every(n=>Number.isInteger(n)&&n>=0&&n<=9)
+  );
 }
 
-function classify(x){
-const a=Number(x.a),b=Number(x.b),c=Number(x.c),s=Number(x.sum);
-let shape;
-if(a===b&&b===c) shape="豹子";
-else if(a===b||a===c||b===c) shape="对子";
-else shape="杂六";
-return {a,b,c,s,shape,big:s>=14,odd:s%2===1};
+function mergeData(...lists){
+  const map=new Map();
+
+  for(const list of lists){
+    for(const x of normalize(list)){
+      if(!map.has(x.issue)) map.set(x.issue,x);
+    }
+  }
+
+  return [...map.values()]
+    .sort((a,b)=>issueNumber(b.issue)-issueNumber(a.issue))
+    .slice(0,300);
 }
 
-function pct(n,total){
-return total?(n*100/total).toFixed(1)+"%":"0.0%";
+function kind(x){
+  if(x.a===x.b&&x.b===x.c)return "豹子";
+  if(x.a===x.b||x.a===x.c||x.b===x.c)return "对子";
+  return "杂六";
+}
+function size(x){return x.sum>=14?"大":"小"}
+function parity(x){return x.sum%2===0?"双":"单"}
+function group(x){return size(x)+parity(x)}
+
+function saveLocal(){
+  try{
+    localStorage.setItem(STORE_KEY,JSON.stringify(allData));
+  }catch(e){}
 }
 
-function formatTime(){
-return new Date().toLocaleTimeString("zh-CN",{hour12:false});
+function loadLocal(){
+  try{
+    const raw=localStorage.getItem(STORE_KEY);
+    return raw?normalize(JSON.parse(raw)):[];
+  }catch(e){
+    return [];
+  }
+}
+
+async function fetchText(url){
+  const controller=new AbortController();
+  const t=setTimeout(()=>controller.abort(),TIMEOUT_MS);
+
+  try{
+    const r=await fetch(url,{
+      method:"GET",
+      mode:"cors",
+      credentials:"omit",
+      cache:"no-store"
+    });
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    return await r.text();
+  }finally{
+    clearTimeout(t);
+  }
+}
+
+function parseTelegram(text){
+  // 解码常见 HTML 实体，兼容代理返回 HTML/Markdown 两种情况
+  const box=document.createElement("div");
+  box.innerHTML=text;
+  const clean=box.textContent||text;
+
+  const source=(text.includes("tgme_widget_message_text")?
+    box.innerText:clean);
+
+  const re=/(\d{6,})\s*期?\s*([0-9])\s*[+＋]\s*([0-9])\s*[+＋]\s*([0-9])\s*=\s*([0-9]{1,2})/g;
+
+  const map=new Map();
+  let m;
+
+  while((m=re.exec(source))!==null){
+    const issue=m[1];
+    const a=Number(m[2]),b=Number(m[3]),c=Number(m[4]);
+    const sum=a+b+c;
+    const shownSum=Number(m[5]);
+
+    // 和值必须与三个数字相符，防止把别的数字文本误判
+    if(sum!==shownSum) continue;
+
+    map.set(issue,{issue,a,b,c,sum});
+  }
+
+  // 如果上面的文本节点方式没有命中，再从原始文本补一次
+  if(!map.size){
+    const alt=text
+      .replace(/<br\s*\/?>/gi,"\n")
+      .replace(/<\/div>/gi,"\n")
+      .replace(/<\/p>/gi,"\n")
+      .replace(/<[^>]+>/g," ")
+      .replace(/&nbsp;/gi," ");
+
+    while((m=re.exec(alt))!==null){
+      const issue=m[1];
+      const a=Number(m[2]),b=Number(m[3]),c=Number(m[4]);
+      const sum=a+b+c;
+      const shownSum=Number(m[5]);
+      if(sum!==shownSum) continue;
+      map.set(issue,{issue,a,b,c,sum});
+    }
+  }
+
+  return [...map.values()].sort((a,b)=>issueNumber(b.issue)-issueNumber(a.issue));
 }
 
 function render(){
-if(!data.length) throw new Error("暂无数据");
+  if(!allData.length)return;
 
-data.sort((a,b)=>issueNumber(b.issue)-issueNumber(a.issue));
-const latest=data[0];
-const recent=data.slice(0,150);
+  const recent=allData.slice(0,150);
+  const latest=recent[0];
 
-$("issue").textContent=String(latest.issue)+"期";
-$("nums").textContent=`${latest.a}+${latest.b}+${latest.c}`;
-$("sum").textContent=latest.sum;
-$("shape").textContent=classify(latest).shape;
+  $("issue").textContent=latest.issue;
+  $("nums").textContent=`${latest.a}${latest.b}${latest.c}`;
+  $("sum").textContent=latest.sum;
+  $("shape").textContent=`${size(latest)}${parity(latest)}`;
 
-$("count").textContent=data.length+"期";
+  const sums=recent.map(x=>x.sum);
+  const avg=sums.reduce((a,b)=>a+b,0)/sums.length;
 
-const sums=recent.map(x=>Number(x.sum)).filter(Number.isFinite);
-if(sums.length){
-const total=sums.reduce((a,b)=>a+b,0);
-$("avg").textContent=(total/sums.length).toFixed(2);
-$("max").textContent=Math.max(...sums);
-$("min").textContent=Math.min(...sums);
+  $("count").textContent=recent.length;
+  $("avg").textContent=avg.toFixed(2);
+  $("max").textContent=Math.max(...sums);
+  $("min").textContent=Math.min(...sums);
+
+  const formCount={"豹子":0,"对子":0,"杂六":0};
+  const groupCount={"大单":0,"大双":0,"小单":0,"小双":0};
+  const digitCount=Array(10).fill(0);
+
+  recent.forEach(x=>{
+    formCount[kind(x)]++;
+    groupCount[group(x)]++;
+    digitCount[x.a]++;
+    digitCount[x.b]++;
+    digitCount[x.c]++;
+  });
+
+  $("bao").textContent=formCount["豹子"];
+  $("dui").textContent=formCount["对子"];
+
+  const total=recent.length||1;
+
+  $("groups").innerHTML=["大单","大双","小单","小双"].map(g=>{
+    const n=groupCount[g];
+    return `<div class="group"><b>${g}</b><span class="pct">${(n/total*100).toFixed(1)}%</span><div class="small">${n}期</div></div>`;
+  }).join("");
+
+  const order=[...Array(10).keys()].sort((a,b)=>{
+    if(digitCount[b]!==digitCount[a]) return digitCount[b]-digitCount[a];
+    return a-b;
+  });
+  const hotSet=new Set(order.slice(0,3));
+  const coldSet=new Set(order.slice(-3));
+
+  $("hot").innerHTML=[...Array(10).keys()].map(d=>{
+    const cls=hotSet.has(d)?"hotball":coldSet.has(d)?"coldball":"";
+    return `<div class="ball ${cls}">${d}</div>`;
+  }).join("");
+
+  $("forms").innerHTML=Object.entries(formCount).map(([k,v])=>
+    `<div class="group"><b>${k}</b><span class="pct">${v}期</span><div class="small">${(v/total*100).toFixed(1)}%</div></div>`
+  ).join("");
+
+  $("history").innerHTML=allData.slice(0,30).map(x=>
+    `<tr>
+      <td>${x.issue}</td>
+      <td>${x.a}${x.b}${x.c}</td>
+      <td>${x.sum}</td>
+      <td>${size(x)}</td>
+      <td>${parity(x)}</td>
+      <td>${kind(x)}</td>
+    </tr>`
+  ).join("");
+
+  latestIssue=latest.issue;
 }
 
-let bo=0,be=0,so=0,se=0;
-const shapes={"豹子":0,"对子":0,"杂六":0};
+function setStatus(msg,live=true){
+  $("status").innerHTML=
+    `<span class="live-dot ${live?"":"off-dot"}"></span>${msg}`;
+}
 
-recent.forEach(x=>{
-const c=classify(x);
-shapes[c.shape]++;
-if(c.big&&c.odd) bo++;
-else if(c.big&&!c.odd) be++;
-else if(!c.big&&c.odd) so++;
-else se++;
+async function loadBackup(){
+  // 先读本机保存的数据
+  const local=loadLocal();
+  if(local.length){
+    allData=mergeData(local,allData);
+    render();
+  }
+
+  // 再读 GitHub data.json
+  try{
+    const text=await fetchText(BACKUP_URL+"?v="+Date.now());
+    const json=JSON.parse(text);
+    const backup=normalize(json.results);
+    if(backup.length){
+      const before=latestIssue;
+      allData=mergeData(backup,allData);
+      saveLocal();
+      render();
+
+      if(!before){
+        setStatus(`历史数据已加载 · ${allData.length}期，正在连接 Telegram`,false);
+      }
+    }
+  }catch(e){
+    if(!allData.length){
+      setStatus("历史备份读取失败，正在直接连接 Telegram",false);
+    }
+  }
+}
+
+async function liveCheck(manual=false){
+  if(busy)return;
+  busy=true;
+
+  try{
+    const live=await fetchText(
+      LIVE_URL+"?live="+Date.now()
+    );
+
+    const fresh=parseTelegram(live);
+
+    if(!fresh.length){
+      throw new Error("没有识别到开奖信息");
+    }
+
+    const newest=fresh[0];
+    const oldIssue=latestIssue;
+
+    allData=mergeData(fresh,allData);
+    saveLocal();
+
+    if(newest.issue!==oldIssue){
+      render();
+      setStatus(`实时连接正常 · 最新：${newest.issue}期 · 自动检查每5秒`);
+    }else{
+      setStatus(`实时连接正常 · 最新：${newest.issue}期 · 自动检查每5秒`);
+    }
+
+  }catch(e){
+    setStatus(`实时读取暂时失败 · 保留当前数据 · ${e.message||"网络错误"}`,false);
+  }finally{
+    busy=false;
+    if(document.visibilityState==="visible"){
+      clearTimeout(timer);
+      timer=setTimeout(()=>liveCheck(false),POLL_MS);
+    }
+  }
+}
+
+$("refreshBtn").addEventListener("click",()=>{
+  clearTimeout(timer);
+  liveCheck(true);
 });
 
-$("bigOdd").textContent=pct(bo,recent.length);
-$("bigEven").textContent=pct(be,recent.length);
-$("smallOdd").textContent=pct(so,recent.length);
-$("smallEven").textContent=pct(se,recent.length);
-
-const cats=[["大单",bo],["大双",be],["小单",so],["小双",se]].sort((a,b)=>b[1]-a[1]);
-$("best").textContent=cats.length?`近期统计最高：${cats[0][0]} · ${pct(cats[0][1],recent.length)}`:"统计中...";
-
-$("baozi").textContent=pct(shapes["豹子"],recent.length);
-$("duizi").textContent=pct(shapes["对子"],recent.length);
-$("zaliu").textContent=pct(shapes["杂六"],recent.length);
-
-const shapeOrder=["豹子","对子","杂六"].sort((a,b)=>shapes[b]-shapes[a]);
-$("hotShape").textContent=shapeOrder[0]||"—";
-
-const nums=Array(10).fill(0);
-recent.forEach(x=>{
-[x.a,x.b,x.c].forEach(v=>{
-const n=Number(v);
-if(Number.isInteger(n)&&n>=0&&n<=9) nums[n]++;
+const music=$("music");
+$("musicBtn").addEventListener("click",async()=>{
+  try{
+    if(music.paused){
+      await music.play();
+      $("musicBtn").textContent="⏸ 暂停音乐";
+    }else{
+      music.pause();
+      $("musicBtn").textContent="🎵 播放音乐";
+    }
+  }catch(e){}
 });
-});
-
-const order=[0,1,2,3,4,5,6,7,8,9].sort((a,b)=>nums[b]!==nums[a]?nums[b]-nums[a]:a-b);
-$("hot").innerHTML=order.map((n,i)=>{
-const icon=i<3?"🔥":(i>=7?"❄️":"");
-return `<span class="chip">${n} · ${nums[n]}次 ${icon}</span>`;
-}).join("");
-
-$("rows").innerHTML=data.slice(0,30).map(x=>{
-const c=classify(x);
-return `<tr><td>${esc(x.issue)}</td><td>${c.a}+${c.b}+${c.c}</td><td>${c.s}</td><td>${c.big?"大":"小"}</td><td>${c.odd?"单":"双"}</td><td>${c.shape}</td></tr>`;
-}).join("");
-
-$("status").className="status";
-$("status").textContent=`读取成功 · ${data.length}期 · 最新：${latest.issue}期`;
-$("syncTime").textContent=`最后检查：${formatTime()}`;
-}
-
-async function getJson(url){
-const controller=new AbortController();
-const timer=setTimeout(()=>controller.abort(),15000);
-try{
-const r=await fetch(url,{cache:"no-store",signal:controller.signal});
-if(!r.ok) throw new Error("HTTP "+r.status);
-const j=await r.json();
-if(!j||!Array.isArray(j.results)) throw new Error("数据格式不正确");
-return j;
-}finally{
-clearTimeout(timer);
-}
-}
-
-/*
-  关键修复：
-  同时读取 Raw GitHub 和 Pages 两份 data.json，
-  不再因为其中一份缓存而直接采用旧数据。
-  最后比较两份数据的最新期号，自动选择更新的一份。
-*/
-async function load(force=false){
-if(loading)return;
-loading=true;
-
-if(force||!data.length){
-$("status").className="status";
-$("status").textContent="正在读取最新数据...";
-}
-
-const cb=Date.now();
-
-const urls=[
-"https://raw.githubusercontent.com/djay84579-art/three-digit-analyzer/main/data.json?cb="+cb,
-"./data.json?cb="+cb
-];
-
-try{
-const results=await Promise.allSettled(urls.map(getJson));
-
-const valid=results
-.filter(r=>r.status==="fulfilled"&&r.value&&Array.isArray(r.value.results))
-.map(r=>r.value);
-
-if(!valid.length) throw new Error("两处数据源都读取失败");
-
-valid.sort((a,b)=>{
-const ai=a.results.length?issueNumber(a.results[0].issue):0;
-const bi=b.results.length?issueNumber(b.results[0].issue):0;
-return bi-ai;
-});
-
-const newest=valid[0];
-const incoming=newest.results;
-
-incoming.sort((a,b)=>issueNumber(b.issue)-issueNumber(a.issue));
-
-const newIssue=incoming.length?String(incoming[0].issue):"";
-const newUpdated=newest.updated_at||"";
-const changed=newIssue!==lastIssue||newUpdated!==lastUpdated||!data.length;
-
-data=incoming;
-lastIssue=newIssue;
-lastUpdated=newUpdated;
-
-if(changed) render();
-else $("syncTime").textContent=`最后检查：${formatTime()} · 数据无变化`;
-
-}catch(e){
-$("status").className="status err";
-$("status").textContent="读取失败："+(e.name==="AbortError"?"网络请求超时":e.message);
-$("syncTime").textContent=`最后检查：${formatTime()}`;
-}finally{
-loading=false;
-}
-}
-
-$("musicBtn").onclick=async()=>{
-const audio=$("music");
-try{
-if(audio.paused){
-await audio.play();
-$("musicBtn").textContent="⏸ 暂停音乐";
-}else{
-audio.pause();
-$("musicBtn").textContent="🎵 播放音乐";
-}
-}catch(e){
-$("musicBtn").textContent="🎵 点击播放音乐";
-}
-};
-
-$("refreshBtn").onclick=()=>load(true);
-
-load(true);
-
-setInterval(()=>{
-if(!document.hidden) load(false);
-},REFRESH_MS);
 
 document.addEventListener("visibilitychange",()=>{
-if(!document.hidden) load(true);
+  clearTimeout(timer);
+  if(document.visibilityState==="visible"){
+    liveCheck(true);
+  }
 });
+
+// 启动
+(async()=>{
+  await loadBackup();
+  await liveCheck(true);
+})();
 </script>
 </body>
 </html>
