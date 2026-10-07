@@ -3,475 +3,1131 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#0b0d12">
+<meta name="theme-color" content="#10131a">
 <title>PC28 · 实时开奖 + 统计</title>
+
 <style>
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;color:#fff}
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
 body{
-  background:#090b10 url("./bg.png") center/cover fixed no-repeat;
-  position:relative;
+  margin:0;
+  min-height:100vh;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "PingFang SC",
+    "Microsoft YaHei",
+    sans-serif;
+  color:#fff;
+  background:#080a0f url("./bg.png") center/cover fixed no-repeat;
+  overflow-x:hidden;
 }
-body:before{content:"";position:fixed;inset:0;background:rgba(5,7,12,.50);pointer-events:none}
-main{position:relative;z-index:1;width:min(720px,100%);margin:auto;padding:14px 10px 34px}
-header{text-align:center;padding:10px 4px 12px}
-h1{margin:0;font-size:24px}
-.sub{margin-top:6px;font-size:12px;opacity:.72}
-.card{
-  background:rgba(14,17,25,.72);
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:rgba(5,7,12,.52);
+  backdrop-filter:blur(3px);
+  -webkit-backdrop-filter:blur(3px);
+  pointer-events:none;
+  z-index:-1;
+}
+
+.container{
+  width:min(960px,94%);
+  margin:0 auto;
+  padding:18px 0 50px;
+}
+
+.header{
+  text-align:center;
+  padding:10px 0 18px;
+}
+
+.header h1{
+  margin:0;
+  font-size:28px;
+  font-weight:800;
+  letter-spacing:.5px;
+}
+
+.header p{
+  margin:8px 0 0;
+  color:rgba(255,255,255,.68);
+  font-size:13px;
+}
+
+.status{
+  margin:12px 0 16px;
+  padding:11px 14px;
+  border-radius:15px;
+  background:rgba(10,13,20,.58);
   border:1px solid rgba(255,255,255,.10);
-  border-radius:20px;
-  padding:15px;
-  margin:9px 0;
-  box-shadow:0 8px 28px rgba(0,0,0,.18);
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
+  color:rgba(255,255,255,.76);
+  font-size:13px;
+  text-align:center;
+  backdrop-filter:blur(15px);
+  -webkit-backdrop-filter:blur(15px);
 }
-.status{font-size:13px;line-height:1.5;opacity:.82;min-height:20px}
-.actions{display:flex;gap:8px;margin-top:9px}
-button{
-  flex:1;border:0;border-radius:13px;padding:10px;background:rgba(255,255,255,.10);
-  color:#fff;font-size:14px
+
+.card{
+  margin-bottom:14px;
+  padding:18px;
+  border-radius:22px;
+  background:rgba(12,14,22,.60);
+  border:1px solid rgba(255,255,255,.11);
+  box-shadow:
+    0 10px 35px rgba(0,0,0,.20),
+    inset 0 1px 0 rgba(255,255,255,.05);
+  backdrop-filter:blur(15px);
+  -webkit-backdrop-filter:blur(15px);
 }
-button:active{transform:scale(.98)}
-.row{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
-.item{background:rgba(255,255,255,.055);border-radius:14px;padding:12px;text-align:center}
-.label{font-size:12px;opacity:.62}
-.value{font-size:23px;font-weight:700;margin-top:4px}
-.big{font-size:32px;letter-spacing:7px}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
-.stat{padding:11px 5px;text-align:center;background:rgba(255,255,255,.045);border-radius:13px}
-.stat span{font-size:12px;opacity:.62}
-.stat b{display:block;font-size:18px;margin-top:3px}
-.groups{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
-.group{padding:11px;border-radius:13px;background:rgba(255,255,255,.045)}
-.group b{font-size:16px}
-.pct{float:right;font-weight:700}
-.small{font-size:11px;opacity:.58;line-height:1.45;margin-top:3px}
-.hot{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+
+.card-title{
+  font-size:16px;
+  font-weight:750;
+  margin-bottom:14px;
+}
+
+.latest{
+  text-align:center;
+}
+
+.issue{
+  color:rgba(255,255,255,.68);
+  font-size:14px;
+  margin-bottom:10px;
+}
+
+.numbers{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin:8px 0 14px;
+}
+
 .ball{
-  width:35px;height:35px;border-radius:50%;display:flex;
-  align-items:center;justify-content:center;
-  background:rgba(255,255,255,.08);font-weight:700
+  width:62px;
+  height:62px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  font-size:27px;
+  font-weight:850;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.17);
+  box-shadow:
+    inset 0 2px 8px rgba(255,255,255,.07),
+    0 7px 20px rgba(0,0,0,.18);
 }
-.hotball{outline:2px solid rgba(255,190,60,.85)}
-.coldball{outline:2px solid rgba(100,180,255,.70)}
-.tablewrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:12px;white-space:nowrap}
-th,td{padding:8px 5px;border-bottom:1px solid rgba(255,255,255,.07);text-align:center}
-th{opacity:.62}
-.note{font-size:11px;line-height:1.5;opacity:.55;margin:9px 0 0}
-footer{text-align:center;font-size:12px;opacity:.48;padding:13px}
-.live-dot{
-  display:inline-block;width:7px;height:7px;border-radius:50%;
-  background:#6cf58a;margin-right:5px;vertical-align:1px
+
+.result-line{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:9px;
 }
-.off-dot{background:#aaa}
-@media(max-width:400px){
-  main{padding-left:8px;padding-right:8px}
-  h1{font-size:22px}
-  .big{font-size:29px}
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:7px 13px;
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.09);
+  font-size:13px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+
+.stat{
+  padding:15px;
+  border-radius:17px;
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.07);
+}
+
+.stat .label{
+  font-size:12px;
+  color:rgba(255,255,255,.58);
+}
+
+.stat .value{
+  margin-top:6px;
+  font-size:23px;
+  font-weight:800;
+}
+
+.groups{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+
+.group{
+  padding:15px;
+  border-radius:17px;
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.07);
+}
+
+.group-name{
+  font-size:14px;
+  color:rgba(255,255,255,.72);
+}
+
+.group-value{
+  font-size:23px;
+  font-weight:850;
+  margin-top:5px;
+}
+
+.group small{
+  display:block;
+  margin-top:5px;
+  color:rgba(255,255,255,.45);
+  font-size:11px;
+}
+
+.hotcold{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.numtag{
+  min-width:42px;
+  padding:9px 8px;
+  text-align:center;
+  border-radius:13px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.07);
+}
+
+.numtag b{
+  display:block;
+  font-size:18px;
+}
+
+.numtag span{
+  display:block;
+  margin-top:3px;
+  font-size:10px;
+  color:rgba(255,255,255,.50);
+}
+
+.table-wrap{
+  width:100%;
+  overflow-x:auto;
+  border-radius:15px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:560px;
+  font-size:12px;
+}
+
+th,td{
+  padding:11px 8px;
+  text-align:center;
+  border-bottom:1px solid rgba(255,255,255,.07);
+  white-space:nowrap;
+}
+
+th{
+  color:rgba(255,255,255,.58);
+  font-weight:600;
+}
+
+td{
+  color:rgba(255,255,255,.82);
+}
+
+.controls{
+  display:flex;
+  justify-content:center;
+  gap:9px;
+  flex-wrap:wrap;
+}
+
+button{
+  border:0;
+  color:#fff;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.12);
+  padding:10px 16px;
+  border-radius:13px;
+  font-size:13px;
+  cursor:pointer;
+}
+
+button:active{
+  transform:scale(.97);
+}
+
+.footer{
+  text-align:center;
+  color:rgba(255,255,255,.38);
+  font-size:11px;
+  padding:15px 0 5px;
+}
+
+.note{
+  margin-top:10px;
+  color:rgba(255,255,255,.40);
+  font-size:11px;
+  line-height:1.6;
+}
+
+@media(max-width:600px){
+  .container{
+    width:94%;
+    padding-top:12px;
+  }
+
+  .header h1{
+    font-size:24px;
+  }
+
+  .ball{
+    width:56px;
+    height:56px;
+    font-size:24px;
+  }
+
+  .card{
+    padding:15px;
+    border-radius:19px;
+  }
+
+  .grid,
+  .groups{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .stat .value,
+  .group-value{
+    font-size:20px;
+  }
 }
 </style>
 </head>
+
 <body>
-<main>
-<header>
-  <h1>PC28 · 实时开奖 + 统计</h1>
-  <div class="sub">Telegram 公开频道 · 直接实时读取 · 历史数据分析</div>
-</header>
 
-<div class="card">
-  <div id="status" class="status">正在连接实时数据...</div>
-  <div class="actions">
-    <button id="refreshBtn">↻ 立即检查</button>
-    <button id="musicBtn">🎵 播放音乐</button>
+<div class="container">
+
+  <div class="header">
+    <h1>PC28 · 实时开奖 + 统计</h1>
+    <p>Telegram 公开频道 · 自动同步 · 历史数据分析</p>
   </div>
-</div>
 
-<div class="card">
-  <h3>最新开奖</h3>
-  <div class="row">
-    <div class="item"><div class="label">期号</div><div id="issue" class="value">--</div></div>
-    <div class="item"><div class="label">开奖号码</div><div id="nums" class="value big">---</div></div>
-    <div class="item"><div class="label">和值</div><div id="sum" class="value">--</div></div>
-    <div class="item"><div class="label">大小 / 单双</div><div id="shape" class="value">--</div></div>
+  <div class="status" id="status">
+    正在读取最新数据...
   </div>
-</div>
 
-<div class="card">
-  <h3>数据统计 · 最近150期</h3>
-  <div class="stats">
-    <div class="stat"><span>期数</span><b id="count">0</b></div>
-    <div class="stat"><span>平均和值</span><b id="avg">0</b></div>
-    <div class="stat"><span>最高和值</span><b id="max">0</b></div>
+  <div class="card latest">
+    <div class="card-title">最新开奖</div>
+
+    <div class="issue" id="issue">--</div>
+
+    <div class="numbers">
+      <div class="ball" id="num1">-</div>
+      <div class="ball" id="num2">-</div>
+      <div class="ball" id="num3">-</div>
+    </div>
+
+    <div class="result-line">
+      <div class="badge">
+        和值：<b id="sum">--</b>
+      </div>
+
+      <div class="badge">
+        <span id="size">--</span>
+      </div>
+
+      <div class="badge">
+        <span id="oddEven">--</span>
+      </div>
+
+      <div class="badge">
+        <span id="shape">--</span>
+      </div>
+    </div>
   </div>
-  <div class="stats" style="margin-top:7px">
-    <div class="stat"><span>最低和值</span><b id="min">0</b></div>
-    <div class="stat"><span>豹子</span><b id="bao">0</b></div>
-    <div class="stat"><span>对子</span><b id="dui">0</b></div>
+
+  <div class="card">
+    <div class="card-title">数据统计 · 最近150期</div>
+
+    <div class="grid">
+      <div class="stat">
+        <div class="label">统计期数</div>
+        <div class="value" id="count">0</div>
+      </div>
+
+      <div class="stat">
+        <div class="label">平均和值</div>
+        <div class="value" id="avg">0</div>
+      </div>
+
+      <div class="stat">
+        <div class="label">最高和值</div>
+        <div class="value" id="max">0</div>
+      </div>
+
+      <div class="stat">
+        <div class="label">最低和值</div>
+        <div class="value" id="min">0</div>
+      </div>
+    </div>
   </div>
-</div>
 
-<div class="card">
-  <h3>下一期统计参考 · 最近150期</h3>
-  <div id="groups" class="groups"></div>
-  <p class="note">仅按最近150期历史频率统计，不代表下一期必然结果。</p>
-</div>
+  <div class="card">
+    <div class="card-title">下一期统计参考 · 最近150期</div>
 
-<div class="card">
-  <h3>数字冷热</h3>
-  <div id="hot" class="hot"></div>
-</div>
+    <div class="groups">
 
-<div class="card">
-  <h3>形态统计 · 最近150期</h3>
-  <div id="forms" class="groups"></div>
-</div>
+      <div class="group">
+        <div class="group-name">大单</div>
+        <div class="group-value" id="bigOdd">0%</div>
+        <small id="bigOddCount">0期</small>
+      </div>
 
-<div class="card">
-  <h3>最近30期开奖</h3>
-  <div class="tablewrap">
-    <table>
-      <thead><tr><th>期号</th><th>号码</th><th>和值</th><th>大小</th><th>单双</th><th>形态</th></tr></thead>
-      <tbody id="history"></tbody>
-    </table>
+      <div class="group">
+        <div class="group-name">大双</div>
+        <div class="group-value" id="bigEven">0%</div>
+        <small id="bigEvenCount">0期</small>
+      </div>
+
+      <div class="group">
+        <div class="group-name">小单</div>
+        <div class="group-value" id="smallOdd">0%</div>
+        <small id="smallOddCount">0期</small>
+      </div>
+
+      <div class="group">
+        <div class="group-name">小双</div>
+        <div class="group-value" id="smallEven">0%</div>
+        <small id="smallEvenCount">0期</small>
+      </div>
+
+    </div>
+
+    <div class="note" id="best">
+      近期统计最高：--
+    </div>
+
+    <div class="note">
+      ※ 以上为最近历史数据的频率统计，仅供参考，不代表下一期必然结果。
+    </div>
   </div>
-</div>
 
-<footer>制作人：@ds200xd200xs200</footer>
-</main>
+  <div class="card">
+    <div class="card-title">形态统计</div>
+
+    <div class="grid">
+      <div class="stat">
+        <div class="label">豹子</div>
+        <div class="value" id="baozi">0</div>
+      </div>
+
+      <div class="stat">
+        <div class="label">对子</div>
+        <div class="value" id="duizi">0</div>
+      </div>
+
+      <div class="stat">
+        <div class="label">杂六</div>
+        <div class="value" id="zaliu">0</div>
+      </div>
+
+      <div class="stat">
+        <div class="label">热门形态</div>
+        <div class="value" id="hotShape">--</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">数字冷热 · 最近150期</div>
+
+    <div class="hotcold" id="hotcold"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">最近30期开奖</div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>期号</th>
+            <th>号码</th>
+            <th>和值</th>
+            <th>大小</th>
+            <th>单双</th>
+            <th>形态</th>
+          </tr>
+        </thead>
+
+        <tbody id="history">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="controls">
+      <button id="refreshBtn">🔄 立即检查</button>
+      <button id="musicBtn">🎵 播放音乐</button>
+    </div>
+  </div>
+
+  <div class="footer">
+    制作人：@ds200xd200xs200
+  </div>
+
+</div>
 
 <audio id="music" src="./music.mp3" loop preload="none"></audio>
 
 <script>
 "use strict";
 
-/*
-  新版数据链路：
-  1. 先读 GitHub 上的 data.json，作为历史/离线备份
-  2. 实时部分直接读取 Telegram @PC28 的公开网页
-  3. Telegram 通过免费的公开 GET CORS 代理转发到浏览器
-  4. 每5秒检查一次；只有发现新期号才重算页面
-  5. 新数据保存到本机 localStorage，避免每次打开都丢掉已经看到的期数
+/* =========================
+   基础设置
+========================= */
 
-  注意：
-  - 网页必须保持打开，浏览器被系统彻底挂起时任何网页都不能保证继续轮询。
-  - 这个方案不依赖 GitHub Actions 的定时触发，所以 Actions 延迟不会阻塞实时显示。
-*/
+const REFRESH_SECONDS = 5;
+const MAX_HISTORY = 150;
 
-const LIVE_URL="https://proxy.cors.dev/https://t.me/s/pc28";
-const BACKUP_URL="./data.json";
-const STORE_KEY="pc28_live_history_v1";
-const POLL_MS=5000;
-const TIMEOUT_MS=9000;
+const DATA_URL = "./data.json";
 
-let allData=[];
-let latestIssue="";
-let busy=false;
-let timer=null;
+let currentData = [];
+let refreshing = false;
 
-const $=id=>document.getElementById(id);
 
-function issueNumber(x){
-  const n=String(x??"").replace(/\D/g,"");
-  return Number(n)||0;
+/* =========================
+   DOM
+========================= */
+
+const $ = id => document.getElementById(id);
+
+
+/* =========================
+   安全数字
+========================= */
+
+function num(v){
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
 }
 
-function normalize(arr){
-  if(!Array.isArray(arr)) return [];
-  return arr.map(x=>{
-    const a=Number(x.a),b=Number(x.b),c=Number(x.c);
-    return {
-      issue:String(x.issue??""),
-      a,b,c,
-      sum:Number.isFinite(Number(x.sum))?Number(x.sum):a+b+c
-    };
-  }).filter(x=>
-    x.issue &&
-    [x.a,x.b,x.c].every(n=>Number.isInteger(n)&&n>=0&&n<=9)
+
+/* =========================
+   期号比较
+========================= */
+
+function issueNumber(issue){
+  const s = String(issue ?? "").replace(/\D/g,"");
+  return Number(s || 0);
+}
+
+
+/* =========================
+   解析数据
+========================= */
+
+function normalizeData(json){
+
+  let arr = [];
+
+  if(Array.isArray(json)){
+    arr = json;
+  }
+  else if(Array.isArray(json.results)){
+    arr = json.results;
+  }
+  else if(Array.isArray(json.data)){
+    arr = json.data;
+  }
+
+  const result = [];
+
+  for(const x of arr){
+
+    if(!x) continue;
+
+    const issue =
+      x.issue ??
+      x.period ??
+      x.qihao ??
+      x.number;
+
+    let a = x.a;
+    let b = x.b;
+    let c = x.c;
+
+    if(
+      a === undefined ||
+      b === undefined ||
+      c === undefined
+    ){
+      if(Array.isArray(x.nums)){
+        a = x.nums[0];
+        b = x.nums[1];
+        c = x.nums[2];
+      }
+    }
+
+    if(
+      a === undefined ||
+      b === undefined ||
+      c === undefined
+    ){
+      if(Array.isArray(x.numbers)){
+        a = x.numbers[0];
+        b = x.numbers[1];
+        c = x.numbers[2];
+      }
+    }
+
+    a = num(a);
+    b = num(b);
+    c = num(c);
+
+    if(
+      issue === undefined ||
+      a < 0 || a > 9 ||
+      b < 0 || b > 9 ||
+      c < 0 || c > 9
+    ){
+      continue;
+    }
+
+    const sum =
+      x.sum !== undefined
+      ? num(x.sum)
+      : a + b + c;
+
+    result.push({
+      issue:String(issue),
+      a,
+      b,
+      c,
+      sum
+    });
+  }
+
+  /* 去重 */
+  const map = new Map();
+
+  for(const item of result){
+    map.set(item.issue,item);
+  }
+
+  return Array.from(map.values())
+    .sort((a,b) =>
+      issueNumber(b.issue) -
+      issueNumber(a.issue)
+    );
+}
+
+
+/* =========================
+   读取 data.json
+========================= */
+
+async function loadData(){
+
+  if(refreshing) return;
+
+  refreshing = true;
+
+  try{
+
+    $("status").textContent =
+      "正在检查最新数据...";
+
+    /*
+      每次请求都增加时间戳，
+      防止浏览器缓存旧 data.json。
+    */
+
+    const url =
+      DATA_URL +
+      "?v=" +
+      Date.now();
+
+    const response = await fetch(url,{
+      method:"GET",
+      cache:"no-store",
+      headers:{
+        "Cache-Control":"no-cache",
+        "Pragma":"no-cache"
+      }
+    });
+
+    if(!response.ok){
+      throw new Error(
+        "HTTP " + response.status
+      );
+    }
+
+    const json = await response.json();
+
+    const data = normalizeData(json);
+
+    if(!data.length){
+      throw new Error("data.json 没有有效开奖数据");
+    }
+
+    currentData = data.slice(0,MAX_HISTORY);
+
+    render();
+
+    const latest = currentData[0];
+
+    $("status").textContent =
+      "读取成功 · " +
+      currentData.length +
+      "期 · 每" +
+      REFRESH_SECONDS +
+      "秒自动检查 · 最新：" +
+      latest.issue +
+      "期";
+
+  }catch(error){
+
+    console.error(error);
+
+    if(currentData.length){
+
+      $("status").textContent =
+        "本次检查失败 · 保留当前数据 · " +
+        error.message;
+
+    }else{
+
+      $("status").textContent =
+        "读取数据失败 · " +
+        error.message;
+    }
+
+  }finally{
+
+    refreshing = false;
+  }
+}
+
+
+/* =========================
+   大小单双
+========================= */
+
+function getSize(sum){
+  return sum >= 14 ? "大" : "小";
+}
+
+function getOddEven(sum){
+  return sum % 2 === 0 ? "双" : "单";
+}
+
+
+/* =========================
+   形态
+========================= */
+
+function getShape(a,b,c){
+
+  if(a === b && b === c){
+    return "豹子";
+  }
+
+  if(
+    a === b ||
+    a === c ||
+    b === c
+  ){
+    return "对子";
+  }
+
+  return "杂六";
+}
+
+
+/* =========================
+   最新开奖
+========================= */
+
+function renderLatest(item){
+
+  $("issue").textContent =
+    "第 " + item.issue + " 期";
+
+  $("num1").textContent = item.a;
+  $("num2").textContent = item.b;
+  $("num3").textContent = item.c;
+
+  $("sum").textContent = item.sum;
+
+  $("size").textContent =
+    getSize(item.sum);
+
+  $("oddEven").textContent =
+    getOddEven(item.sum);
+
+  $("shape").textContent =
+    getShape(item.a,item.b,item.c);
+}
+
+
+/* =========================
+   基础统计
+========================= */
+
+function renderBasicStats(data){
+
+  const sums = data.map(x => x.sum);
+
+  if(!sums.length) return;
+
+  const total =
+    sums.reduce((a,b)=>a+b,0);
+
+  const avg =
+    total / sums.length;
+
+  $("count").textContent =
+    sums.length;
+
+  $("avg").textContent =
+    avg.toFixed(2);
+
+  $("max").textContent =
+    Math.max(...sums);
+
+  $("min").textContent =
+    Math.min(...sums);
+}
+
+
+/* =========================
+   大单/大双/小单/小双
+========================= */
+
+function renderGroups(data){
+
+  const groups = {
+    bigOdd:0,
+    bigEven:0,
+    smallOdd:0,
+    smallEven:0
+  };
+
+  for(const x of data){
+
+    const big = x.sum >= 14;
+    const odd = x.sum % 2 === 1;
+
+    if(big && odd) groups.bigOdd++;
+    else if(big && !odd) groups.bigEven++;
+    else if(!big && odd) groups.smallOdd++;
+    else groups.smallEven++;
+  }
+
+  const total = data.length || 1;
+
+  const percent = n =>
+    ((n / total) * 100).toFixed(1) + "%";
+
+  $("bigOdd").textContent =
+    percent(groups.bigOdd);
+
+  $("bigEven").textContent =
+    percent(groups.bigEven);
+
+  $("smallOdd").textContent =
+    percent(groups.smallOdd);
+
+  $("smallEven").textContent =
+    percent(groups.smallEven);
+
+  $("bigOddCount").textContent =
+    groups.bigOdd + "期";
+
+  $("bigEvenCount").textContent =
+    groups.bigEven + "期";
+
+  $("smallOddCount").textContent =
+    groups.smallOdd + "期";
+
+  $("smallEvenCount").textContent =
+    groups.smallEven + "期";
+
+  const list = [
+    ["大单",groups.bigOdd],
+    ["大双",groups.bigEven],
+    ["小单",groups.smallOdd],
+    ["小双",groups.smallEven]
+  ];
+
+  list.sort((a,b)=>b[1]-a[1]);
+
+  $("best").textContent =
+    "近期统计最高：" +
+    list[0][0] +
+    " · " +
+    percent(list[0][1]);
+}
+
+
+/* =========================
+   形态统计
+========================= */
+
+function renderShapes(data){
+
+  let baozi = 0;
+  let duizi = 0;
+  let zaliu = 0;
+
+  for(const x of data){
+
+    const shape =
+      getShape(x.a,x.b,x.c);
+
+    if(shape === "豹子") baozi++;
+    else if(shape === "对子") duizi++;
+    else zaliu++;
+  }
+
+  $("baozi").textContent = baozi;
+  $("duizi").textContent = duizi;
+  $("zaliu").textContent = zaliu;
+
+  const list = [
+    ["豹子",baozi],
+    ["对子",duizi],
+    ["杂六",zaliu]
+  ];
+
+  list.sort((a,b)=>b[1]-a[1]);
+
+  $("hotShape").textContent =
+    list[0][0];
+}
+
+
+/* =========================
+   数字冷热
+========================= */
+
+function renderHotCold(data){
+
+  const count = Array(10).fill(0);
+
+  for(const x of data){
+
+    count[x.a]++;
+    count[x.b]++;
+    count[x.c]++;
+  }
+
+  const order =
+    Array.from({length:10},(_,i)=>i)
+    .sort((a,b)=>count[b]-count[a]);
+
+  const hot =
+    new Set(order.slice(0,3));
+
+  const cold =
+    new Set(order.slice(-3));
+
+  $("hotcold").innerHTML =
+    order.map(n=>{
+
+      let mark = "";
+
+      if(hot.has(n)){
+        mark = "🔥";
+      }
+      else if(cold.has(n)){
+        mark = "❄️";
+      }
+
+      return `
+        <div class="numtag">
+          <b>${n}</b>
+          <span>${mark} ${count[n]}次</span>
+        </div>
+      `;
+
+    }).join("");
+}
+
+
+/* =========================
+   最近30期
+========================= */
+
+function renderTable(data){
+
+  const rows =
+    data.slice(0,30);
+
+  $("history").innerHTML =
+    rows.map(x=>{
+
+      const shape =
+        getShape(x.a,x.b,x.c);
+
+      const size =
+        getSize(x.sum);
+
+      const oddEven =
+        getOddEven(x.sum);
+
+      return `
+        <tr>
+          <td>${x.issue}</td>
+          <td>${x.a} ${x.b} ${x.c}</td>
+          <td>${x.sum}</td>
+          <td>${size}</td>
+          <td>${oddEven}</td>
+          <td>${shape}</td>
+        </tr>
+      `;
+
+    }).join("");
+}
+
+
+/* =========================
+   总渲染
+========================= */
+
+function render(){
+
+  if(!currentData.length) return;
+
+  renderLatest(currentData[0]);
+
+  renderBasicStats(currentData);
+
+  renderGroups(currentData);
+
+  renderShapes(currentData);
+
+  renderHotCold(currentData);
+
+  renderTable(currentData);
+}
+
+
+/* =========================
+   手动刷新
+========================= */
+
+$("refreshBtn").addEventListener(
+  "click",
+  loadData
+);
+
+
+/* =========================
+   音乐
+========================= */
+
+const music =
+  $("music");
+
+const musicBtn =
+  $("musicBtn");
+
+let playing = false;
+
+musicBtn.addEventListener(
+  "click",
+  async ()=>{
+
+    try{
+
+      if(!playing){
+
+        await music.play();
+
+        playing = true;
+
+        musicBtn.textContent =
+          "⏸️ 暂停音乐";
+
+      }else{
+
+        music.pause();
+
+        playing = false;
+
+        musicBtn.textContent =
+          "🎵 播放音乐";
+      }
+
+    }catch(e){
+
+      musicBtn.textContent =
+        "🎵 点击播放音乐";
+    }
+  }
+);
+
+
+/* =========================
+   自动检查
+========================= */
+
+/*
+  不使用 setInterval，
+  避免网络慢时多个请求同时堆积。
+
+  一次检查完成后，
+  再等待5秒进行下一次。
+*/
+
+async function autoRefresh(){
+
+  await loadData();
+
+  setTimeout(
+    autoRefresh,
+    REFRESH_SECONDS * 1000
   );
 }
 
-function mergeData(...lists){
-  const map=new Map();
 
-  for(const list of lists){
-    for(const x of normalize(list)){
-      if(!map.has(x.issue)) map.set(x.issue,x);
-    }
-  }
+/* =========================
+   启动
+========================= */
 
-  return [...map.values()]
-    .sort((a,b)=>issueNumber(b.issue)-issueNumber(a.issue))
-    .slice(0,300);
-}
+autoRefresh();
 
-function kind(x){
-  if(x.a===x.b&&x.b===x.c)return "豹子";
-  if(x.a===x.b||x.a===x.c||x.b===x.c)return "对子";
-  return "杂六";
-}
-function size(x){return x.sum>=14?"大":"小"}
-function parity(x){return x.sum%2===0?"双":"单"}
-function group(x){return size(x)+parity(x)}
-
-function saveLocal(){
-  try{
-    localStorage.setItem(STORE_KEY,JSON.stringify(allData));
-  }catch(e){}
-}
-
-function loadLocal(){
-  try{
-    const raw=localStorage.getItem(STORE_KEY);
-    return raw?normalize(JSON.parse(raw)):[];
-  }catch(e){
-    return [];
-  }
-}
-
-async function fetchText(url){
-  const controller=new AbortController();
-  const t=setTimeout(()=>controller.abort(),TIMEOUT_MS);
-
-  try{
-    const r=await fetch(url,{
-      method:"GET",
-      mode:"cors",
-      credentials:"omit",
-      cache:"no-store"
-    });
-    if(!r.ok) throw new Error("HTTP "+r.status);
-    return await r.text();
-  }finally{
-    clearTimeout(t);
-  }
-}
-
-function parseTelegram(text){
-  // 解码常见 HTML 实体，兼容代理返回 HTML/Markdown 两种情况
-  const box=document.createElement("div");
-  box.innerHTML=text;
-  const clean=box.textContent||text;
-
-  const source=(text.includes("tgme_widget_message_text")?
-    box.innerText:clean);
-
-  const re=/(\d{6,})\s*期?\s*([0-9])\s*[+＋]\s*([0-9])\s*[+＋]\s*([0-9])\s*=\s*([0-9]{1,2})/g;
-
-  const map=new Map();
-  let m;
-
-  while((m=re.exec(source))!==null){
-    const issue=m[1];
-    const a=Number(m[2]),b=Number(m[3]),c=Number(m[4]);
-    const sum=a+b+c;
-    const shownSum=Number(m[5]);
-
-    // 和值必须与三个数字相符，防止把别的数字文本误判
-    if(sum!==shownSum) continue;
-
-    map.set(issue,{issue,a,b,c,sum});
-  }
-
-  // 如果上面的文本节点方式没有命中，再从原始文本补一次
-  if(!map.size){
-    const alt=text
-      .replace(/<br\s*\/?>/gi,"\n")
-      .replace(/<\/div>/gi,"\n")
-      .replace(/<\/p>/gi,"\n")
-      .replace(/<[^>]+>/g," ")
-      .replace(/&nbsp;/gi," ");
-
-    while((m=re.exec(alt))!==null){
-      const issue=m[1];
-      const a=Number(m[2]),b=Number(m[3]),c=Number(m[4]);
-      const sum=a+b+c;
-      const shownSum=Number(m[5]);
-      if(sum!==shownSum) continue;
-      map.set(issue,{issue,a,b,c,sum});
-    }
-  }
-
-  return [...map.values()].sort((a,b)=>issueNumber(b.issue)-issueNumber(a.issue));
-}
-
-function render(){
-  if(!allData.length)return;
-
-  const recent=allData.slice(0,150);
-  const latest=recent[0];
-
-  $("issue").textContent=latest.issue;
-  $("nums").textContent=`${latest.a}${latest.b}${latest.c}`;
-  $("sum").textContent=latest.sum;
-  $("shape").textContent=`${size(latest)}${parity(latest)}`;
-
-  const sums=recent.map(x=>x.sum);
-  const avg=sums.reduce((a,b)=>a+b,0)/sums.length;
-
-  $("count").textContent=recent.length;
-  $("avg").textContent=avg.toFixed(2);
-  $("max").textContent=Math.max(...sums);
-  $("min").textContent=Math.min(...sums);
-
-  const formCount={"豹子":0,"对子":0,"杂六":0};
-  const groupCount={"大单":0,"大双":0,"小单":0,"小双":0};
-  const digitCount=Array(10).fill(0);
-
-  recent.forEach(x=>{
-    formCount[kind(x)]++;
-    groupCount[group(x)]++;
-    digitCount[x.a]++;
-    digitCount[x.b]++;
-    digitCount[x.c]++;
-  });
-
-  $("bao").textContent=formCount["豹子"];
-  $("dui").textContent=formCount["对子"];
-
-  const total=recent.length||1;
-
-  $("groups").innerHTML=["大单","大双","小单","小双"].map(g=>{
-    const n=groupCount[g];
-    return `<div class="group"><b>${g}</b><span class="pct">${(n/total*100).toFixed(1)}%</span><div class="small">${n}期</div></div>`;
-  }).join("");
-
-  const order=[...Array(10).keys()].sort((a,b)=>{
-    if(digitCount[b]!==digitCount[a]) return digitCount[b]-digitCount[a];
-    return a-b;
-  });
-  const hotSet=new Set(order.slice(0,3));
-  const coldSet=new Set(order.slice(-3));
-
-  $("hot").innerHTML=[...Array(10).keys()].map(d=>{
-    const cls=hotSet.has(d)?"hotball":coldSet.has(d)?"coldball":"";
-    return `<div class="ball ${cls}">${d}</div>`;
-  }).join("");
-
-  $("forms").innerHTML=Object.entries(formCount).map(([k,v])=>
-    `<div class="group"><b>${k}</b><span class="pct">${v}期</span><div class="small">${(v/total*100).toFixed(1)}%</div></div>`
-  ).join("");
-
-  $("history").innerHTML=allData.slice(0,30).map(x=>
-    `<tr>
-      <td>${x.issue}</td>
-      <td>${x.a}${x.b}${x.c}</td>
-      <td>${x.sum}</td>
-      <td>${size(x)}</td>
-      <td>${parity(x)}</td>
-      <td>${kind(x)}</td>
-    </tr>`
-  ).join("");
-
-  latestIssue=latest.issue;
-}
-
-function setStatus(msg,live=true){
-  $("status").innerHTML=
-    `<span class="live-dot ${live?"":"off-dot"}"></span>${msg}`;
-}
-
-async function loadBackup(){
-  // 先读本机保存的数据
-  const local=loadLocal();
-  if(local.length){
-    allData=mergeData(local,allData);
-    render();
-  }
-
-  // 再读 GitHub data.json
-  try{
-    const text=await fetchText(BACKUP_URL+"?v="+Date.now());
-    const json=JSON.parse(text);
-    const backup=normalize(json.results);
-    if(backup.length){
-      const before=latestIssue;
-      allData=mergeData(backup,allData);
-      saveLocal();
-      render();
-
-      if(!before){
-        setStatus(`历史数据已加载 · ${allData.length}期，正在连接 Telegram`,false);
-      }
-    }
-  }catch(e){
-    if(!allData.length){
-      setStatus("历史备份读取失败，正在直接连接 Telegram",false);
-    }
-  }
-}
-
-async function liveCheck(manual=false){
-  if(busy)return;
-  busy=true;
-
-  try{
-    const live=await fetchText(
-      LIVE_URL+"?live="+Date.now()
-    );
-
-    const fresh=parseTelegram(live);
-
-    if(!fresh.length){
-      throw new Error("没有识别到开奖信息");
-    }
-
-    const newest=fresh[0];
-    const oldIssue=latestIssue;
-
-    allData=mergeData(fresh,allData);
-    saveLocal();
-
-    if(newest.issue!==oldIssue){
-      render();
-      setStatus(`实时连接正常 · 最新：${newest.issue}期 · 自动检查每5秒`);
-    }else{
-      setStatus(`实时连接正常 · 最新：${newest.issue}期 · 自动检查每5秒`);
-    }
-
-  }catch(e){
-    setStatus(`实时读取暂时失败 · 保留当前数据 · ${e.message||"网络错误"}`,false);
-  }finally{
-    busy=false;
-    if(document.visibilityState==="visible"){
-      clearTimeout(timer);
-      timer=setTimeout(()=>liveCheck(false),POLL_MS);
-    }
-  }
-}
-
-$("refreshBtn").addEventListener("click",()=>{
-  clearTimeout(timer);
-  liveCheck(true);
-});
-
-const music=$("music");
-$("musicBtn").addEventListener("click",async()=>{
-  try{
-    if(music.paused){
-      await music.play();
-      $("musicBtn").textContent="⏸ 暂停音乐";
-    }else{
-      music.pause();
-      $("musicBtn").textContent="🎵 播放音乐";
-    }
-  }catch(e){}
-});
-
-document.addEventListener("visibilitychange",()=>{
-  clearTimeout(timer);
-  if(document.visibilityState==="visible"){
-    liveCheck(true);
-  }
-});
-
-// 启动
-(async()=>{
-  await loadBackup();
-  await liveCheck(true);
-})();
 </script>
+
 </body>
 </html>
