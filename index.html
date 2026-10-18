@@ -2,1132 +2,597 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#10131a">
-<title>PC28 · 实时开奖 + 统计</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Quantum 4-Chaos Code Engine</title>
 <style>
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+        --text: #f8fafc; --text-muted: #94a3b8;
+        --accent-1: #00f0ff; --accent-2: #ff00ea;
+        --accent-3: #ffd700; --accent-4: #00ff88;
+        --success: #00ff88; --danger: #ff3366;
+        --glass-bg: rgba(15, 23, 42, 0.65); --glass-border: rgba(255, 255, 255, 0.12);
+    }
+    body {
+        font-family: 'Segoe UI', -apple-system, sans-serif; background-color: #030712; color: var(--text);
+        padding: 15px; padding-bottom: 60px; min-height: 100vh;
+        background-image: 
+            radial-gradient(circle at 15% 50%, rgba(0, 240, 255, 0.12), transparent 40%),
+            radial-gradient(circle at 85% 30%, rgba(255, 0, 234, 0.12), transparent 40%),
+            linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+        background-size: 100% 100%, 100% 100%, 30px 30px, 30px 30px;
+        background-attachment: fixed;
+    }
+    .container { max-width: 500px; margin: 0 auto; position: relative; z-index: 1;}
 
-html{
-  scroll-behavior:smooth;
-}
+    .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; }
+    .header-left h1 { font-size: 24px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; background: linear-gradient(90deg, var(--accent-1), var(--accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .header-left p { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+    .time-box { text-align: right; }
+    .time-box .time { font-size: 18px; font-weight: 700; color: var(--accent-1); font-family: monospace; }
+    .time-box .date { font-size: 11px; color: var(--text-muted); }
 
-body{
-  margin:0;
-  min-height:100vh;
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    "PingFang SC",
-    "Microsoft YaHei",
-    sans-serif;
-  color:#fff;
-  background:#080a0f url("./bg.png") center/cover fixed no-repeat;
-  overflow-x:hidden;
-}
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+    .stat-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 12px; backdrop-filter: blur(12px); position: relative; }
+    .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; }
+    .stat-card.a1::before { background: linear-gradient(90deg, transparent, var(--accent-1), transparent); }
+    .stat-card.a2::before { background: linear-gradient(90deg, transparent, var(--accent-2), transparent); }
+    .stat-card.a3::before { background: linear-gradient(90deg, transparent, var(--accent-3), transparent); }
+    .stat-card.a4::before { background: linear-gradient(90deg, transparent, var(--accent-4), transparent); }
+    
+    .stat-label { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; }
+    .stat-value { font-size: 24px; font-weight: 800; line-height: 1; }
+    .stat-card.a1 .stat-value { color: var(--accent-1); }
+    .stat-card.a2 .stat-value { color: var(--accent-2); }
+    .stat-card.a3 .stat-value { color: var(--accent-3); }
+    .stat-card.a4 .stat-value { color: var(--accent-4); }
+    .stat-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
 
-body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  background:rgba(5,7,12,.52);
-  backdrop-filter:blur(3px);
-  -webkit-backdrop-filter:blur(3px);
-  pointer-events:none;
-  z-index:-1;
-}
+    .panel { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 15px; margin-bottom: 15px; backdrop-filter: blur(12px); }
+    .panel-title { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 12px; display: flex; justify-content: space-between;}
+    
+    .latest-row { display: flex; justify-content: space-between; align-items: center; }
+    .latest-period { font-size: 18px; font-weight: 800; color: var(--accent-1); }
+    .latest-type { font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 6px; background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.3); color: var(--accent-1); }
+    .latest-nums { font-size: 28px; font-weight: 800; font-family: monospace; letter-spacing: 4px; text-align: center; padding: 10px 0; }
+    #countdown { text-align: center; margin-top: 5px; font-size: 14px; color: var(--text-muted); font-family: monospace; }
+    #srcTag { font-size: 10px; color: #64748b; cursor: pointer; }
 
-.container{
-  width:min(960px,94%);
-  margin:0 auto;
-  padding:18px 0 50px;
-}
+    .pred-area { display: none; margin-bottom: 15px; }
+    .pred-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 12px; margin-bottom: 8px; }
+    .pred-card-header { display: flex; justify-content: space-between; margin-bottom: 6px;}
+    .pred-value { font-size: 20px; font-weight: 800; }
+    .pred-card.a1 .pred-value { color: var(--accent-1); }
+    .pred-card.a2 .pred-value { color: var(--accent-2); }
+    .pred-card.a3 .pred-value { color: var(--accent-3); }
+    .pred-card.a4 .pred-value { color: var(--accent-4); }
+    .special-codes { margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.1); display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); }
+    .code-badge { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; color: #fff; font-weight: bold; font-family: monospace; }
+    .detail-toggle { font-size: 12px; color: #64748b; cursor: pointer; text-decoration: underline; }
+    .detail-content { display: none; font-size: 11px; color: #94a3b8; font-family: monospace; background: rgba(0,0,0,0.6); padding: 12px; border-radius: 6px; margin-top: 8px; line-height: 1.6; word-break: break-all; border: 1px solid rgba(255,255,255,0.05); }
+    .detail-content.show { display: block; }
 
-.header{
-  text-align:center;
-  padding:10px 0 18px;
-}
-
-.header h1{
-  margin:0;
-  font-size:28px;
-  font-weight:800;
-  letter-spacing:.5px;
-}
-
-.header p{
-  margin:8px 0 0;
-  color:rgba(255,255,255,.68);
-  font-size:13px;
-}
-
-.status{
-  margin:12px 0 16px;
-  padding:11px 14px;
-  border-radius:15px;
-  background:rgba(10,13,20,.58);
-  border:1px solid rgba(255,255,255,.10);
-  color:rgba(255,255,255,.76);
-  font-size:13px;
-  text-align:center;
-  backdrop-filter:blur(15px);
-  -webkit-backdrop-filter:blur(15px);
-}
-
-.card{
-  margin-bottom:14px;
-  padding:18px;
-  border-radius:22px;
-  background:rgba(12,14,22,.60);
-  border:1px solid rgba(255,255,255,.11);
-  box-shadow:
-    0 10px 35px rgba(0,0,0,.20),
-    inset 0 1px 0 rgba(255,255,255,.05);
-  backdrop-filter:blur(15px);
-  -webkit-backdrop-filter:blur(15px);
-}
-
-.card-title{
-  font-size:16px;
-  font-weight:750;
-  margin-bottom:14px;
-}
-
-.latest{
-  text-align:center;
-}
-
-.issue{
-  color:rgba(255,255,255,.68);
-  font-size:14px;
-  margin-bottom:10px;
-}
-
-.numbers{
-  display:flex;
-  justify-content:center;
-  gap:10px;
-  margin:8px 0 14px;
-}
-
-.ball{
-  width:62px;
-  height:62px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:50%;
-  font-size:27px;
-  font-weight:850;
-  background:rgba(255,255,255,.10);
-  border:1px solid rgba(255,255,255,.17);
-  box-shadow:
-    inset 0 2px 8px rgba(255,255,255,.07),
-    0 7px 20px rgba(0,0,0,.18);
-}
-
-.result-line{
-  display:flex;
-  justify-content:center;
-  flex-wrap:wrap;
-  gap:9px;
-}
-
-.badge{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:7px 13px;
-  border-radius:999px;
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.09);
-  font-size:13px;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:12px;
-}
-
-.stat{
-  padding:15px;
-  border-radius:17px;
-  background:rgba(255,255,255,.055);
-  border:1px solid rgba(255,255,255,.07);
-}
-
-.stat .label{
-  font-size:12px;
-  color:rgba(255,255,255,.58);
-}
-
-.stat .value{
-  margin-top:6px;
-  font-size:23px;
-  font-weight:800;
-}
-
-.groups{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:10px;
-}
-
-.group{
-  padding:15px;
-  border-radius:17px;
-  background:rgba(255,255,255,.055);
-  border:1px solid rgba(255,255,255,.07);
-}
-
-.group-name{
-  font-size:14px;
-  color:rgba(255,255,255,.72);
-}
-
-.group-value{
-  font-size:23px;
-  font-weight:850;
-  margin-top:5px;
-}
-
-.group small{
-  display:block;
-  margin-top:5px;
-  color:rgba(255,255,255,.45);
-  font-size:11px;
-}
-
-.hotcold{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-}
-
-.numtag{
-  min-width:42px;
-  padding:9px 8px;
-  text-align:center;
-  border-radius:13px;
-  background:rgba(255,255,255,.07);
-  border:1px solid rgba(255,255,255,.07);
-}
-
-.numtag b{
-  display:block;
-  font-size:18px;
-}
-
-.numtag span{
-  display:block;
-  margin-top:3px;
-  font-size:10px;
-  color:rgba(255,255,255,.50);
-}
-
-.table-wrap{
-  width:100%;
-  overflow-x:auto;
-  border-radius:15px;
-}
-
-table{
-  width:100%;
-  border-collapse:collapse;
-  min-width:560px;
-  font-size:12px;
-}
-
-th,td{
-  padding:11px 8px;
-  text-align:center;
-  border-bottom:1px solid rgba(255,255,255,.07);
-  white-space:nowrap;
-}
-
-th{
-  color:rgba(255,255,255,.58);
-  font-weight:600;
-}
-
-td{
-  color:rgba(255,255,255,.82);
-}
-
-.controls{
-  display:flex;
-  justify-content:center;
-  gap:9px;
-  flex-wrap:wrap;
-}
-
-button{
-  border:0;
-  color:#fff;
-  background:rgba(255,255,255,.10);
-  border:1px solid rgba(255,255,255,.12);
-  padding:10px 16px;
-  border-radius:13px;
-  font-size:13px;
-  cursor:pointer;
-}
-
-button:active{
-  transform:scale(.97);
-}
-
-.footer{
-  text-align:center;
-  color:rgba(255,255,255,.38);
-  font-size:11px;
-  padding:15px 0 5px;
-}
-
-.note{
-  margin-top:10px;
-  color:rgba(255,255,255,.40);
-  font-size:11px;
-  line-height:1.6;
-}
-
-@media(max-width:600px){
-  .container{
-    width:94%;
-    padding-top:12px;
-  }
-
-  .header h1{
-    font-size:24px;
-  }
-
-  .ball{
-    width:56px;
-    height:56px;
-    font-size:24px;
-  }
-
-  .card{
-    padding:15px;
-    border-radius:19px;
-  }
-
-  .grid,
-  .groups{
-    grid-template-columns:repeat(2,minmax(0,1fr));
-  }
-
-  .stat .value,
-  .group-value{
-    font-size:20px;
-  }
-}
+    .history-item { padding: 12px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; font-size: 13px; background: var(--glass-bg); }
+    .history-item:first-child { border-radius: 12px 12px 0 0; }
+    .history-item:last-child { border-bottom: none; border-radius: 0 0 12px 12px; }
+    .badge { font-size: 10px; font-weight: 800; padding: 2px 5px; border-radius: 4px; margin-left: 2px; }
+    .badge.hit { background: rgba(0, 255, 136, 0.15); color: var(--success); border: 1px solid rgba(0, 255, 136, 0.3); }
+    .badge.miss { background: rgba(255, 51, 102, 0.15); color: var(--danger); border: 1px solid rgba(255, 51, 102, 0.3); }
 </style>
 </head>
-
 <body>
-
-<div class="container">
-
-  <div class="header">
-    <h1>PC28 · 实时开奖 + 统计</h1>
-    <p>Telegram 公开频道 · 自动同步 · 历史数据分析</p>
-  </div>
-
-  <div class="status" id="status">
-    正在读取最新数据...
-  </div>
-
-  <div class="card latest">
-    <div class="card-title">最新开奖</div>
-
-    <div class="issue" id="issue">--</div>
-
-    <div class="numbers">
-      <div class="ball" id="num1">-</div>
-      <div class="ball" id="num2">-</div>
-      <div class="ball" id="num3">-</div>
-    </div>
-
-    <div class="result-line">
-      <div class="badge">
-        和值：<b id="sum">--</b>
-      </div>
-
-      <div class="badge">
-        <span id="size">--</span>
-      </div>
-
-      <div class="badge">
-        <span id="oddEven">--</span>
-      </div>
-
-      <div class="badge">
-        <span id="shape">--</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">数据统计 · 最近150期</div>
-
-    <div class="grid">
-      <div class="stat">
-        <div class="label">统计期数</div>
-        <div class="value" id="count">0</div>
-      </div>
-
-      <div class="stat">
-        <div class="label">平均和值</div>
-        <div class="value" id="avg">0</div>
-      </div>
-
-      <div class="stat">
-        <div class="label">最高和值</div>
-        <div class="value" id="max">0</div>
-      </div>
-
-      <div class="stat">
-        <div class="label">最低和值</div>
-        <div class="value" id="min">0</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">下一期统计参考 · 最近150期</div>
-
-    <div class="groups">
-
-      <div class="group">
-        <div class="group-name">大单</div>
-        <div class="group-value" id="bigOdd">0%</div>
-        <small id="bigOddCount">0期</small>
-      </div>
-
-      <div class="group">
-        <div class="group-name">大双</div>
-        <div class="group-value" id="bigEven">0%</div>
-        <small id="bigEvenCount">0期</small>
-      </div>
-
-      <div class="group">
-        <div class="group-name">小单</div>
-        <div class="group-value" id="smallOdd">0%</div>
-        <small id="smallOddCount">0期</small>
-      </div>
-
-      <div class="group">
-        <div class="group-name">小双</div>
-        <div class="group-value" id="smallEven">0%</div>
-        <small id="smallEvenCount">0期</small>
-      </div>
-
-    </div>
-
-    <div class="note" id="best">
-      近期统计最高：--
-    </div>
-
-    <div class="note">
-      ※ 以上为最近历史数据的频率统计，仅供参考，不代表下一期必然结果。
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">形态统计</div>
-
-    <div class="grid">
-      <div class="stat">
-        <div class="label">豹子</div>
-        <div class="value" id="baozi">0</div>
-      </div>
-
-      <div class="stat">
-        <div class="label">对子</div>
-        <div class="value" id="duizi">0</div>
-      </div>
-
-      <div class="stat">
-        <div class="label">杂六</div>
-        <div class="value" id="zaliu">0</div>
-      </div>
-
-      <div class="stat">
-        <div class="label">热门形态</div>
-        <div class="value" id="hotShape">--</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">数字冷热 · 最近150期</div>
-
-    <div class="hotcold" id="hotcold"></div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">最近30期开奖</div>
-
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>期号</th>
-            <th>号码</th>
-            <th>和值</th>
-            <th>大小</th>
-            <th>单双</th>
-            <th>形态</th>
-          </tr>
-        </thead>
-
-        <tbody id="history">
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="controls">
-      <button id="refreshBtn">🔄 立即检查</button>
-      <button id="musicBtn">🎵 播放音乐</button>
-    </div>
-  </div>
-
-  <div class="footer">
-    制作人：@ds200xd200xs200
-  </div>
-
-</div>
-
-<audio id="music" src="./music.mp3" loop preload="none"></audio>
-
-<script>
-"use strict";
-
-/* =========================
-   基础设置
-========================= */
-
-const REFRESH_SECONDS = 5;
-const MAX_HISTORY = 150;
-
-const DATA_URL = "./data.json";
-
-let currentData = [];
-let refreshing = false;
-
-
-/* =========================
-   DOM
-========================= */
-
-const $ = id => document.getElementById(id);
-
-
-/* =========================
-   安全数字
-========================= */
-
-function num(v){
-  const n = Number(v);
-  return Number.isFinite(n) ? n : 0;
-}
-
-
-/* =========================
-   期号比较
-========================= */
-
-function issueNumber(issue){
-  const s = String(issue ?? "").replace(/\D/g,"");
-  return Number(s || 0);
-}
-
-
-/* =========================
-   解析数据
-========================= */
-
-function normalizeData(json){
-
-  let arr = [];
-
-  if(Array.isArray(json)){
-    arr = json;
-  }
-  else if(Array.isArray(json.results)){
-    arr = json.results;
-  }
-  else if(Array.isArray(json.data)){
-    arr = json.data;
-  }
-
-  const result = [];
-
-  for(const x of arr){
-
-    if(!x) continue;
-
-    const issue =
-      x.issue ??
-      x.period ??
-      x.qihao ??
-      x.number;
-
-    let a = x.a;
-    let b = x.b;
-    let c = x.c;
-
-    if(
-      a === undefined ||
-      b === undefined ||
-      c === undefined
-    ){
-      if(Array.isArray(x.nums)){
-        a = x.nums[0];
-        b = x.nums[1];
-        c = x.nums[2];
-      }
-    }
-
-    if(
-      a === undefined ||
-      b === undefined ||
-      c === undefined
-    ){
-      if(Array.isArray(x.numbers)){
-        a = x.numbers[0];
-        b = x.numbers[1];
-        c = x.numbers[2];
-      }
-    }
-
-    a = num(a);
-    b = num(b);
-    c = num(c);
-
-    if(
-      issue === undefined ||
-      a < 0 || a > 9 ||
-      b < 0 || b > 9 ||
-      c < 0 || c > 9
-    ){
-      continue;
-    }
-
-    const sum =
-      x.sum !== undefined
-      ? num(x.sum)
-      : a + b + c;
-
-    result.push({
-      issue:String(issue),
-      a,
-      b,
-      c,
-      sum
-    });
-  }
-
-  /* 去重 */
-  const map = new Map();
-
-  for(const item of result){
-    map.set(item.issue,item);
-  }
-
-  return Array.from(map.values())
-    .sort((a,b) =>
-      issueNumber(b.issue) -
-      issueNumber(a.issue)
-    );
-}
-
-
-/* =========================
-   读取 data.json
-========================= */
-
-async function loadData(){
-
-  if(refreshing) return;
-
-  refreshing = true;
-
-  try{
-
-    $("status").textContent =
-      "正在检查最新数据...";
-
-    /*
-      每次请求都增加时间戳，
-      防止浏览器缓存旧 data.json。
-    */
-
-    const url =
-      DATA_URL +
-      "?v=" +
-      Date.now();
-
-    const response = await fetch(url,{
-      method:"GET",
-      cache:"no-store",
-      headers:{
-        "Cache-Control":"no-cache",
-        "Pragma":"no-cache"
-      }
-    });
-
-    if(!response.ok){
-      throw new Error(
-        "HTTP " + response.status
-      );
-    }
-
-    const json = await response.json();
-
-    const data = normalizeData(json);
-
-    if(!data.length){
-      throw new Error("data.json 没有有效开奖数据");
-    }
-
-    currentData = data.slice(0,MAX_HISTORY);
-
-    render();
-
-    const latest = currentData[0];
-
-    $("status").textContent =
-      "读取成功 · " +
-      currentData.length +
-      "期 · 每" +
-      REFRESH_SECONDS +
-      "秒自动检查 · 最新：" +
-      latest.issue +
-      "期";
-
-  }catch(error){
-
-    console.error(error);
-
-    if(currentData.length){
-
-      $("status").textContent =
-        "本次检查失败 · 保留当前数据 · " +
-        error.message;
-
-    }else{
-
-      $("status").textContent =
-        "读取数据失败 · " +
-        error.message;
-    }
-
-  }finally{
-
-    refreshing = false;
-  }
-}
-
-
-/* =========================
-   大小单双
-========================= */
-
-function getSize(sum){
-  return sum >= 14 ? "大" : "小";
-}
-
-function getOddEven(sum){
-  return sum % 2 === 0 ? "双" : "单";
-}
-
-
-/* =========================
-   形态
-========================= */
-
-function getShape(a,b,c){
-
-  if(a === b && b === c){
-    return "豹子";
-  }
-
-  if(
-    a === b ||
-    a === c ||
-    b === c
-  ){
-    return "对子";
-  }
-
-  return "杂六";
-}
-
-
-/* =========================
-   最新开奖
-========================= */
-
-function renderLatest(item){
-
-  $("issue").textContent =
-    "第 " + item.issue + " 期";
-
-  $("num1").textContent = item.a;
-  $("num2").textContent = item.b;
-  $("num3").textContent = item.c;
-
-  $("sum").textContent = item.sum;
-
-  $("size").textContent =
-    getSize(item.sum);
-
-  $("oddEven").textContent =
-    getOddEven(item.sum);
-
-  $("shape").textContent =
-    getShape(item.a,item.b,item.c);
-}
-
-
-/* =========================
-   基础统计
-========================= */
-
-function renderBasicStats(data){
-
-  const sums = data.map(x => x.sum);
-
-  if(!sums.length) return;
-
-  const total =
-    sums.reduce((a,b)=>a+b,0);
-
-  const avg =
-    total / sums.length;
-
-  $("count").textContent =
-    sums.length;
-
-  $("avg").textContent =
-    avg.toFixed(2);
-
-  $("max").textContent =
-    Math.max(...sums);
-
-  $("min").textContent =
-    Math.min(...sums);
-}
-
-
-/* =========================
-   大单/大双/小单/小双
-========================= */
-
-function renderGroups(data){
-
-  const groups = {
-    bigOdd:0,
-    bigEven:0,
-    smallOdd:0,
-    smallEven:0
-  };
-
-  for(const x of data){
-
-    const big = x.sum >= 14;
-    const odd = x.sum % 2 === 1;
-
-    if(big && odd) groups.bigOdd++;
-    else if(big && !odd) groups.bigEven++;
-    else if(!big && odd) groups.smallOdd++;
-    else groups.smallEven++;
-  }
-
-  const total = data.length || 1;
-
-  const percent = n =>
-    ((n / total) * 100).toFixed(1) + "%";
-
-  $("bigOdd").textContent =
-    percent(groups.bigOdd);
-
-  $("bigEven").textContent =
-    percent(groups.bigEven);
-
-  $("smallOdd").textContent =
-    percent(groups.smallOdd);
-
-  $("smallEven").textContent =
-    percent(groups.smallEven);
-
-  $("bigOddCount").textContent =
-    groups.bigOdd + "期";
-
-  $("bigEvenCount").textContent =
-    groups.bigEven + "期";
-
-  $("smallOddCount").textContent =
-    groups.smallOdd + "期";
-
-  $("smallEvenCount").textContent =
-    groups.smallEven + "期";
-
-  const list = [
-    ["大单",groups.bigOdd],
-    ["大双",groups.bigEven],
-    ["小单",groups.smallOdd],
-    ["小双",groups.smallEven]
-  ];
-
-  list.sort((a,b)=>b[1]-a[1]);
-
-  $("best").textContent =
-    "近期统计最高：" +
-    list[0][0] +
-    " · " +
-    percent(list[0][1]);
-}
-
-
-/* =========================
-   形态统计
-========================= */
-
-function renderShapes(data){
-
-  let baozi = 0;
-  let duizi = 0;
-  let zaliu = 0;
-
-  for(const x of data){
-
-    const shape =
-      getShape(x.a,x.b,x.c);
-
-    if(shape === "豹子") baozi++;
-    else if(shape === "对子") duizi++;
-    else zaliu++;
-  }
-
-  $("baozi").textContent = baozi;
-  $("duizi").textContent = duizi;
-  $("zaliu").textContent = zaliu;
-
-  const list = [
-    ["豹子",baozi],
-    ["对子",duizi],
-    ["杂六",zaliu]
-  ];
-
-  list.sort((a,b)=>b[1]-a[1]);
-
-  $("hotShape").textContent =
-    list[0][0];
-}
-
-
-/* =========================
-   数字冷热
-========================= */
-
-function renderHotCold(data){
-
-  const count = Array(10).fill(0);
-
-  for(const x of data){
-
-    count[x.a]++;
-    count[x.b]++;
-    count[x.c]++;
-  }
-
-  const order =
-    Array.from({length:10},(_,i)=>i)
-    .sort((a,b)=>count[b]-count[a]);
-
-  const hot =
-    new Set(order.slice(0,3));
-
-  const cold =
-    new Set(order.slice(-3));
-
-  $("hotcold").innerHTML =
-    order.map(n=>{
-
-      let mark = "";
-
-      if(hot.has(n)){
-        mark = "🔥";
-      }
-      else if(cold.has(n)){
-        mark = "❄️";
-      }
-
-      return `
-        <div class="numtag">
-          <b>${n}</b>
-          <span>${mark} ${count[n]}次</span>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <h1>Quantum 4</h1>
+                <p>CHAOS CODE ENGINE</p>
+            </div>
+            <div class="time-box">
+                <div class="time" id="clock">00:00:00</div>
+                <div class="date" id="date">----</div>
+            </div>
         </div>
-      `;
 
-    }).join("");
-}
+        <div class="stats-grid">
+            <div class="stat-card a1">
+                <div class="stat-label">深渊一 · 整数截断</div>
+                <div class="stat-value" id="stat1">0</div>
+                <div class="stat-sub">连中 | 累计 <span id="total1">0</span> · <span id="rate1">0%</span></div>
+            </div>
+            <div class="stat-card a2">
+                <div class="stat-label">深渊二 · 小数提取</div>
+                <div class="stat-value" id="stat2">0</div>
+                <div class="stat-sub">连中 | 累计 <span id="total2">0</span> · <span id="rate2">0%</span></div>
+            </div>
+            <div class="stat-card a3">
+                <div class="stat-label">深渊三 · 特征相加</div>
+                <div class="stat-value" id="stat3">0</div>
+                <div class="stat-sub">连中 | 累计 <span id="total3">0</span> · <span id="rate3">0%</span></div>
+            </div>
+            <div class="stat-card a4">
+                <div class="stat-label">深渊四 · 末位拼接</div>
+                <div class="stat-value" id="stat4">0</div>
+                <div class="stat-sub">连中 | 累计 <span id="total4">0</span> · <span id="rate4">0%</span></div>
+            </div>
+        </div>
 
+        <div class="panel">
+            <div class="panel-title">
+                <span>实时开奖数据</span>
+                <span id="srcTag" onclick="forceRefresh()">连接中...</span>
+            </div>
+            <div class="latest-row">
+                <span class="latest-period" id="latestPeriod">----期</span>
+                <span class="latest-type" id="latestType">--</span>
+            </div>
+            <div class="latest-nums" id="latestNums">- + - + -</div>
+            <div id="countdown">⏳ 加载中...</div>
+        </div>
 
-/* =========================
-   最近30期
-========================= */
+        <div class="pred-area" id="predArea">
+            <div class="pred-card a1">
+                <div class="pred-card-header">
+                    <div class="stat-label" style="color:var(--accent-1);" id="title1">深渊一预测</div>
+                    <div class="detail-toggle" onclick="toggle('dt1')">查看算法</div>
+                </div>
+                <div class="pred-value" id="outP1">--</div>
+                <div class="special-codes" id="codes1"><span>特码:</span></div>
+                <div class="detail-content" id="dt1"></div>
+            </div>
+            
+            <div class="pred-card a2">
+                <div class="pred-card-header">
+                    <div class="stat-label" style="color:var(--accent-2);" id="title2">深渊二预测</div>
+                    <div class="detail-toggle" onclick="toggle('dt2')">查看算法</div>
+                </div>
+                <div class="pred-value" id="outP2">--</div>
+                <div class="special-codes" id="codes2"><span>特码:</span></div>
+                <div class="detail-content" id="dt2"></div>
+            </div>
 
-function renderTable(data){
+            <div class="pred-card a3">
+                <div class="pred-card-header">
+                    <div class="stat-label" style="color:var(--accent-3);" id="title3">深渊三预测</div>
+                    <div class="detail-toggle" onclick="toggle('dt3')">查看算法</div>
+                </div>
+                <div class="pred-value" id="outP3">--</div>
+                <div class="special-codes" id="codes3"><span>特码:</span></div>
+                <div class="detail-content" id="dt3"></div>
+            </div>
 
-  const rows =
-    data.slice(0,30);
+            <div class="pred-card a4">
+                <div class="pred-card-header">
+                    <div class="stat-label" style="color:var(--accent-4);" id="title4">深渊四预测</div>
+                    <div class="detail-toggle" onclick="toggle('dt4')">查看算法</div>
+                </div>
+                <div class="pred-value" id="outP4">--</div>
+                <div class="special-codes" id="codes4"><span>特码:</span></div>
+                <div class="detail-content" id="dt4"></div>
+            </div>
+        </div>
 
-  $("history").innerHTML =
-    rows.map(x=>{
+        <div class="history-list" id="history"></div>
+    </div>
 
-      const shape =
-        getShape(x.a,x.b,x.c);
+    <script>
+    const $ = id => document.getElementById(id);
+    function toggle(id) { $(id).classList.toggle('show'); }
+    const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-      const size =
-        getSize(x.sum);
+    /* ============================================================
+     *  极速并发网络层
+     * ============================================================ */
+    const SOURCES = [
+        'https://jnd28.pw/api/kj?limit=500',
+        'https://28.run/api/lottery/recent/100'
+    ];
+    const PROXIES = [
+        u => u,
+        u => 'https://cors.eu.org/' + u,
+        u => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u),
+        u => 'https://corsproxy.io/?' + encodeURIComponent(u),
+        u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u)
+    ];
 
-      const oddEven =
-        getOddEven(x.sum);
-
-      return `
-        <tr>
-          <td>${x.issue}</td>
-          <td>${x.a} ${x.b} ${x.c}</td>
-          <td>${x.sum}</td>
-          <td>${size}</td>
-          <td>${oddEven}</td>
-          <td>${shape}</td>
-        </tr>
-      `;
-
-    }).join("");
-}
-
-
-/* =========================
-   总渲染
-========================= */
-
-function render(){
-
-  if(!currentData.length) return;
-
-  renderLatest(currentData[0]);
-
-  renderBasicStats(currentData);
-
-  renderGroups(currentData);
-
-  renderShapes(currentData);
-
-  renderHotCold(currentData);
-
-  renderTable(currentData);
-}
-
-
-/* =========================
-   手动刷新
-========================= */
-
-$("refreshBtn").addEventListener(
-  "click",
-  loadData
-);
-
-
-/* =========================
-   音乐
-========================= */
-
-const music =
-  $("music");
-
-const musicBtn =
-  $("musicBtn");
-
-let playing = false;
-
-musicBtn.addEventListener(
-  "click",
-  async ()=>{
-
-    try{
-
-      if(!playing){
-
-        await music.play();
-
-        playing = true;
-
-        musicBtn.textContent =
-          "⏸️ 暂停音乐";
-
-      }else{
-
-        music.pause();
-
-        playing = false;
-
-        musicBtn.textContent =
-          "🎵 播放音乐";
-      }
-
-    }catch(e){
-
-      musicBtn.textContent =
-        "🎵 点击播放音乐";
+    function parseItems(items){
+        const out = [];
+        for (const it of (items || [])) {
+            try {
+                let nums = null, s = null, expect = null, ds = '', ts = '';
+                if (it.number1 != null || it.number2 != null || it.number3 != null) {
+                    nums = [parseInt(it.number1, 10), parseInt(it.number2, 10), parseInt(it.number3, 10)];
+                    s = it.final_result != null ? parseInt(it.final_result, 10) : nums.reduce((a, b) => a + b, 0);
+                    expect = String(it.expect || it.qh || '').trim();
+                    ds = String(it.opentime || it.time || '');
+                } else {
+                    const raw = String(it.pc28 || it.number || '');
+                    nums = raw.split('+').map(x => parseInt(x.trim(), 10));
+                    if (nums.length !== 3 || nums.some(n => isNaN(n))) continue;
+                    s = parseInt(it.he || nums.reduce((a, b) => a + b, 0), 10);
+                    expect = String(it.qh || it.expect || '').trim();
+                    ds = String(it.date || ''); ts = String(it.time || '');
+                }
+                if (!nums || nums.length !== 3 || nums.some(n => isNaN(n))) continue;
+                if (s == null || isNaN(s)) s = nums.reduce((a, b) => a + b, 0);
+                if (s < 0 || s > 27) continue;
+                let ot = Date.now() / 1000 | 0;
+                if (ds) {
+                    const p = Date.parse(String(ds).replace(/-/g, '/') + (ts ? ' ' + ts : ''));
+                    if (!isNaN(p)) ot = p / 1000 | 0;
+                }
+                out.push({ expect, nums, sum: s, opentime: ot });
+            } catch (e) {}
+        }
+        out.sort((a, b) => a.opentime - b.opentime);
+        return out;
     }
-  }
-);
 
+    function extractList(j){
+        if (Array.isArray(j)) return j;
+        if (!j || typeof j !== 'object') return [];
+        for (const k of ['data', 'list', 'rows', 'result', 'items', 'records', 'recent_results']) {
+            const v = j[k];
+            if (Array.isArray(v)) return v;
+            if (v && typeof v === 'object') {
+                for (const k2 of ['data', 'list', 'rows', 'items']) {
+                    if (Array.isArray(v[k2])) return v[k2];
+                }
+            }
+        }
+        if (typeof j.contents === 'string') {
+            try { return extractList(JSON.parse(j.contents)); } catch (e) {}
+        }
+        return [];
+    }
 
-/* =========================
-   自动检查
-========================= */
+    const withTimeout = (p, ms) => Promise.race([p, new Promise((_, rj) => setTimeout(() => rj(new Error('超时')), ms))]);
 
-/*
-  不使用 setInterval，
-  避免网络慢时多个请求同时堆积。
+    async function tryOne(url){
+        const r = await withTimeout(fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' }, cache: 'no-store' }), 6000);
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const txt = await r.text();
+        let j; try { j = JSON.parse(txt); } catch (e) { throw new Error('非JSON'); }
+        const h = parseItems(extractList(j));
+        if (!h.length) throw new Error('解析0期');
+        return h;
+    }
 
-  一次检查完成后，
-  再等待5秒进行下一次。
-*/
+    async function fetchData(){
+        let urls = [];
+        for (let si = 0; si < SOURCES.length; si++) {
+            const u = SOURCES[si] + (SOURCES[si].indexOf('?') >= 0 ? '&' : '?') + '_=' + Date.now();
+            for (let i = 0; i < PROXIES.length; i++) {
+                urls.push({ url: PROXIES[i](u), name: `源${si+1}-代${i}` });
+            }
+        }
+        return new Promise((resolve) => {
+            let hasResolved = false;
+            let failCount = 0;
+            urls.forEach(async (item) => {
+                try {
+                    const h = await tryOne(item.url);
+                    if (!hasResolved) { hasResolved = true; resolve({ ok: true, h, via: item.name }); }
+                } catch (e) {
+                    failCount++;
+                    if (failCount === urls.length && !hasResolved) resolve({ ok: false, msg: '全通道超时' });
+                }
+            });
+        });
+    }
 
-async function autoRefresh(){
+    /* ============================================================
+     *  深渊级固定公式 + 混沌特码引擎
+     * ============================================================ */
+    const propertyPools = {
+        '大单': [15, 17, 19, 21, 23, 25, 27],
+        '大双': [14, 16, 18, 20, 22, 24, 26],
+        '小单': [1, 3, 5, 7, 9, 11, 13],
+        '小双': [0, 2, 4, 6, 8, 10, 12]
+    };
 
-  await loadData();
+    function getProperty(num){
+        return (num > 13 ? '大' : '小') + (num % 2 === 0 ? '双' : '单');
+    }
 
-  setTimeout(
-    autoRefresh,
-    REFRESH_SECONDS * 1000
-  );
-}
+    // 【核心整改】混沌特码生成器：利用公式产出的混沌大数作为种子
+    function generateChaosCodes(propStr, chaosSeedStr) {
+        const pool = propertyPools[propStr];
+        if (!pool) return [];
+        
+        // 把传进来的超级长串（去掉小数点）作为大整数进行散列
+        let hash = 0;
+        for (let i = 0; i < chaosSeedStr.length; i++) {
+            hash = ((hash << 5) - hash) + chaosSeedStr.charCodeAt(i);
+            hash = hash & hash; // 转32位整数
+        }
+        // 取绝对值的不同部分映射到池里
+        const idx1 = Math.abs(hash) % pool.length;
+        const idx2 = Math.abs(hash >> 4) % pool.length;
+        
+        // 保证两个特码不重复
+        let finalIdx2 = (idx1 === idx2) ? (idx2 + 1) % pool.length : idx2;
+        return [pool[idx1], pool[finalIdx2]];
+    }
 
+    function formatNum(num){ return num < 10 ? '0' + num : num.toString(); }
 
-/* =========================
-   启动
-========================= */
+    // 运行深渊提取引擎
+    function runExtractionFormulas(P) {
+        let n = Math.max(1, P); 
 
-autoRefresh();
+        // 公式一：整数截断
+        let f1 = Math.pow(Math.sqrt(n) * Math.log(n + 1) * Math.E, Math.PI) * n;
+        let str1 = Math.floor(f1).toString();
+        let v1_1 = parseInt(str1.slice(-3)) % 28;
+        let v1_2 = parseInt(str1.substring(0, 3) || "0") % 28;
+        let chaos1 = str1; // 混沌种子
 
-</script>
+        // 公式二：小数提取
+        let f2 = Math.sin(n * Math.PI) * Math.cos(n * Math.E) * Math.sqrt(n) + (n * Math.PI * 100);
+        let str2 = f2.toString().split('.')[1] || "0";
+        let v2_1 = parseInt(str2.substring(0, 2) || "0") % 28;
+        let v2_2 = parseInt(str2.substring(2, 4) || "0") % 28;
+        let chaos2 = str2; // 混沌种子
 
+        // 公式三：特征相加
+        let f3_base = Math.sqrt(n * Math.PI) + Math.pow(n, 1.5);
+        let str3 = Math.abs(f3_base).toFixed(4);
+        let sumDigits = str3.split('').filter(c => c >= '0' && c <= '9').reduce((acc, cur) => acc + parseInt(cur), 0);
+        let v3_1 = (sumDigits * n) % 28;
+        let v3_2 = (sumDigits * n * 3.14) % 28;
+        let chaos3 = str3 + sumDigits; // 混沌种子
+
+        // 公式四：末位拼接
+        let f4_a = Math.abs(Math.sin(n) * 10000) * Math.log(n+1);
+        let f4_b = Math.abs(Math.cos(n) * 10000) * Math.log(n+2);
+        let tailA = Math.floor(f4_a) % 10;
+        let tailB = Math.floor(f4_b) % 10;
+        let v4_1 = (tailA * 10 + tailB); 
+        let v4_2 = (tailA * 7 + tailB * 3 + n) % 28;
+        let chaos4 = f4_a.toString() + f4_b.toString(); // 混沌种子
+
+        return {
+            m1: { pa: getProperty(v1_1), pb: getProperty(v1_2), t1: f1.toFixed(2), t2: str1.slice(-10), seed: chaos1 },
+            m2: { pa: getProperty(v2_1), pb: getProperty(v2_2), t1: f2.toFixed(6), t2: "小数:" + str2.substring(0, 8), seed: chaos2 },
+            m3: { pa: getProperty(v3_1), pb: getProperty(v3_2), t1: f3_base.toFixed(3), t2: "各位相加=" + sumDigits, seed: chaos3 },
+            m4: { pa: getProperty(v4_1), pb: getProperty(v4_2), t1: "尾数1=" + tailA, t2: "尾数2=" + tailB, seed: chaos4 }
+        };
+    }
+
+    /* ============================================================
+     *  状态与统计机制
+     * ============================================================ */
+    let draws = [];
+    let lastVia = '';
+    let timer = null, refreshTimer = null, requesting = false;
+    
+    let stats = { streak1: 0, streak2: 0, streak3: 0, streak4: 0 };
+    let simStats = { total1: 0, hit1: 0, total2: 0, hit2: 0, total3: 0, hit3: 0, total4: 0, hit4: 0 };
+    let snapshots = {}; 
+
+    function loadState() {
+        const s = localStorage.getItem('quantum4_stats');
+        const sn = localStorage.getItem('quantum4_snapshots');
+        if (s) stats = JSON.parse(s);
+        if (sn) snapshots = JSON.parse(sn);
+    }
+    function saveState() {
+        localStorage.setItem('quantum4_stats', JSON.stringify(stats));
+        localStorage.setItem('quantum4_snapshots', JSON.stringify(snapshots));
+    }
+
+    function simulateHistory(list) {
+        simStats = { total1: 0, hit1: 0, total2: 0, hit2: 0, total3: 0, hit3: 0, total4: 0, hit4: 0 };
+        let startIdx = Math.max(0, list.length - 100);
+        for (let i = startIdx; i < list.length; i++) {
+            const nbrNum = parseInt(list[i].expect, 10) || 0;
+            const actual = getProperty(list[i].sum);
+            
+            const { m1, m2, m3, m4 } = runExtractionFormulas(nbrNum);
+            
+            simStats.total1++; simStats.total2++; simStats.total3++; simStats.total4++;
+            if (m1.pa === actual || m1.pb === actual) simStats.hit1++;
+            if (m2.pa === actual || m2.pb === actual) simStats.hit2++;
+            if (m3.pa === actual || m3.pb === actual) simStats.hit3++;
+            if (m4.pa === actual || m4.pb === actual) simStats.hit4++;
+        }
+    }
+
+    function processHistory(list) {
+        let records = [];
+        let curStreak1 = 0, curStreak2 = 0, curStreak3 = 0, curStreak4 = 0;
+        
+        for (let i = 0; i < list.length; i++) {
+            const item = list[i];
+            const nbrStr = item.expect;
+            
+            if (snapshots[nbrStr]) {
+                const snap = snapshots[nbrStr];
+                const actual = getProperty(item.sum);
+                
+                const h1 = (snap.p1a === actual || snap.p1b === actual);
+                const h2 = (snap.p2a === actual || snap.p2b === actual);
+                const h3 = (snap.p3a === actual || snap.p3b === actual);
+                const h4 = (snap.p4a === actual || snap.p4b === actual);
+                
+                if (h1) curStreak1++; else curStreak1 = 0;
+                if (h2) curStreak2++; else curStreak2 = 0;
+                if (h3) curStreak3++; else curStreak3 = 0;
+                if (h4) curStreak4++; else curStreak4 = 0;
+                
+                if (i >= list.length - 100) {
+                    records.push({ nbr: nbrStr, nums: item.nums, sum: item.sum, actual, h1, h2, h3, h4 });
+                }
+            }
+        }
+        
+        stats.streak1 = curStreak1; stats.streak2 = curStreak2;
+        stats.streak3 = curStreak3; stats.streak4 = curStreak4;
+        
+        $('stat1').innerText = stats.streak1; $('total1').innerText = simStats.hit1; $('rate1').innerText = simStats.total1 ? ((simStats.hit1 / simStats.total1)*100).toFixed(1)+'%' : '0%';
+        $('stat2').innerText = stats.streak2; $('total2').innerText = simStats.hit2; $('rate2').innerText = simStats.total2 ? ((simStats.hit2 / simStats.total2)*100).toFixed(1)+'%' : '0%';
+        $('stat3').innerText = stats.streak3; $('total3').innerText = simStats.hit3; $('rate3').innerText = simStats.total3 ? ((simStats.hit3 / simStats.total3)*100).toFixed(1)+'%' : '0%';
+        $('stat4').innerText = stats.streak4; $('total4').innerText = simStats.hit4; $('rate4').innerText = simStats.total4 ? ((simStats.hit4 / simStats.total4)*100).toFixed(1)+'%' : '0%';
+        
+        const div = $('history');
+        if (records.length === 0) {
+            div.innerHTML = '<div class="history-item" style="justify-content:center;color:var(--text-muted);">暂无快照记录</div>';
+        } else {
+            div.innerHTML = records.reverse().map(r => `
+                <div class="history-item">
+                    <div style="width: 80px; color:#94a3b8">#${esc(r.nbr)}<br>${r.nums.join('+')}=${r.sum}</div>
+                    <div style="flex:1; text-align:right;">
+                        <span class="badge ${r.h1 ? 'hit' : 'miss'}">一</span>
+                        <span class="badge ${r.h2 ? 'hit' : 'miss'}">二</span>
+                        <span class="badge ${r.h3 ? 'hit' : 'miss'}">三</span>
+                        <span class="badge ${r.h4 ? 'hit' : 'miss'}">四</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    function updateLatest(){
+        if (!draws.length) return;
+        const last = draws[draws.length - 1];
+        $('latestPeriod').innerText = `#${esc(last.expect)} 期`;
+        $('latestNums').innerText = last.nums.join(' + ') + ' = ' + last.sum;
+        $('latestType').innerText = getProperty(last.sum);
+        $('srcTag').innerText = lastVia ? `${lastVia}` : '连接中...';
+    }
+
+    function renderPrediction(){
+        if (!draws.length) return;
+        const last = draws[draws.length - 1];
+        const nextNbr = (parseInt(last.expect, 10) || 0) + 1;
+        const nextNbrStr = String(nextNbr);
+        
+        let snap = snapshots[nextNbrStr];
+        
+        if (!snap) {
+            const { m1, m2, m3, m4 } = runExtractionFormulas(nextNbr);
+            
+            snap = {
+                p1a: m1.pa, p1b: m1.pb, t1_1: m1.t1, t1_2: m1.t2, seed1: m1.seed,
+                p2a: m2.pa, p2b: m2.pb, t2_1: m2.t1, t2_2: m2.t2, seed2: m2.seed,
+                p3a: m3.pa, p3b: m3.pb, t3_1: m3.t1, t3_2: m3.t2, seed3: m3.seed,
+                p4a: m4.pa, p4b: m4.pb, t4_1: m4.t1, t4_2: m4.t2, seed4: m4.seed
+            };
+            snapshots[nextNbrStr] = snap;
+            saveState();
+        }
+
+        $('title1').innerText = `深渊一预测 (#${nextNbrStr})`;
+        $('title2').innerText = `深渊二预测 (#${nextNbrStr})`;
+        $('title3').innerText = `深渊三预测 (#${nextNbrStr})`;
+        $('title4').innerText = `深渊四预测 (#${nextNbrStr})`;
+        
+        $('outP1').innerText = `${snap.p1a} / ${snap.p1b}`;
+        $('outP2').innerText = `${snap.p2a} / ${snap.p2b}`;
+        $('outP3').innerText = `${snap.p3a} / ${snap.p3b}`;
+        $('outP4').innerText = `${snap.p4a} / ${snap.p4b}`;
+
+        // 使用混沌种子生成特码
+        const makeCodes = (p, seedStr) => generateChaosCodes(p, seedStr).map(c => `<span class="code-badge">${formatNum(c)}</span>`).join('');
+        
+        $('codes1').innerHTML = `<span>特:</span> ${makeCodes(snap.p1a, snap.seed1)}${makeCodes(snap.p1b, snap.seed1)}`;
+        $('codes2').innerHTML = `<span>特:</span> ${makeCodes(snap.p2a, snap.seed2)}${makeCodes(snap.p2b, snap.seed2)}`;
+        $('codes3').innerHTML = `<span>特:</span> ${makeCodes(snap.p3a, snap.seed3)}${makeCodes(snap.p3b, snap.seed3)}`;
+        $('codes4').innerHTML = `<span>特:</span> ${makeCodes(snap.p4a, snap.seed4)}${makeCodes(snap.p4b, snap.seed4)}`;
+
+        $('dt1').innerHTML = `算得宇宙大数 = ${snap.t1_1}<br>提取末尾十位 = ${snap.t1_2}<br>推算 = ${snap.p1a}, ${snap.p1b}`;
+        $('dt2').innerHTML = `算得混沌值 = ${snap.t2_1}<br>${snap.t2_2}<br>推算 = ${snap.p2a}, ${snap.p2b}`;
+        $('dt3').innerHTML = `基数 = ${snap.t3_1}<br>${snap.t3_2}<br>推算 = ${snap.p3a}, ${snap.p3b}`;
+        $('dt4').innerHTML = `算得两个尾数 = ${snap.t4_1} , ${snap.t4_2}<br>推算 = ${snap.p4a}, ${snap.p4b}`;
+
+        $('predArea').style.display = 'block';
+    }
+
+    const DRAW_INTERVAL = 210;
+    function startCountdown(openTimeSec){
+        clearInterval(timer);
+        let base = (typeof openTimeSec === 'number' && openTimeSec > 0 && openTimeSec * 1000 <= Date.now() + 60000) ? openTimeSec * 1000 : Date.now();
+        const target = base + DRAW_INTERVAL * 1000;
+
+        const tick = () => {
+            const left = Math.round((target - Date.now()) / 1000);
+            if (left <= 0){
+                $('countdown').textContent = '🔄 开奖中...';
+                clearInterval(timer);
+                let retryCount = 0;
+                const fastPoll = async () => {
+                    if (retryCount >= 10) {
+                        $('countdown').textContent = '⚠️ 官网数据延迟';
+                        setTimeout(() => load(), 15000);
+                        return;
+                    }
+                    retryCount++;
+                    const success = await load();
+                    if (success && draws.length > 0) return;
+                    setTimeout(fastPoll, 3000);
+                };
+                setTimeout(fastPoll, 1000);
+                return;
+            }
+            $('countdown').textContent = `⏳ 距下期开奖 ${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}`;
+        };
+        tick();
+        timer = setInterval(tick, 1000);
+    }
+
+    async function load(isManual = false){
+        if (requesting) return false;
+        requesting = true;
+        if (isManual) $('countdown').textContent = '⏳ 强制获取中...';
+        
+        try {
+            const r = await fetchData();
+            if (!r.ok) throw new Error(r.msg);
+            
+            draws = r.h.slice().sort((a, b) => (parseInt(a.expect, 10) || 0) - (parseInt(b.expect, 10) || 0));
+            lastVia = r.via;
+            
+            simulateHistory(draws);
+            processHistory(draws);
+            updateLatest();
+            renderPrediction();
+            
+            const last = draws[draws.length - 1];
+            startCountdown(last ? last.opentime : null);
+            requesting = false;
+            return true;
+        } catch (e) {
+            $('countdown').textContent = '⚠️ 网络波动...';
+            requesting = false;
+            return false;
+        }
+    }
+
+    function forceRefresh() {
+        if (requesting) return;
+        load(true);
+    }
+
+    function updateClock(){
+        const now = new Date();
+        $('clock').innerText = now.toLocaleTimeString('zh-CN', { hour12: false });
+        $('date').innerText = now.toISOString().split('T')[0];
+    }
+
+    window.onload = () => {
+        loadState();
+        updateClock(); setInterval(updateClock, 1000);
+        load();
+        refreshTimer = setInterval(() => { if (!requesting) load(); }, 60000);
+    };
+    document.onvisibilitychange = () => {
+        clearInterval(refreshTimer);
+        if (!document.hidden) {
+            load();
+            refreshTimer = setInterval(() => { if (!requesting) load(); }, 60000);
+        }
+    };
+    </script>
 </body>
-</html>
+                      </html>
