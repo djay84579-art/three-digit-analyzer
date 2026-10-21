@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#f6f8fc">
+  <meta name="theme-color" content="#0b1120">
   <meta name="description" content="加拿大28实时开奖、走势图和历史统计研究工具。">
-  <title>28 PRO v3 · 错期自动复盘与可核验命中统计</title>
+  <title>28 LIVE · 加拿大28实时趋势</title>
   <style>
     :root { color-scheme:dark; --bg:#080e1b;--card:#111b2d;--panel:#152137;--line:#27344c;--text:#ecf3ff;--muted:#8698b5;--mint:#40e3af;--cyan:#50b9ff;--amber:#ffc66f;--danger:#fb7c90; --radius:18px; }
     *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 84% -12%, #1b3150 0, transparent 32%),var(--bg);color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft Yahei",sans-serif;-webkit-font-smoothing:antialiased}button,input,textarea{font:inherit}button{cursor:pointer}a{color:var(--cyan)}
@@ -20,104 +20,14 @@
     @media(max-width:410px){.brand-name{font-size:15px}.brand-small{font-size:10px}.mark{width:37px;height:37px}.online-pill{font-size:11px;padding:7px}.top-actions{gap:6px}.intro h1{font-size:32px}.ball{width:45px;height:51px;font-size:24px;border-radius:13px}.operator{font-size:19px}.digits{gap:6px}.p-card{padding:15px}.p-card .pick{font-size:24px}.panel{padding:16px}.form-row{grid-template-columns:1fr}}
     @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
   </style>
-
-  <style id="professional-style">
-    :root{color-scheme:light;--bg:#f6f8fc;--card:#ffffff;--panel:#f7f9fd;--line:#e3e9f3;--text:#17233b;--muted:#708099;--mint:#2563eb;--cyan:#2563eb;--amber:#bb721e;--danger:#e14d66;--radius:17px;--accent:#2563eb;--accent-light:#eaf1ff;--success:#169772}
-    body{background:linear-gradient(180deg,#edf4ff 0,#f6f8fc 260px,#f6f8fc 100%);color:var(--text)}
-    a,.footer a{color:var(--accent)}
-    .app{max-width:1160px}.topbar{height:76px;border-bottom:1px solid #dce7f5}
-    .brand-name{color:var(--text)}.brand-small{color:var(--muted);letter-spacing:1.5px}
-    .mark{background:var(--accent);color:#fff;box-shadow:0 9px 22px #2563eb24}
-    .panel{background:#fff;border-color:var(--line);box-shadow:0 8px 35px #293f6510}
-    .eyebrow-pill,.online-pill{background:#fff;border-color:#dce5f2;color:#64748b}
-    .intro{padding-top:37px}.intro h1{letter-spacing:-1.5px}.accent{color:var(--accent)}
-    .btn{color:#32445e;background:#fff;border-color:#dce5f1}.btn:hover{background:#f1f6ff;filter:none}.btn.primary{background:var(--accent);border:1px solid var(--accent);color:white}
-    .dot.live{background:var(--success);box-shadow:0 0 0 4px #1697721c}.dot.warn{background:#e5a52a;box-shadow:0 0 0 4px #e5a52a26}
-    .current-issue strong{color:#293b54}.ball{background:#f0f5fd;border:1px solid #dbe5f2;color:#273e5d}.ball.sum{background:var(--accent);border:0;color:#fff;box-shadow:0 7px 22px #2563eb20}.operator{color:#9aabc2}
-    .tag{background:#f0f5ff;border:1px solid #dce8ff;color:#3f69a5}.tag.strong{color:#16795d;background:#e9f8f1;border-color:#c7ecd9}
-    .separator{background:#e7edf5}.count-wrap{background:#f7faff;border-color:#e4ecf7}.count-number{color:var(--accent)}
-    .p-card{background:#fff;border-color:var(--line);box-shadow:0 6px 23px #2439560b}
-    .p-card.featured{background:linear-gradient(120deg,#edf5ff,#fff);border-color:#bbd5ff}
-    .tiny-chip{background:#e4efff;color:#316ac7}.p-card .pick.green,.p-card .pick.blue{color:var(--accent)}.p-card .pick.amber{color:#af711e}
-    .safety{border-color:#e8e0c9;background:#fffaf0;color:#817044}
-    .tabs{background:#f2f6fc;border-color:#e0e8f3}.tab{color:#74849c}.tab.active{background:#fff;color:var(--accent);box-shadow:0 1px 5px #273c5b13}
-    .track{background:#edf2f8}.track-fill{background:linear-gradient(90deg,var(--accent),#71b4ff)}
-    .stat-box{background:#f6f9fe}.history-table td{border-color:#eef1f6}.history-table th{background:#fbfcff}.mini-badge{background:#eef4ff;color:#3566ae}.mini-badge.good{background:#e5f8f0;color:#218464}
-    .modal-mask{background:#17233c8c}.modal{background:#fff;border-color:#e0e8f1;box-shadow:0 24px 80px #18284146}
-    .field{color:var(--text);border-color:#d9e3f0;background:#fff}.field:focus{outline:2px solid #2563eb25;border-color:var(--accent)}.field::placeholder{color:#a5b0c2}
-    .note-card{background:#f7f9fd;border-color:var(--line)}
-    .section-head{margin:30px 0 14px}.section-head h2{font-size:19px}
-    .settings-btn{display:inline-flex;align-items:center;justify-content:center;gap:5px}
-    .status-mini{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:12px}
-    .kpi-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
-    .kpi{background:#fff;border:1px solid var(--line);border-radius:15px;padding:18px;min-width:0;box-shadow:0 4px 22px #32476309}
-    .kpi .kpi-label{font-size:12px;font-weight:700;color:#65768f}.kpi-value{margin:12px 0 6px;font-size:clamp(27px,3vw,38px);line-height:1.1;font-weight:840;letter-spacing:-1.1px;font-variant-numeric:tabular-nums}
-    .kpi-value .percent-sign{font-size:.55em;margin-left:2px;color:#6e89b4}.kpi-detail{min-height:17px;font-size:12px;color:var(--muted)}
-    .kpi-track{height:6px;border-radius:10px;background:#eaf0f8;overflow:hidden;margin-top:14px}.kpi-fill{height:100%;width:0;background:var(--accent);border-radius:10px;transition:width .3s}
-    .perf-hero{background:var(--accent);color:#fff;border-radius:16px;padding:20px 22px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin:15px 0}
-    .perf-hero strong{display:block;font-size:15px;margin-bottom:5px}.perf-hero p{font-size:12px;color:#ffffffe0;margin:0;line-height:1.6}
-    .perf-hero-metric{font-size:32px;font-weight:850;letter-spacing:-1px;font-variant-numeric:tabular-nums}
-    .perf-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-    .perf-controls .tabs{white-space:nowrap}.perf-controls .tab{font-size:12px}
-    .perf-note{margin:13px 0 15px;color:#72819a;font-size:12px;line-height:1.75}
-    .perf-split{display:grid;grid-template-columns:1.15fr .85fr;gap:15px;margin-top:15px}
-    .activity-tiles{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:6px;margin-top:18px}
-    .activity-tile{aspect-ratio:1.25;border-radius:6px;background:#edf1f8;border:1px solid #dfe6ef}
-    .activity-tile.win{background:#32b58a;border-color:#32b58a}.activity-tile.lose{background:#f08f99;border-color:#f08f99}
-    .activity-footer{font-size:11px;color:var(--muted);display:flex;gap:13px;margin-top:13px;align-items:center}
-    .swatch{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}.swatch.win{background:#32b58a}.swatch.lose{background:#f08f99}
-    .record-pill{font-size:10px;padding:5px 8px;border-radius:100px;white-space:nowrap;display:inline-flex;gap:3px}
-    .record-pill.win{background:#e6f8f1;color:#108760}.record-pill.lose{background:#fff0f1;color:#c64e64}.record-pill.pending{background:#f2f5fa;color:#718299}
-    .mini-metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:13px}
-    .mini-metric{background:#f7f9fd;border:1px solid #edf1f8;padding:13px;border-radius:12px}
-    .mini-metric b{display:block;font-size:22px;margin-top:6px;font-variant-numeric:tabular-nums}.mini-metric span{font-size:11px;color:var(--muted)}
-    .settings-group{margin-top:19px}.settings-group-title{font-weight:750;font-size:13px;margin-bottom:11px}
-    .swatches{display:flex;gap:11px;flex-wrap:wrap}.swatch-btn{width:42px;height:42px;border:3px solid #fff;outline:1px solid #d4dfec;border-radius:13px;display:grid;place-items:center;color:#fff;font-size:18px;box-shadow:0 2px 6px #1c2c3a15}.swatch-btn.selected{outline:3px solid #b6cae5}
-    .setting-line{display:flex;gap:12px;align-items:center;justify-content:space-between;border-top:1px solid #edf1f7;padding:13px 0;font-size:13px}.setting-line input{width:18px;height:18px;accent-color:var(--accent)}
-    .settings-hint{font-size:11px;color:var(--muted);line-height:1.65;margin-top:13px}
-    .btn-mini{padding:7px 10px;font-size:12px}.mobile-scroll{overflow-x:auto}
-    [hidden]{display:none!important}
-    body.compact .panel{padding:15px}body.compact .p-card{padding:14px}body.compact .kpi{padding:13px}body.compact .section-head{margin-top:18px}
-    @media(max-width:900px){.perf-split{grid-template-columns:1fr}.kpi-overview{grid-template-columns:repeat(2,minmax(0,1fr))}}
-    @media(max-width:600px){.topbar{height:68px}.top-actions{gap:6px}.top-actions .settings-btn{padding:9px 10px}.intro{padding-top:20px}.intro h1{font-size:clamp(28px,8vw,37px)}.kpi{padding:14px}.kpi-value{font-size:27px}.perf-hero{padding:17px}.perf-controls{justify-content:flex-start}.perf-controls .tabs{max-width:100%;overflow-x:auto}.activity-tiles{grid-template-columns:repeat(10,minmax(0,1fr))}.intro-extra{display:none}}
-    @media(max-width:380px){.top-actions .online-pill{font-size:10px;max-width:98px;overflow:hidden}.top-actions .btn.primary{padding:9px 10px}.brand{gap:7px}.brand-name{font-size:13px}.brand-small{letter-spacing:.5px;font-size:9px}.kpi-overview{gap:8px}.kpi-label{font-size:11px}.kpi-value{font-size:25px}}
-
-    /* v2: 滚动窗口与可解释统计卡片 */
-    .model-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 16px;margin:0 0 13px;border:1px solid var(--line);border-radius:13px;background:#fff}
-    .model-tools b{font-size:13px}.model-tools small{font-size:11px;color:var(--muted);display:block;margin-top:5px}
-    .model-tools .tab{font-size:12px}.model-detail{margin-top:12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 4px 20px #24395608}
-    .model-detail-head{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.model-detail-head strong{font-size:14px}.model-detail-head span{font-size:11px;color:var(--muted)}
-    .model-change{margin:13px 0 12px;padding:10px 12px;background:#f1f6ff;border:1px solid #dce8ff;border-radius:10px;color:#355b8d;font-size:12px;line-height:1.7}
-    .model-bars{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:13px}.model-bars h4{font-size:12px;font-weight:760;margin:0 0 9px;color:#596c85}
-    .model-stat{display:grid;grid-template-columns:52px minmax(0,1fr) 100px;gap:8px;align-items:center;font-size:12px;margin:8px 0}
-    .model-stat .track{height:7px}.model-stat small{color:#71829c;text-align:right;font-variant-numeric:tabular-nums;font-size:10px}
-    .model-health{border-top:1px solid var(--line);padding-top:11px;margin-top:12px;color:var(--muted);font-size:11px;line-height:1.7;overflow-wrap:anywhere}
-    .model-lock{font-size:11px;line-height:1.7;margin-top:7px;color:#7b639d}
-    @media(max-width:650px){.model-bars{grid-template-columns:1fr}.model-tools .tabs{width:100%;justify-content:space-between}.model-tools .tabs .tab{flex:1}.model-stat{grid-template-columns:54px minmax(0,1fr) 88px}}
-    /* v3：自动复盘卡片，和已有的浅色界面保持一致 */
-    .learning-panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:19px;margin:16px 0;box-shadow:0 5px 23px #24395609}
-    .learning-desc{color:var(--muted);font-size:12px;line-height:1.75;margin:8px 0 16px}
-    .learning-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-    .learning-stat{background:#f7f9fd;border:1px solid #e9eef6;border-radius:12px;padding:13px;min-width:0}
-    .learning-stat small{display:block;font-size:11px;color:#7789a2}.learning-stat b{display:block;margin-top:7px;font-size:20px;color:#24466a;overflow-wrap:anywhere}
-    .learning-reason{border-radius:10px;background:#f2f7ff;border:1px solid #e0ebff;padding:12px 14px;line-height:1.8;color:#355c90;font-size:12px;margin:15px 0}
-    .learning-table{width:100%;border-collapse:collapse;text-align:left;min-width:550px;font-size:12px}
-    .learning-table th,.learning-table td{padding:11px 9px;border-bottom:1px solid #eef2f8;white-space:nowrap}
-    .learning-table th{font-size:11px;color:#72839d}.learning-table td.active-window{font-weight:800;color:var(--accent)}
-    .learning-history{border-top:1px solid #edf1f7;padding-top:13px;margin-top:16px}
-    .learning-history strong{font-size:13px}.learning-item{font-size:12px;color:#596b85;line-height:1.75;padding:9px 0;border-bottom:1px solid #f0f2f6}
-    .learning-item:last-child{border-bottom:0}.learning-item em{font-style:normal;font-weight:750;color:#bd6370}.learning-item em.good{color:#198765}
-    @media(max-width:570px){.learning-panel{padding:14px}.learning-summary{gap:7px}.learning-stat{padding:10px 8px}.learning-stat b{font-size:16px}}
-
-  </style>
 </head>
 <body>
 <div class="app">
   <header class="topbar">
     <div class="brand"><div class="mark">28</div><div><div class="brand-name">加拿大28 <span style="color:var(--mint)">LIVE</span></div><div class="brand-small">TREND ANALYTICS</div></div></div>
-    <div class="top-actions"><span class="online-pill" id="statusPill"><span class="dot" id="statusDot"></span><span id="statusText">正在连接</span></span><button class="btn plain hide-sm" id="manualOpen">手动录入</button><button class="btn settings-btn" id="settingsOpen" aria-label="打开外观设置">⚙ 设置</button><button class="btn primary" id="refreshBtn">↻ 刷新</button></div>
+    <div class="top-actions"><span class="online-pill" id="statusPill"><span class="dot" id="statusDot"></span><span id="statusText">正在连接</span></span><button class="btn plain hide-sm" id="manualOpen">手动录入</button><button class="btn primary" id="refreshBtn">↻ 刷新</button></div>
   </header>
-  <section class="intro"><div><span class="eyebrow-pill" style="background:#eaf2ff;border-color:#d6e6ff;color:#3b72bd">● 实时同步 · 专业数据面板</span><h1>加拿大28<span class="accent">数据分析中心</span></h1><p>实时开奖结果、下一期频率参考与可核验的历史命中表现。适配安卓手机，自由配置界面。</p></div><div class="intro-extra"><span>数据源</span><strong>pc28.world</strong></div></section>
+  <section class="intro"><div><span class="eyebrow-pill" style="border-color:#295b59;background:#14342f;color:#81e8c7">● 实时数据 · 自动趋势分析</span><h1>加拿大28<span class="accent">实时预测参考</span></h1><p>同步公开开奖数据 · 追踪冷热分布 · 自动生成下一期统计参考，适合手机查看。</p></div><div class="intro-extra"><span>数据源</span><strong>pc28.world</strong></div></section>
   <section class="grid-top">
     <article class="panel">
       <div class="panel-header"><h2>最新开奖结果</h2><span class="small muted" id="syncDisplay">未同步</span></div>
@@ -137,67 +47,27 @@
       <div style="display:flex;gap:9px;margin-top:16px;flex-wrap:wrap"><button class="btn" id="manualOpen2">+ 录入结果</button><button class="btn" id="demoBtn">查看演示数据</button></div>
     </article>
   </section>
-  <div class="section-head"><h2>下一期趋势参考</h2><span class="sub" id="predictionIssue">等待历史开奖数据</span></div>
-  <div class="model-tools"><div><b>滚动统计窗口</b><small>只统计最近开奖，默认12期；切换后会重新分析</small></div><div class="tabs" id="modelWindowTabs" role="group" aria-label="预测模型样本期数"><button class="tab" data-sample="8">8期</button><button class="tab active" data-sample="12">12期</button><button class="tab" data-sample="20">20期</button><button class="tab" data-sample="30">30期</button></div></div>
+  <div class="section-head"><h2>下期统计参考</h2><span class="sub" id="predictionIssue">等待历史开奖数据</span></div>
   <section class="p-grid">
     <article class="p-card featured"><div class="p-card-top"><span>大小参考</span><span class="tiny-chip">历史模型</span></div><div class="pick green" id="predSize">—</div><div class="desc" id="sizeDesc">等待数据</div></article>
     <article class="p-card"><div class="p-card-top">单双参考</div><div class="pick blue" id="predParity">—</div><div class="desc" id="parityDesc">等待数据</div></article>
     <article class="p-card"><div class="p-card-top">双组参考</div><div class="pick amber" id="predCombo">—</div><div class="desc" id="comboDesc">等待数据</div></article>
     <article class="p-card"><div class="p-card-top">和值热区</div><div class="pick" id="predRange">—</div><div class="desc" id="rangeDesc">等待数据</div></article>
   </section>
-  <section class="model-detail" aria-label="预测变动原因与样本统计">
-    <div class="model-detail-head"><strong>为什么这期显示这些参考？</strong><span id="modelVersionText">滚动窗口统计 · 不保证下期走势</span></div>
-    <div class="model-change" id="modelChange">等待开奖历史数据…</div>
-    <div class="model-bars"><div><h4>四种组合 · 近期加权频率</h4><div id="modelComboBars"></div></div><div><h4>和值区间 · 近期加权频率</h4><div id="modelRangeBars"></div></div></div>
-    <div class="model-health" id="modelHealth">等待获取有效开奖样本</div>
-    <div class="model-lock" id="modelLock">前瞻预测首次保存后会锁定，切换窗口不会倒改已保存记录。</div>
-  </section>
-  <section class="learning-panel" id="learningPanel" aria-label="错期自动复盘">
-    <div class="panel-header"><h2>↻ 错期自动复盘</h2><button class="btn btn-mini" id="autoLearnToggle" type="button" aria-pressed="true">自动复盘：开启</button></div>
-    <p class="learning-desc">下一期开奖后核验「双组」与「和值热区」。其中任一未中，就基于当时可用的历史结果比较 8 / 12 / 20 / 30 期四种统计窗口；有足够样本且历史表现明显更好时，才切换后续期的窗口。原预测快照不会被事后修改。</p>
-    <div class="learning-summary"><div class="learning-stat"><small>当前分析窗口</small><b id="learningWindow">12 期</b></div><div class="learning-stat"><small>已复盘前瞻期数</small><b id="learningReviewed">0 期</b></div><div class="learning-stat"><small>落空触发次数</small><b id="learningMisses">0 次</b></div></div>
-    <div class="learning-reason" id="learningReason" role="status">等待首次开奖后的预测核验。</div>
-    <div class="history-table-wrap"><table class="learning-table"><thead><tr><th>滚动窗口</th><th>严格历史回看</th><th>双组命中</th><th>和值热区命中</th><th>综合表现*</th><th>当前选择</th></tr></thead><tbody id="learningCandidates"><tr><td colspan="6">等待历史数据</td></tr></tbody></table></div>
-    <div class="learning-history"><strong>最近的自动复盘记录</strong><div id="learningLogList" aria-live="polite" class="learning-item">暂无已核验的真实预测</div></div>
-    <p class="learning-desc" style="margin-bottom:0">*综合表现 = 双组命中率×50% + 和值热区×25% + 大小×12.5% + 单双×12.5%；仅用于比较候选模型，不是下期中奖概率。至少 16 个共同回看样本、且超过当前窗口 5 个百分点才会切换。历史回看与真实前瞻胜率分开显示；随机开奖无可保证的可学习规律。</p>
-  </section>
-  <div class="safety">⚠ <b>重要说明：</b>滚动窗口根据历史加权频率生成参考，排名也可能连续多期不变；改变窗口不代表更高命中率。不可预知独立随机开奖结果。下方命中率是历史核对记录，不代表未来命中概率，也不等于投注收益率。</div>
-
-  <section id="performanceSection">
-    <div class="section-head" style="flex-wrap:wrap"><div><h2>预测命中表现</h2><p class="small muted" style="margin:7px 0 0">预测先记录，开奖后核验 · 不回填历史预测 · 旧版快照继续保留</p></div>
-      <div class="perf-controls"><div class="tabs" id="modeTabs" role="group" aria-label="统计模式"><button class="tab active" data-mode="live">实时记录</button><button class="tab" data-mode="replay">历史回测</button></div><div class="tabs" id="windowTabs" role="group" aria-label="统计期数"><button class="tab active" data-window="10">10期</button><button class="tab" data-window="20">20期</button><button class="tab" data-window="50">50期</button><button class="tab" data-window="all">全部</button></div></div>
-    </div>
-    <div class="perf-hero"><div><strong id="perfModeTitle">已核验的实时预测</strong><p id="perfModeDesc">每次自动生成的参考会先保存在本机，开奖后才统计是否命中。</p></div><div class="perf-hero-metric" id="perfHeadline">暂无记录</div></div>
-    <div class="kpi-overview" id="performanceCards">
-      <article class="kpi"><div class="kpi-label">大小命中率</div><div class="kpi-value" id="kpiSize">—</div><div class="kpi-detail" id="kpiSizeDetail">等待核验</div><div class="kpi-track"><div class="kpi-fill" id="kpiSizeBar"></div></div></article>
-      <article class="kpi"><div class="kpi-label">单双命中率</div><div class="kpi-value" id="kpiParity">—</div><div class="kpi-detail" id="kpiParityDetail">等待核验</div><div class="kpi-track"><div class="kpi-fill" id="kpiParityBar"></div></div></article>
-      <article class="kpi"><div class="kpi-label">双组命中率（两组任中）</div><div class="kpi-value" id="kpiDouble">—</div><div class="kpi-detail" id="kpiDoubleDetail">等待核验</div><div class="kpi-track"><div class="kpi-fill" id="kpiDoubleBar"></div></div></article>
-      <article class="kpi"><div class="kpi-label">首选组合命中率</div><div class="kpi-value" id="kpiSingle">—</div><div class="kpi-detail" id="kpiSingleDetail">等待核验</div><div class="kpi-track"><div class="kpi-fill" id="kpiSingleBar"></div></div></article>
-      <article class="kpi"><div class="kpi-label">大小、单双同时命中</div><div class="kpi-value" id="kpiBoth">—</div><div class="kpi-detail" id="kpiBothDetail">等待核验</div><div class="kpi-track"><div class="kpi-fill" id="kpiBothBar"></div></div></article>
-      <article class="kpi"><div class="kpi-label">和值热区命中率</div><div class="kpi-value" id="kpiRange">—</div><div class="kpi-detail" id="kpiRangeDetail">等待核验</div><div class="kpi-track"><div class="kpi-fill" id="kpiRangeBar"></div></div></article>
-    </div>
-    <div class="perf-note" id="perfSourceNote">提示：首次使用没有已核验的实时预测属于正常情况。请保持数据正常更新；浏览器会在本地保存预测快照，之后开奖才能计算真实记录命中率。</div>
-    <div class="perf-split">
-      <article class="panel"><div class="panel-header"><h2>双组命中轨迹</h2><span class="small muted" id="perfTimelineCount">最近 0 条</span></div><div class="activity-tiles" id="perfTimeline" aria-label="最近双组预测命中情况"></div><div class="activity-footer"><span><i class="swatch win"></i>命中</span><span><i class="swatch lose"></i>未中</span><span class="muted">从左到右：旧 → 新</span></div></article>
-      <article class="panel"><div class="panel-header"><h2>连续表现</h2><span class="small muted">以双组核验结果计算</span></div><div class="mini-metrics"><div class="mini-metric"><span>当前连续命中</span><b id="perfWinStreak">—</b></div><div class="mini-metric"><span>最高连续命中</span><b id="perfMaxStreak">—</b></div><div class="mini-metric"><span>当前连续未中</span><b id="perfLoseStreak">—</b></div><div class="mini-metric"><span>已核验期数</span><b id="perfSettled">0</b></div></div></article>
-    </div>
-    <section class="panel history-panel"><div class="panel-header"><h2>逐期预测核验记录</h2><span class="small muted" id="perfRecordCount">0 条</span></div><div class="history-table-wrap"><table class="history-table"><thead><tr><th>目标期号</th><th>大小</th><th>单双</th><th>双组参考</th><th>开奖结果</th><th>大小</th><th>单双</th><th>双组</th></tr></thead><tbody id="predictionHistoryBody"><tr><td colspan="8" class="history-empty">等待预测记录</td></tr></tbody></table></div></section>
-  </section>
-  <section class="analysis-grid" id="analysisSection">
+  <div class="safety">⚠ <b>重要说明：</b>所有“预测”均是基于已开奖样本的频率分析，不是未来真实概率或必中信号。独立随机开奖无法通过走势图保证预测准确，勿据此进行高风险投注。</div>
+  <section class="analysis-grid">
     <article class="panel chart-panel"><div class="panel-header"><h2>开奖和值走势图</h2><div class="tabs" id="trendTabs"><button class="tab active" data-limit="20">20期</button><button class="tab" data-limit="50">50期</button><button class="tab" data-limit="100">100期</button></div></div><canvas id="trendChart" role="img" aria-label="最近开奖和值变化折线图"></canvas><div class="legend"><span><i class="key-dot"></i>历史和值（0–27）</span><span>越新越靠右</span></div></article>
     <article class="panel"><div class="panel-header"><h2>近期频率统计</h2><span class="small muted" id="statsCount">最近 0 期</span></div><div class="stat-row"><div class="stat-label"><b>大 (14–27)</b><span id="bigStat">—</span></div><div class="track"><div id="bigBar" class="track-fill" style="width:0%"></div></div><div class="split"><span>小 (0–13)</span><span id="smallStat">—</span></div></div><div class="stat-row"><div class="stat-label"><b>单</b><span id="oddStat">—</span></div><div class="track"><div id="oddBar" class="track-fill" style="width:0%"></div></div><div class="split"><span>双</span><span id="evenStat">—</span></div></div><div class="stat-boxes"><div class="stat-box"><small>最近20期均值</small><strong id="avgStat">—</strong><small>和值平均</small></div><div class="stat-box"><small>连续相同大小</small><strong id="streakStat">—</strong><small>期（仅历史）</small></div></div></article>
   </section>
-  <section class="panel history-panel" id="drawHistorySection"><div class="panel-header"><h2>开奖历史</h2><span class="small muted" id="historyTotal">暂无数据</span></div><div class="history-table-wrap"><table class="history-table"><thead><tr><th>期号</th><th>开奖结果</th><th>和值</th><th>大小</th><th>单双</th><th>组合</th><th>开奖时间（北京时间）</th></tr></thead><tbody id="historyBody"><tr><td class="history-empty" colspan="7">正在加载…</td></tr></tbody></table></div></section>
-  <footer class="footer"><span>28 PRO v3 · 自动复盘与真实核验研究站 · 不提供投注、充值或收益保证</span><span>开奖数据由 <a href="https://pc28.world" target="_blank" rel="noreferrer">pc28.world</a> 提供 · <a href="https://pc28.world/apidoc" target="_blank" rel="noreferrer">接口文档</a></span></footer>
+  <section class="panel history-panel"><div class="panel-header"><h2>开奖历史</h2><span class="small muted" id="historyTotal">暂无数据</span></div><div class="history-table-wrap"><table class="history-table"><thead><tr><th>期号</th><th>开奖结果</th><th>和值</th><th>大小</th><th>单双</th><th>组合</th><th>开奖时间（北京时间）</th></tr></thead><tbody id="historyBody"><tr><td class="history-empty" colspan="7">正在加载…</td></tr></tbody></table></div></section>
+  <footer class="footer"><span>28 LIVE · 移动端实时开奖与统计演示站 · 不提供投注、充值或收益保证</span><span>开奖数据由 <a href="https://pc28.world" target="_blank" rel="noreferrer">pc28.world</a> 提供 · <a href="https://pc28.world/apidoc" target="_blank" rel="noreferrer">接口文档</a></span></footer>
 </div>
-
-<div class="modal-mask" id="settingsModal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="row-between"><h3 id="settingsTitle">⚙ 网站外观设置</h3><button class="btn plain" id="settingsClose" aria-label="关闭设置">✕</button></div><p>按自己的喜好调整网站界面。设置只保存在当前浏览器，不影响开奖接口。</p><div class="settings-group"><div class="settings-group-title">主题强调色</div><div class="swatches" id="themeChoices"><button class="swatch-btn selected" data-theme="blue" style="background:#2563eb" title="科技蓝" aria-label="科技蓝">✓</button><button class="swatch-btn" data-theme="green" style="background:#098b74" title="清新绿" aria-label="清新绿"></button><button class="swatch-btn" data-theme="purple" style="background:#7654d7" title="雅致紫" aria-label="雅致紫"></button><button class="swatch-btn" data-theme="orange" style="background:#dc7d28" title="暖橙" aria-label="暖橙"></button></div></div><div class="settings-group"><div class="settings-group-title">页面布局</div><label class="setting-line">紧凑卡片布局<input type="checkbox" id="compactSetting"></label><label class="setting-line">显示走势图与近期频率<input type="checkbox" id="showAnalysisSetting" checked></label><label class="setting-line">显示历史开奖记录<input type="checkbox" id="showHistorySetting" checked></label></div><div class="settings-hint">清除浏览器数据或更换手机后，原有偏好与本地预测记录可能丢失；不同设备间不会自动同步。</div><div class="modal-actions"><button class="btn" id="settingsReset">恢复默认外观</button><button class="btn primary" id="settingsDone">完成</button></div></div></div>
 <div class="modal-mask" id="manualModal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="manualTitle"><div class="row-between"><h3 id="manualTitle">手动录入开奖结果</h3><button class="btn plain" id="modalClose" aria-label="关闭">✕</button></div><p>若网络限制第三方开奖接口，可手动填入真实开奖结果继续分析。录入会暂存在当前手机浏览器中。手动模式下不会冒充官方实时数据。</p><label class="form-label" for="fieldIssue">期号</label><input id="fieldIssue" class="field" inputmode="numeric" placeholder="例如 3481501"><div class="form-row"><div><label class="form-label" for="field1">第一个数字 (0–9)</label><input id="field1" class="field" inputmode="numeric" placeholder="0–9"></div><div><label class="form-label" for="field2">第二个数字 (0–9)</label><input id="field2" class="field" inputmode="numeric" placeholder="0–9"></div></div><label class="form-label" for="field3">第三个数字 (0–9)</label><input id="field3" class="field" inputmode="numeric" placeholder="0–9"><div class="hint" id="manualError"></div><div class="modal-actions"><button class="btn" id="resetManual">清除手动记录</button><button class="btn primary" id="saveManual">保存结果</button></div></div></div>
 <script>
 (function(){'use strict';
   const API='https://pc28.world';
   const $=id=>document.getElementById(id);
-  const state={history:[],local:[],demo:false,live:false,feed:'connecting',lastSync:0,nextTs:0,nextNbr:null,trendLimit:20,es:null,pollTimer:null,polling:false,loading:false,manualMode:false,retryMs:6000,forecasts:[],perfMode:'live',perfWindow:10,settings:{theme:'blue',compact:false,showAnalysis:true,showHistory:true,modelWindow:12,autoLearn:true},learningLogs:[]};
+  const state={history:[],local:[],demo:false,live:false,feed:'connecting',lastSync:0,nextTs:0,nextNbr:null,trendLimit:20,es:null,pollTimer:null,polling:false,loading:false,manualMode:false,retryMs:6000};
   const pad2=n=>String(n).padStart(2,'0');
   const validSum=v=>Number.isInteger(v)&&v>=0&&v<=27;
   const size=n=>n>=14?'大':'小';const parity=n=>n%2?'单':'双';const combo=n=>size(n)+parity(n);
@@ -222,7 +92,7 @@
       const old=keyed.get(draw.nbr);
       if(!old || (old.n1===null&&draw.n1!==null))keyed.set(draw.nbr,draw);
     }
-    state.history=[...keyed.values()].sort((a,b)=>BigInt(b.nbr)>BigInt(a.nbr)?1:BigInt(b.nbr)<BigInt(a.nbr)?-1:0).slice(0,200);
+    state.history=[...keyed.values()].sort((a,b)=>Number(b.nbr)-Number(a.nbr)).slice(0,200);
     render();
   }
   function setFeed(mode,desc){
@@ -311,270 +181,19 @@
     merge(items);setFeed('demo','这是虚构的界面演示数据，不是真实开奖记录。');$('syncDisplay').textContent='演示模式 · 非真实数据';
   }
   function percent(a,b){return b?Math.round(a*1000/b)/10:0;}
-  // v2: 只取最新 8/12/20/30 期。按时间衰减的加权频率，而非随机扰动。
-  // 不尝试人为强制每期改号：排名保持不变时，会解释“未改变”的原因。
-  const GROUPS=['小单','小双','大单','大双'];
-  const BUCKETS=[{label:'0–9',test:n=>n<=9},{label:'10–17',test:n=>n>=10&&n<=17},{label:'18–27',test:n=>n>=18}];
-  function predict(history,windowSize=state.settings.modelWindow){
-    const sample=history.slice(0,Math.min(history.length,windowSize));if(sample.length<8)return null;
-    const groupScore=Object.fromEntries(GROUPS.map(x=>[x,0]));
-    const groupCounts=Object.fromEntries(GROUPS.map(x=>[x,0]));
-    const bucketScore=BUCKETS.map(()=>0),counts=BUCKETS.map(()=>0);
-    const dims={大:0,小:0,单:0,双:0};
-    sample.forEach((draw,i)=>{
-      const weight=1.8-(sample.length<=1?0:i*0.8/(sample.length-1));
-      const g=combo(draw.sum);groupScore[g]+=weight;groupCounts[g]++;
-      dims[size(draw.sum)]+=weight;dims[parity(draw.sum)]+=weight;
-      const bucketIndex=BUCKETS.findIndex(b=>b.test(draw.sum));
-      if(bucketIndex!==-1){bucketScore[bucketIndex]+=weight;counts[bucketIndex]++;}
-    });
-    // 仅在分数真正相等时使用固定顺序；不靠“制造变化”误导用户。
-    const order=GROUPS.slice().sort((a,b)=>groupScore[b]-groupScore[a]||GROUPS.indexOf(a)-GROUPS.indexOf(b));
-    const bucketOrder=BUCKETS.map((b,i)=>i).sort((a,b)=>bucketScore[b]-bucketScore[a]||a-b);
-    const chosenSize=dims.大>=dims.小?'大':'小';
-    const chosenParity=dims.单>=dims.双?'单':'双';
-    const sizeHits=sample.filter(x=>size(x.sum)===chosenSize).length;
-    const parityHits=sample.filter(x=>parity(x.sum)===chosenParity).length;
-    const hot=BUCKETS[bucketOrder[0]];
-    return {chosenSize,chosenParity,order,hot,counts,period:sample.length,sizeHits,parityHits,groupScore,groupCounts,bucketScore,dims};
-  }
-
-  // 本机记录的前瞻预测：仅在实时接口给出当前最新期开奖后，才为下一期创建不可更改的快照。
-  // 不把已经知道开奖结果的历史样本伪装为实时预测；历史回测单独计算和标注。
-  const FORECAST_KEY='pc28_pro_forecasts_v1';
-  const SETTINGS_KEY='pc28_pro_settings_v1';
-  const LEARNING_KEY='pc28_pro_learning_logs_v1';
-  const themes={blue:{accent:'#2563eb',light:'#eaf1ff'},green:{accent:'#098b74',light:'#e8f8f3'},purple:{accent:'#7654d7',light:'#f2edff'},orange:{accent:'#dc7d28',light:'#fff2e6'}};
-  function saveForecasts(){try{localStorage.setItem(FORECAST_KEY,JSON.stringify(state.forecasts.slice(-350)));}catch(e){console.warn('本机存储不可用',e);}}
-  function loadForecasts(){
-    try{
-      const source=JSON.parse(localStorage.getItem(FORECAST_KEY)||'[]');
-      state.forecasts=Array.isArray(source)?source.filter(x=>x&&/^\d{1,16}$/.test(String(x.issue))&&/^\d{1,16}$/.test(String(x.basedOn))&&x.basedOn!==x.issue&&['大','小'].includes(x.size)&&['单','双'].includes(x.parity)&&Array.isArray(x.groups)&&x.groups.length===2&&x.groups.every(g=>['大单','大双','小单','小双'].includes(g))&&Number.isFinite(x.createdAt)).slice(-350):[];
-    }catch(e){state.forecasts=[];}
-  }
-  function loadSettings(){
-    try{const obj=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}');if(obj&&typeof obj==='object'){
-      if(themes[obj.theme])state.settings.theme=obj.theme;
-      for(const key of ['compact','showAnalysis','showHistory'])if(typeof obj[key]==='boolean')state.settings[key]=obj[key];
-      if([8,12,20,30].includes(Number(obj.modelWindow)))state.settings.modelWindow=Number(obj.modelWindow);
-      if(typeof obj.autoLearn==='boolean')state.settings.autoLearn=obj.autoLearn;
-    }}catch(e){}
-    applySettings();
-  }
-  function applySettings(){
-    const cfg=state.settings,t=themes[cfg.theme]||themes.blue;
-    document.documentElement.style.setProperty('--accent',t.accent);
-    document.documentElement.style.setProperty('--mint',t.accent);
-    document.documentElement.style.setProperty('--cyan',t.accent);
-    document.documentElement.style.setProperty('--accent-light',t.light);
-    document.body.classList.toggle('compact',cfg.compact);
-    $('analysisSection').hidden=!cfg.showAnalysis;$('drawHistorySection').hidden=!cfg.showHistory;
-    $('compactSetting').checked=cfg.compact;$('showAnalysisSetting').checked=cfg.showAnalysis;$('showHistorySetting').checked=cfg.showHistory;
-    document.querySelectorAll('#themeChoices [data-theme]').forEach(btn=>{const active=btn.dataset.theme===cfg.theme;btn.classList.toggle('selected',active);btn.textContent=active?'✓':'';btn.setAttribute('aria-pressed',String(active));});
-    document.querySelectorAll('#modelWindowTabs [data-sample]').forEach(btn=>{const selected=Number(btn.dataset.sample)===cfg.modelWindow;btn.classList.toggle('active',selected);btn.setAttribute('aria-pressed',String(selected));});
-    document.querySelector('meta[name="theme-color"]').setAttribute('content','#f6f8fc');
-    $('autoLearnToggle').textContent=cfg.autoLearn?'自动复盘：开启':'自动复盘：暂停';
-    $('autoLearnToggle').setAttribute('aria-pressed',String(cfg.autoLearn));
-    if(state.history.length&&cfg.showAnalysis)drawChart();
-    try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(cfg));}catch(e){}
-  }
-  function desiredIssue(latest){
-    if(!latest||!/^\d{1,16}$/.test(latest.nbr))return null;
-    const current=BigInt(latest.nbr);
-    const supplied=state.nextNbr&&/^\d{1,16}$/.test(state.nextNbr)?BigInt(state.nextNbr):null;
-    const desired=(supplied!==null&&supplied>current&&supplied<=current+1n)?supplied:current+1n;
-    return desired.toString();
-  }
-  function snapPrediction(){
-    if(state.demo||state.manualMode||!state.live||state.history.length<8)return;
-    const latest=state.history[0];const issue=desiredIssue(latest);if(!issue)return;
-    if(state.forecasts.some(x=>x.issue===issue))return;
-    const p=predict(state.history);if(!p)return;
-    // 保存唯一快照，一旦写入就不会因后续频率变化而追改。
-    const snapshot={issue,basedOn:latest.nbr,size:p.chosenSize,parity:p.chosenParity,groups:p.order.slice(0,2),range:p.hot.label,createdAt:Date.now(),modelWindow:state.settings.modelWindow,modelVersion:'rolling-v2'};
-    state.forecasts.push(snapshot);state.forecasts=state.forecasts.slice(-350);saveForecasts();
-  }
-  const metricNames=['Size','Parity','Double','Single','Both','Range'];
-  function isInRange(r,n){return r==='0–9'?n>=0&&n<=9:r==='10–17'?n>=10&&n<=17:r==='18–27'?n>=18&&n<=27:false;}
-  function evaluate(p,draw){
-    const actualGroup=combo(draw.sum);
-    return {size:p.size===size(draw.sum),parity:p.parity===parity(draw.sum),double:p.groups.includes(actualGroup),single:p.groups[0]===actualGroup,both:p.size===size(draw.sum)&&p.parity===parity(draw.sum),range:isInRange(p.range,draw.sum)};
-  }
-  // v3: 仅用“目标期之前”的开奖训练每个候选模型；全部候选使用相同回看期，防止未来信息泄漏。
-  const WINDOWS=[8,12,20,30];
-  function windowScores(history){
-    const ascending=[...history].reverse();
-    const start=Math.max(30,ascending.length-55); // 相同验证样本，最多55期
-    return WINDOWS.map(window=>{
-      let count=0,double=0,range=0,sizeHit=0,parityHit=0;
-      for(let i=start;i<ascending.length;i++){
-        const p=predict(ascending.slice(Math.max(0,i-window),i).reverse(),window);
-        if(!p)continue;
-        const prediction={size:p.chosenSize,parity:p.chosenParity,groups:p.order.slice(0,2),range:p.hot.label};
-        const result=evaluate(prediction,ascending[i]);
-        count++;double+=Number(result.double);range+=Number(result.range);sizeHit+=Number(result.size);parityHit+=Number(result.parity);
-      }
-      return {window,count,double,range,sizeHit,parityHit,score:count?(double*.5+range*.25+sizeHit*.125+parityHit*.125)/count:0};
-    });
-  }
-  function saveLearningLogs(){
-    try{localStorage.setItem(LEARNING_KEY,JSON.stringify(state.learningLogs.slice(-350)));}catch(e){console.warn('自动复盘记录暂时不能保存',e);}
-  }
-  function loadLearningLogs(){
-    try{
-      const rows=JSON.parse(localStorage.getItem(LEARNING_KEY)||'[]');
-      state.learningLogs=Array.isArray(rows)?rows.filter(x=>x&&/^\d{1,16}$/.test(String(x.issue))&&typeof x.missed==='boolean'&&WINDOWS.includes(Number(x.before))&&WINDOWS.includes(Number(x.after))&&typeof x.reason==='string').slice(-350):[];
-    }catch(e){state.learningLogs=[];}
-  }
-  function learnFromSettled(){
-    // 演示 / 手动数据不得进入“真实预测后自动学习”记录。
-    if(!state.live||state.demo||state.manualMode)return;
-    const byIssue=new Map(state.history.map(d=>[d.nbr,d]));
-    const reviewed=new Set(state.learningLogs.map(x=>x.issue));
-    const pending=state.forecasts.filter(f=>byIssue.has(f.issue)&&!reviewed.has(f.issue))
-      .sort((a,b)=>BigInt(a.issue)<BigInt(b.issue)?-1:BigInt(a.issue)>BigInt(b.issue)?1:0);
-    if(!pending.length)return;
-    let changed=false;
-    for(const f of pending){
-      const draw=byIssue.get(f.issue);
-      const checks=evaluate(f,draw);
-      const missed=!checks.double||!checks.range;
-      const before=state.settings.modelWindow;
-      let after=before;
-      let reason='双组与和值热区均命中；仅保存核验，不调整窗口。';
-      if(missed){
-        const wrong=[!checks.double?'双组':'',!checks.range?'和值热区':''].filter(Boolean).join('和');
-        const pastOnly=state.history.filter(d=>BigInt(d.nbr)<=BigInt(f.issue));
-        const scores=windowScores(pastOnly);
-        const current=scores.find(x=>x.window===before);
-        const best=scores.slice().sort((a,b)=>b.score-a.score||Math.abs(a.window-before)-Math.abs(b.window-before))[0];
-        if(!state.settings.autoLearn){
-          reason=`${wrong}未中；自动复盘已暂停，保留 ${before} 期窗口。`;
-        }else if(!current||!best||current.count<16||best.count<16){
-          reason=`${wrong}未中；共同回看样本不足16期，保留 ${before} 期窗口，避免少量数据误导。`;
-        }else if(best.window!==before&&best.score-current.score>=0.05-1e-10){
-          after=best.window;
-          state.settings.modelWindow=after;
-          reason=`${wrong}未中；共同回看 ${best.count} 期，${after}期窗口的综合回看得分比原 ${before}期高 ${((best.score-current.score)*100).toFixed(1)} 个百分点，下一期起采用新窗口。`;
-        }else{
-          reason=`${wrong}未中；已重算4种窗口，但没有比当前 ${before} 期高至少5个百分点且样本足够的候选，暂不强制改动。`;
-        }
-      }
-      state.learningLogs.push({issue:f.issue,basedOn:f.basedOn,missed,wasDouble:checks.double,wasRange:checks.range,before,after,reason,reviewedAt:Date.now()});
-      changed=true;
-    }
-    if(changed){
-      state.learningLogs=state.learningLogs.slice(-350);
-      saveLearningLogs();
-      applySettings(); // 持久化被复盘改变的窗口；不触碰旧预测快照。
-    }
-  }
-  function renderLearning(){
-    const entries=state.learningLogs;
-    const last=entries[entries.length-1];
-    $('learningWindow').textContent=state.settings.modelWindow+' 期';
-    $('learningReviewed').textContent=entries.length+' 期';
-    $('learningMisses').textContent=entries.filter(x=>x.missed).length+' 次';
-    $('learningReason').textContent=last
-      ?`期号 ${last.issue}：${last.reason}`
-      :'等待开奖前保存的下一期预测得到真实开奖核验。历史回看表可以先显示，但不算作真实预测记录。';
-    const rows=windowScores(state.history);
-    $('learningCandidates').innerHTML=rows.map(x=>{
-      const isCurrent=x.window===state.settings.modelWindow;
-      return `<tr><td class="${isCurrent?'active-window':''}">${x.window}期</td><td>${x.count}期（历史模拟）</td><td>${x.count?percent(x.double,x.count)+'%':'—'}</td><td>${x.count?percent(x.range,x.count)+'%':'—'}</td><td>${x.count?(x.score*100).toFixed(1)+'分':'—'}</td><td>${isCurrent?'当前使用':'候选'}</td></tr>`;
-    }).join('');
-    $('learningLogList').innerHTML=entries.length?entries.slice(-6).reverse().map(x=>`<div class="learning-item">${safe(x.issue)}期 · <em class="${x.missed?'':'good'}">${x.missed?'参考未全部命中':'两项均命中'}</em> · ${safe(x.before)} → ${safe(x.after)}期。${safe(x.reason)}</div>`).join(''):'<div class="learning-item">暂无已核验的实时预测，等待下一期开奖。</div>';
-  }
-  function liveRows(){
-    const known=new Map(state.history.map(x=>[x.nbr,x]));
-    return state.forecasts.map(p=>({forecast:p,draw:known.get(p.issue)||null})).sort((a,b)=>BigInt(b.forecast.issue)>BigInt(a.forecast.issue)?1:BigInt(b.forecast.issue)<BigInt(a.forecast.issue)?-1:0);
-  }
-  function replayRows(){
-    const ascending=[...state.history].reverse();const results=[];
-    // 滚动回测：针对第 i 期，模型只读取前 i 期结果，绝不读取目标期结果。
-    for(let i=8;i<ascending.length;i++){
-      const p=predict(ascending.slice(0,i).reverse());if(!p)continue;
-      results.push({forecast:{issue:ascending[i].nbr,basedOn:ascending[i-1].nbr,size:p.chosenSize,parity:p.chosenParity,groups:p.order.slice(0,2),range:p.hot.label,createdAt:0},draw:ascending[i]});
-    }
-    return results.reverse();
-  }
-  function renderPerformance(){
-    const replay=state.perfMode==='replay';const rows=replay?replayRows():liveRows();
-    const available=rows.filter(r=>r.draw);
-    const limit=state.perfWindow==='all'?Infinity:Number(state.perfWindow);
-    const settled=available.slice(0,limit);
-    const allVisible=rows.slice(0,Math.max(30,Number.isFinite(limit)?limit:30));
-    $('perfModeTitle').textContent=replay?'历史滚动回测（模拟）':'已核验的实时预测';
-    $('perfModeDesc').textContent=replay?'每期只使用当时以前的历史数据重新生成模型参考；不代表曾在开奖前实际发布。':'仅计算记录后开奖、已核验的期数；没有数据时不显示假胜率。';
-    $('perfHeadline').textContent=settled.length?`${settled.length} 期已核验`:'暂无已核验期数';
-    $('perfSourceNote').textContent=replay
-      ?(state.demo?'演示模式：历史样本为模拟数据，下面所有回测结果仅供查看界面。':state.manualMode?'手动录入历史回测：计算只基于本机输入的开奖结果。':'历史回测仅反映已知样本的滚动模拟，不能替代真实前瞻预测表现，也不保证未来胜率。')
-      :'实时模式：预测快照会在获得最新开奖后为下一期生成，并保存在当前浏览器；仅在新开奖结果被收到时核验。切换浏览器、清除数据可能丢失快照。';
-    for(const metric of metricNames){
-      const key=metric.toLowerCase();const hits=settled.filter(x=>evaluate(x.forecast,x.draw)[key]).length;
-      const rate=settled.length?percent(hits,settled.length):0;
-      $('kpi'+metric).textContent=settled.length?rate+'%':'—';
-      $('kpi'+metric+'Detail').textContent=settled.length?`${hits} 中 / ${settled.length} 期`:'暂无可核验记录';
-      $('kpi'+metric+'Bar').style.width=rate+'%';
-    }
-    $('perfRecordCount').textContent=rows.length+' 条记录';
-    $('predictionHistoryBody').innerHTML=allVisible.map(r=>{
-      const v=r.draw?evaluate(r.forecast,r.draw):null;
-      const status=(key)=>v?`<span class="record-pill ${v[key]?'win':'lose'}">${v[key]?'✓ 命中':'✕ 未中'}</span>`:'<span class="record-pill pending">待开奖</span>';
-      const actual=r.draw?`${r.draw.sum} · ${combo(r.draw.sum)}`:'待开奖';
-      return `<tr><td class="code">${safe(r.forecast.issue)}</td><td>${safe(r.forecast.size)}</td><td>${safe(r.forecast.parity)}</td><td>${safe(r.forecast.groups.join(' / '))}</td><td>${safe(actual)}</td><td>${status('size')}</td><td>${status('parity')}</td><td>${status('double')}</td></tr>`;
-    }).join('')||'<tr><td class="history-empty" colspan="8">暂无记录。实时模式需要等首次预测后下一期开奖；也可切换到「历史回测」查看样本内模拟。</td></tr>';
-    const chronological=[...settled].reverse();const events=chronological.slice(-30);
-    $('perfTimelineCount').textContent=events.length+' 期';
-    $('perfTimeline').innerHTML=events.map(r=>`<span class="activity-tile ${evaluate(r.forecast,r.draw).double?'win':'lose'}" title="${safe(r.forecast.issue)}：${evaluate(r.forecast,r.draw).double?'双组命中':'双组未中'}"></span>`).join('')||'<span class="small muted" style="grid-column:span 12">等待核验后显示命中轨迹</span>';
-    let curWin=0,curLose=0,maxWin=0,running=0;
-    for(const item of chronological){const won=evaluate(item.forecast,item.draw).double;running=won?running+1:0;maxWin=Math.max(maxWin,running);}
-    for(const item of settled){if(!evaluate(item.forecast,item.draw).double)break;curWin++;}
-    for(const item of settled){if(evaluate(item.forecast,item.draw).double)break;curLose++;}
-    $('perfWinStreak').textContent=settled.length?curWin+' 期':'—';$('perfMaxStreak').textContent=settled.length?maxWin+' 期':'—';
-    $('perfLoseStreak').textContent=settled.length?curLose+' 期':'—';$('perfSettled').textContent=settled.length;
-  }
-  function setModelRow(target,label,count,score,total){
-    const track=Math.max(0,Math.min(100,total?score/total*100:0));
-    return `<div class="model-stat"><b>${safe(label)}</b><div class="track"><div class="track-fill" style="width:${track.toFixed(1)}%"></div></div><small>${count}期 / ${score.toFixed(1)}分</small></div>`;
-  }
-  function explainModel(p){
-    const items=state.history;
-    if(!p){
-      $('modelChange').textContent='至少需要8期有效开奖数据。请检查下方“开奖历史”是否在持续增加。';
-      $('modelComboBars').textContent='等待数据';$('modelRangeBars').textContent='等待数据';
-      $('modelHealth').textContent=items.length?`目前仅有 ${items.length} 期有效开奖。`: '目前没有有效开奖历史。';
-      $('modelLock').textContent='每期首次保存的前瞻预测不会因刷新、调整窗口而被修改。';
-      return;
-    }
-    const previous=predict(items.slice(1),state.settings.modelWindow);
-    const groupTotal=Object.values(p.groupScore).reduce((a,b)=>a+b,0);
-    const bucketTotal=p.bucketScore.reduce((a,b)=>a+b,0);
-    $('modelComboBars').innerHTML=p.order.map(g=>setModelRow(null,g,p.groupCounts[g],p.groupScore[g],groupTotal)).join('');
-    $('modelRangeBars').innerHTML=BUCKETS.map((b,i)=>setModelRow(null,b.label,p.counts[i],p.bucketScore[i],bucketTotal)).join('');
-    const changes=[];
-    if(previous){
-      if(previous.order.slice(0,2).join(' / ')!==p.order.slice(0,2).join(' / '))changes.push(`双组从 ${previous.order.slice(0,2).join(' / ')} 调整为 ${p.order.slice(0,2).join(' / ')}`);
-      if(previous.hot.label!==p.hot.label)changes.push(`和值热区从 ${previous.hot.label} 调整为 ${p.hot.label}`);
-      if(previous.chosenSize!==p.chosenSize)changes.push(`大小从 ${previous.chosenSize} 变为 ${p.chosenSize}`);
-      if(previous.chosenParity!==p.chosenParity)changes.push(`单双从 ${previous.chosenParity} 变为 ${p.chosenParity}`);
-    }
-    const newest=items[0],removed=items[state.settings.modelWindow];
-    const updateText=previous
-      ?(changes.length?changes.join('；')+'。':'四项排名均未改变：新开奖纳入统计，但当前窗口内的加权排序仍然相同。')
-      :'当前样本不足以与上一期完整滚动窗口比较。';
-    $('modelChange').textContent=`最新开奖 ${newest.nbr}（和值 ${newest.sum} · ${combo(newest.sum)}）已纳入近 ${p.period} 期分析。${removed?`最旧一期 ${removed.nbr} 已滑出窗口。`:''}${updateText}`;
-    const unique= new Set(items.slice(0,p.period).map(x=>x.nbr)).size;
-    $('modelHealth').textContent=`样本覆盖 ${items[p.period-1].nbr} ～ ${newest.nbr} · 最新和值 ${newest.sum} · 去重有效样本 ${unique} 期 · 双组选取加权频率前两名，和值热区选加权频率最高一档。`;
-    $('modelVersionText').textContent=`最近 ${p.period} 期 · ${state.settings.autoLearn?'自动复盘已开启':'手动窗口'} · 新记录权重1.8，旧记录权重1.0`;
-    let lockText='本期前瞻预测已保存后不会修改；调节统计窗口只影响以后首次生成的预测。';
-    const issue=state.demo||state.manualMode?null:desiredIssue(newest);
-    const locked=issue&&state.forecasts.find(x=>x.issue===issue);
-    if(locked){
-      const different=locked.groups.join('|')!==p.order.slice(0,2).join('|')||locked.range!==p.hot.label||locked.size!==p.chosenSize||locked.parity!==p.chosenParity;
-      lockText=different?`当前 ${issue} 期已锁定先前的参考（原窗口 ${locked.modelWindow||'旧版'} 期）；上方分析展示新窗口排序，但不追改已保存预测。等下期开盘才按新窗口保存。`:`当前 ${issue} 期参考已锁定，本机核验继续使用当时的快照。`;
-    }
-    $('modelLock').textContent=lockText;
+  function predict(history){
+    const sample=history.slice(0,Math.min(history.length,60));if(sample.length<8)return null;
+    // 频率信号只是描述样本，与未来事件概率不同；平滑避免少量数据引起极端比率。
+    const group=['小单','小双','大单','大双'];
+    const score=Object.fromEntries(group.map(x=>[x,1]));
+    sample.forEach((d,i)=>{const weight=i<15?1.8:i<35?1.3:1;score[combo(d.sum)]+=weight;});
+    const order=group.slice().sort((a,b)=>score[b]-score[a]||group.indexOf(a)-group.indexOf(b));
+    const dims={大:0,小:0,单:0,双:0};sample.forEach((d,i)=>{const w=i<20?1.5:1;dims[size(d.sum)]+=w;dims[parity(d.sum)]+=w;});
+    const chosenSize=dims.大>=dims.小?'大':'小';const chosenParity=dims.单>=dims.双?'单':'双';
+    const bucket=[{label:'0–9',test:n=>n<=9},{label:'10–17',test:n=>n>=10&&n<=17},{label:'18–27',test:n=>n>=18}];
+    const counts=bucket.map(b=>sample.filter(d=>b.test(d.sum)).length);const max=Math.max(...counts);const hot=bucket[counts.indexOf(max)];
+    const sizeHits=sample.filter(x=>size(x.sum)===chosenSize).length,parityHits=sample.filter(x=>parity(x.sum)===chosenParity).length;
+    return {chosenSize,chosenParity,order,hot,counts,period:sample.length,sizeHits,parityHits};
   }
   function render(){
     const items=state.history;const latest=items[0];
@@ -587,19 +206,14 @@
     $('historyTotal').textContent=`已加载 ${items.length} 期`;
     const table=items.slice(0,30).map(d=>`<tr><td class="code">${safe(d.nbr)}</td><td>${d.n1===null?'—':`${d.n1} + ${d.n2} + ${d.n3}`}</td><td><strong>${d.sum}</strong></td><td>${size(d.sum)}</td><td>${parity(d.sum)}</td><td><span class="mini-badge ${d.sum>=14?'good':''}">${combo(d.sum)}</span></td><td>${safe(state.demo?'演示':d.time||'—')}</td></tr>`).join('');
     $('historyBody').innerHTML=table||'<tr><td colspan="7" class="history-empty">暂无开奖数据。请检查网络，点击刷新，或使用“手动录入”。</td></tr>';
-    learnFromSettled();
     const p=predict(items);
     if(p){
-      // UI 展示与已锁定前瞻快照一致；下方详细面板可查看当前窗口的滚动分析。
-      const target=state.demo||state.manualMode?null:desiredIssue(items[0]);
-      const locked=target&&state.forecasts.find(x=>x.issue===target);
-      const display=locked?{chosenSize:locked.size,chosenParity:locked.parity,order:locked.groups,hot:{label:locked.range}}:p;
-      $('predictionIssue').textContent=(state.demo?'演示分析 · ':state.manualMode?'手动统计 · ':'目标期 '+(target||'—')+' · ')+(locked?`已锁定快照`:`分析样本 ${p.period} 期`);
-      $('predSize').textContent=display.chosenSize;$('predParity').textContent=display.chosenParity;$('predCombo').textContent=display.order.slice(0,2).join(' / ');$('predRange').textContent=display.hot.label;
-      $('sizeDesc').textContent=locked?'开奖前保存的参考，不随设置追改':`近 ${p.period} 期出现 ${p.sizeHits} 次 · 历史频率`;
-      $('parityDesc').textContent=locked?'本期参考已锁定，等下一期才采用新设置':`近 ${p.period} 期出现 ${p.parityHits} 次 · 历史频率`;
-      $('comboDesc').textContent=locked?'双组锁定快照 · 不是保证命中':`近期加权频率前两名 · 可在下方查看得分`;
-      $('rangeDesc').textContent=locked?'历史快照 · 下方为新窗口滚动分析':'由近期期数和加权频率决定 · 可看各区间得分';
+      $('predictionIssue').textContent=(state.demo?'演示预测 · ':state.manualMode?'手动统计 · ':'目标期 '+(state.nextNbr||String(Number(items[0].nbr)+1))+' · ')+'样本 '+p.period+' 期';
+      $('predSize').textContent=p.chosenSize;$('predParity').textContent=p.chosenParity;$('predCombo').textContent=p.order.slice(0,2).join(' / ');$('predRange').textContent=p.hot.label;
+      $('sizeDesc').textContent=`近 ${p.period} 期内出现 ${p.sizeHits} 次 · 仅频率信号`;
+      $('parityDesc').textContent=`近 ${p.period} 期内出现 ${p.parityHits} 次 · 仅频率信号`;
+      $('comboDesc').textContent='按近期加权频次排序的两组，不代表必中';
+      $('rangeDesc').textContent='和值历史出现次数较多的区间';
     }else{
       ['predSize','predParity','predCombo','predRange'].forEach(x=>$(x).textContent='—');
       $('predictionIssue').textContent='至少需要 8 期历史样本';
@@ -613,24 +227,23 @@
     const avg=items.slice(0,20);$('avgStat').textContent=avg.length?(avg.reduce((a,b)=>a+b.sum,0)/avg.length).toFixed(1):'—';
     let streak=0;if(items.length){const s=size(items[0].sum);for(const d of items){if(size(d.sum)!==s)break;streak++;}}
     $('streakStat').textContent=streak||'—';
-    // 本期已先完成旧预测复盘，因此新快照只会采用当时最新选择的窗口。
-    snapPrediction();explainModel(p);renderPerformance();renderLearning();if(state.settings.showAnalysis)drawChart();
+    drawChart();
   }
   function drawChart(){
     const canvas=$('trendChart'),rect=canvas.getBoundingClientRect(),w=Math.max(250,rect.width||500),h=218,ratio=Math.min(window.devicePixelRatio||1,2);
     canvas.width=Math.round(w*ratio);canvas.height=Math.round(h*ratio);const c=canvas.getContext('2d');c.scale(ratio,ratio);c.clearRect(0,0,w,h);
-    const left=29,right=w-10,top=15,bottom=h-27;const ink=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#2563eb';
+    const left=29,right=w-10,top=15,bottom=h-27;
     c.font='11px system-ui';c.textAlign='right';c.textBaseline='middle';
     for(const tick of [0,7,14,21,27]){
-      const y=bottom-(tick/27)*(bottom-top);c.strokeStyle='#e3eaf4';c.lineWidth=1;c.setLineDash([3,5]);c.beginPath();c.moveTo(left,y);c.lineTo(right,y);c.stroke();c.setLineDash([]);c.fillStyle='#7f8fa6';c.fillText(String(tick),left-8,y);
+      const y=bottom-(tick/27)*(bottom-top);c.strokeStyle='#2a3c568c';c.lineWidth=1;c.setLineDash([3,5]);c.beginPath();c.moveTo(left,y);c.lineTo(right,y);c.stroke();c.setLineDash([]);c.fillStyle='#8191a9';c.fillText(String(tick),left-8,y);
     }
-    const rows=state.history.slice(0,state.trendLimit).reverse();if(rows.length===0){c.fillStyle='#72829a';c.textAlign='center';c.font='13px system-ui';c.fillText('等待开奖数据',w/2,h/2);return;}
+    const rows=state.history.slice(0,state.trendLimit).reverse();if(rows.length===0){c.fillStyle='#7b8ca7';c.textAlign='center';c.font='13px system-ui';c.fillText('等待开奖数据',w/2,h/2);return;}
     const points=rows.map((d,i)=>({x:left+(rows.length===1?0:(i/(rows.length-1))*(right-left)),y:bottom-(d.sum/27)*(bottom-top)}));
-    const gradient=c.createLinearGradient(0,top,0,bottom);gradient.addColorStop(0,'#7baaff42');gradient.addColorStop(1,'#7baaff00');
+    const gradient=c.createLinearGradient(0,top,0,bottom);gradient.addColorStop(0,'rgba(63,225,171,.30)');gradient.addColorStop(1,'rgba(63,225,171,0)');
     if(points.length>1){c.beginPath();c.moveTo(points[0].x,bottom);for(const p of points)c.lineTo(p.x,p.y);c.lineTo(points[points.length-1].x,bottom);c.closePath();c.fillStyle=gradient;c.fill();}
-    c.beginPath();points.forEach((p,i)=>i?c.lineTo(p.x,p.y):c.moveTo(p.x,p.y));c.strokeStyle=ink;c.lineWidth=2.4;c.lineJoin='round';c.stroke();
-    for(let i=0;i<points.length;i++){if(rows.length>30&&i%3!==0&&i!==points.length-1)continue;const p=points[i];c.beginPath();c.arc(p.x,p.y,i===points.length-1?4.4:2.3,0,Math.PI*2);c.fillStyle=ink;c.fill();}
-    c.textAlign='center';c.fillStyle='#72829a';c.font='11px system-ui';c.fillText('较早',left+12,h-8);c.fillText('最新',right-12,h-8);
+    c.beginPath();points.forEach((p,i)=>i?c.lineTo(p.x,p.y):c.moveTo(p.x,p.y));c.strokeStyle='#4ae6b8';c.lineWidth=2.4;c.lineJoin='round';c.stroke();
+    for(let i=0;i<points.length;i++){if(rows.length>30&&i%3!==0&&i!==points.length-1)continue;const p=points[i];c.beginPath();c.arc(p.x,p.y,i===points.length-1?4.4:2.3,0,Math.PI*2);c.fillStyle='#6df7cc';c.fill();}
+    c.textAlign='center';c.fillStyle='#8b9ab3';c.font='11px system-ui';c.fillText('较早',left+12,h-8);c.fillText('最新',right-12,h-8);
   }
   function ticker(){
     if(state.lastSync&&state.feed!=='demo'&&state.feed!=='manual')$('syncDisplay').textContent='最近同步 '+new Date(state.lastSync).toLocaleTimeString('zh-CN',{hour12:false});
@@ -643,21 +256,6 @@
     if(state.demo||state.manualMode){state.demo=false;state.manualMode=false;state.history=[];state.live=false;state.nextTs=0;state.nextNbr=null;setFeed('connecting','已退出离线模式，正在重连开奖数据源…');}
     getHistory();getLatest();connectSSE();
   }
-
-  function closeSettings(){$('settingsModal').classList.remove('show');}
-  $('settingsOpen').addEventListener('click',()=>{$('settingsModal').classList.add('show');});
-  $('settingsClose').addEventListener('click',closeSettings);
-  $('settingsDone').addEventListener('click',closeSettings);
-  $('settingsModal').addEventListener('click',e=>{if(e.target===$('settingsModal'))closeSettings();});
-  $('themeChoices').addEventListener('click',e=>{const btn=e.target.closest('[data-theme]');if(!btn||!themes[btn.dataset.theme])return;state.settings.theme=btn.dataset.theme;applySettings();});
-  $('compactSetting').addEventListener('change',e=>{state.settings.compact=e.target.checked;applySettings();});
-  $('showAnalysisSetting').addEventListener('change',e=>{state.settings.showAnalysis=e.target.checked;applySettings();});
-  $('showHistorySetting').addEventListener('change',e=>{state.settings.showHistory=e.target.checked;applySettings();});
-  $('settingsReset').addEventListener('click',()=>{state.settings={theme:'blue',compact:false,showAnalysis:true,showHistory:true,modelWindow:12,autoLearn:true};applySettings();render();});
-  $('modelWindowTabs').addEventListener('click',e=>{const btn=e.target.closest('[data-sample]');if(!btn)return;const windowSize=Number(btn.dataset.sample);if(![8,12,20,30].includes(windowSize))return;state.settings.modelWindow=windowSize;state.settings.autoLearn=false;applySettings();render();});
-  $('autoLearnToggle').addEventListener('click',()=>{state.settings.autoLearn=!state.settings.autoLearn;applySettings();render();});
-  $('modeTabs').addEventListener('click',e=>{const btn=e.target.closest('[data-mode]');if(!btn)return;state.perfMode=btn.dataset.mode;$('modeTabs').querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===btn));renderPerformance();});
-  $('windowTabs').addEventListener('click',e=>{const btn=e.target.closest('[data-window]');if(!btn)return;state.perfWindow=btn.dataset.window==='all'?'all':Number(btn.dataset.window);$('windowTabs').querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===btn));renderPerformance();});
   $('refreshBtn').addEventListener('click',refresh);
   $('manualOpen').addEventListener('click',openModal);$('manualOpen2').addEventListener('click',openModal);
   $('modalClose').addEventListener('click',closeModal);$('manualModal').addEventListener('click',e=>{if(e.target===$('manualModal'))closeModal();});
@@ -665,9 +263,9 @@
   $('resetManual').addEventListener('click',()=>{if(!confirm('确定清除本机保存的手动开奖结果？'))return;state.local=[];setLocalStorage();enterManual();closeModal();});
   $('demoBtn').addEventListener('click',demo);
   $('trendTabs').addEventListener('click',e=>{const btn=e.target.closest('[data-limit]');if(!btn)return;state.trendLimit=Number(btn.dataset.limit);$('trendTabs').querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===btn));drawChart();});
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeSettings();}});window.addEventListener('resize',drawChart);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});window.addEventListener('resize',drawChart);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!state.demo&&!state.manualMode)getLatest();});
-  loadLocalStorage();loadForecasts();loadLearningLogs();loadSettings();render();ticker();refresh();
+  loadLocalStorage();render();ticker();refresh();
   setInterval(ticker,1000);
   setInterval(()=>{if(state.demo||state.manualMode||document.hidden)return;if(state.feed!=='sse'||Date.now()-state.lastSync>90000)getLatest();},6000);
 })();
